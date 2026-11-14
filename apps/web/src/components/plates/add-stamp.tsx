@@ -6,11 +6,12 @@ import { usePathname } from "next/navigation";
 
 /**
  * O "+" de Plates: um carimbo redondo pousado acima da barra inferior, à
- * direita, ao alcance do polegar. Some na própria tela de cadastro.
+ * direita, ao alcance do polegar. Some na tela de cadastro e no mapa (onde
+ * cobriria o cartão do restaurante escolhido).
  */
 export function AddStamp() {
   const pathname = usePathname();
-  if (pathname.startsWith("/plates/novo")) return null;
+  if (pathname.startsWith("/plates/novo") || pathname.startsWith("/plates/mapa")) return null;
   return (
     <Link
       href="/plates/novo"
