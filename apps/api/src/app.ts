@@ -7,6 +7,7 @@ import { requireAuth } from "./auth";
 import { ApiFailure } from "./errors";
 import { clientIp, rateLimit } from "./rate-limit";
 import { dishRoutes } from "./routes/dishes";
+import { logRoutes } from "./routes/logs";
 import { placesRoutes } from "./routes/places";
 import { profileRoutes } from "./routes/profiles";
 import { ratingRoutes } from "./routes/ratings";
@@ -49,6 +50,7 @@ export function createApp(deps: AppDeps) {
   v1.route("/", ratingRoutes(deps));
   v1.route("/", wishlistRoutes(deps));
   v1.route("/", titleRoutes(deps));
+  v1.route("/", logRoutes(deps));
   app.route("/v1", v1);
 
   app.notFound((c) => c.json({ error: { code: "not_found", message: "Rota não encontrada." } }, 404));
