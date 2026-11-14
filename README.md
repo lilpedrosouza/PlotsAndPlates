@@ -7,7 +7,17 @@ O diário a dois do que a gente come e do que a gente assiste.
 
 Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do casal. Uso pessoal, sem fins comerciais.
 
-> **Estado atual: fase 1.** Monorepo, autenticação, perfil, design system dos dois mundos e a transição entre eles. Plates (fase 2) e Plots (fase 3) ainda não foram construídos; as partes deste README sobre Google Places e TMDB já descrevem como preparar as chaves, mas o código que as usa chega nessas fases.
+> **Estado atual: fase 2.** Fase 1 (monorepo, autenticação, perfil, design system dos dois mundos e a transição entre eles) e fase 2 (Plates completo) prontas. Plots (fase 3) ainda não foi construído; a parte deste README sobre o TMDB já descreve como preparar a chave.
+
+### O que já dá para usar em Plates
+
+- **Caderno** (`/plates`): os restaurantes em que vocês foram, em grade de rótulos ou índice, com filtros (cozinha, bairro/cidade, preço, nota) e ordenação.
+- **Quero ir** (`/plates/quero-ir`): a lista de vontade, com motivo, prioridade e o botão **Fomos!** (vira visita e abre a avaliação).
+- **Novo restaurante** (`/plates/novo`): busca pelo nome (Google, ou OpenStreetMap se o Google não responder), link do Google Maps colado ou cadastro à mão, com pin no mapa.
+- **Página do restaurante** (`/plates/r/:id`): notas por critério (a nota geral é a média, arredondada para meia estrela), review, pratos com nota e "pediria de novo?", visitas com fotos e valor, e o painel **Ver no Google** (dados ao vivo, nada salvo).
+- **Mapa** (`/plates/mapa`): pins de "fomos" e "quero ir", agrupados quando ficam próximos.
+
+O vínculo de casal (notas lado a lado, "juntos", quero ir compartilhado) e "O que o pessoal do PAP achou" chegam na fase 4.
 
 ## Como está organizado
 

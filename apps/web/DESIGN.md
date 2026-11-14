@@ -89,6 +89,51 @@ typography:
     fontWeight: 600
     letterSpacing: "0.09em"
     fontFeature: "tnum"
+  micro-nav:
+    fontFamily: "Sofia Sans Extra Condensed, Arial Narrow, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 600
+    letterSpacing: "0.09em"
+  micro-sm:
+    fontFamily: "Sofia Sans Extra Condensed, Arial Narrow, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 600
+    letterSpacing: "0.09em"
+  micro-xs:
+    fontFamily: "Sofia Sans Extra Condensed, Arial Narrow, sans-serif"
+    fontSize: "0.6875rem"
+    fontWeight: 600
+    letterSpacing: "0.09em"
+  micro-xxs:
+    fontFamily: "Sofia Sans Extra Condensed, Arial Narrow, sans-serif"
+    fontSize: "0.625rem"
+    fontWeight: 600
+    letterSpacing: "0.09em"
+  plates-label-title:
+    fontFamily: "Besley, Clarendon, Rockwell, Georgia, serif"
+    fontSize: "1.1875rem"
+    fontWeight: 700
+    lineHeight: 1.15
+  plates-label-title-sm:
+    fontFamily: "Besley, Clarendon, Rockwell, Georgia, serif"
+    fontSize: "1.125rem"
+    fontWeight: 700
+    lineHeight: 1.15
+  plates-label-title-lg:
+    fontFamily: "Besley, Clarendon, Rockwell, Georgia, serif"
+    fontSize: "1.25rem"
+    fontWeight: 700
+    lineHeight: 1.15
+  body-md:
+    fontFamily: "Sofia Sans, Segoe UI, Roboto, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  body-sm:
+    fontFamily: "Sofia Sans, Segoe UI, Roboto, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 400
+    lineHeight: 1.5
 rounded:
   plates-xs: "1px"
   plates-sm: "2px"
@@ -350,6 +395,20 @@ A marca é a palavra da seção em letra de título. "Plates" e "Plots" dividem 
 - **Avatar:** redondo em Plates, quadrado em Plots; sem foto, as iniciais em letra de título sobre a cor de destaque.
 - **Ilustração:** SVG autoral desenhado só com tokens do mundo (prato em duas tintas no arco; cartaz geométrico com uma forma no destaque). Ocupa o lugar da foto enquanto ela não existe e é sempre apresentada como exemplo.
 - **Esqueleto:** bloco em `sunken` na forma do que vai chegar (arco em Plates, 2:3 em Plots), com um brilho que atravessa em 1,4s; parado com movimento reduzido.
+
+## Plates: caderno, restaurante e mapa (fase 2)
+
+Peças do rótulo aplicadas às telas de Plates. A direção e as decisões estão em `.impeccable/surfaces/src-app-plates.md`.
+
+- **Rótulo do caderno:** moldura de rótulo sobre `surface`, arco 4:5 (foto ou a gravura do prato), fio duplo, nome em Besley de 1,125 a 1,25rem (`plates-label-title*`), lugar em letra miúda de 0,6875rem (`micro-xs`) e, no pé, as visitas à esquerda e o carimbo pequeno à direita. O giro do carimbo varia por restaurante (−8° a −3°). No "quero ir", o pé mostra o motivo em itálico, a prioridade e o botão "Fomos!".
+- **Prateleira:** grade de duas colunas (três a partir de 768px) em que uma coluna desce 1,5rem, como potes desalinhados. Filtro e reordenação usam animação de layout com a mola `settle`.
+- **Índice:** a vista em lista é o índice de um caderno de receitas: nome em Besley, pontilhado de 2px no fio forte até a nota na margem, letra miúda embaixo. A partir de 40 linhas só as visíveis ficam no DOM.
+- **Tabela de informação:** a nota do restaurante é a tabela de um rótulo de mercearia: contorno de 2px na tinta, cabeçalho em letra miúda, uma linha por critério (estrelas de 16px e número em Besley) e, depois de um fio de 6px na tinta, a nota geral em carimbo.
+- **Cardápio:** pratos numerados em letra miúda, nome em Besley, pontilhado até a nota (na cor de destaque; "dar nota" em tinta suave quando não há).
+- **Folha inferior:** sobe do pé da tela com `--pap-dur-slow` e a curva de saída do mundo (no computador aparece centrada); título em Besley, fio duplo abaixo, ações fixas no pé. É a única outra peça com a sombra de folha de cima.
+- **Carimbo "Novo":** o "+" de Plates é um carimbo redondo de 64px pousado acima da barra inferior, à direita, com a sombra de peça solta; some no cadastro e no mapa.
+- **Mapa:** estilo claro do OpenFreeMap tingido com os tokens (fundo papel, água em rebaixo, rótulos em tinta café). "Fomos" é um círculo cheio na cor de destaque com a nota; "quero ir" é um anel de 3,5px na segunda tinta; grupos são um círculo de folha com contorno de destaque e a contagem. O pin do formulário é uma gota na cor de destaque com a sombra de peça solta. A atribuição fica recolhida no "i".
+- **Salto (`POP`):** estrela que carimba e "Fomos!" usam quadros-chave de ida e volta com a curva `POP[section]` de `src/lib/motion.ts` (molas do Motion não aceitam três quadros).
 
 ## Do's and Don'ts
 
