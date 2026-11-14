@@ -130,3 +130,39 @@ describe("diário", () => {
     expect((await request("DELETE", `/v1/logs/${log.id}`, bia)).status).toBe(404);
   });
 });
+
+describe("nota dada na página não se perde", () => {
+  let film: string;
+  let series: string;
+
+  beforeAll(async () => {
+    film = (await ok(await request("GET", "/v1/titles/by-tmdb/movie/9002", bia))).id;
+    series = (await ok(await request("GET", "/v1/titles/by-tmdb/tv/7002", bia))).id;
+  });
+
+  it("registro sem nota não apaga a nota do filme dada na página", async () => {
+    await ok(await request("PUT", `/v1/titles/${film}/rating`, bia, { rating: 4 }));
+    await ok(await request("POST", `/v1/titles/${film}/logs`, bia, { watchedOn: "2026-11-03" }), 201);
+    expect((await getDetail(film, bia)).myRating.rating).toBe(4);
+  });
+
+  it("registrar a temporada sem nota não apaga a nota da temporada dada na página", async () => {
+    await ok(await request("PUT", `/v1/titles/${series}/seasons/2/rating`, bia, { rating: 4.5 }));
+    await ok(await request("POST", `/v1/titles/${series}/logs`, bia, { watchedOn: "2026-11-03", seasonNumber: 2 }), 201);
+    expect((await getDetail(series, bia)).seasons[1].myRating).toBe(4.5);
+  });
+
+  it("editar só o review de um registro não volta a nota mudada na página", async () => {
+    const log = await ok(await request("POST", `/v1/titles/${film}/logs`, bia, { watchedOn: "2026-11-04", rating: 3 }), 201);
+    await ok(await request("PUT", `/v1/titles/${film}/rating`, bia, { rating: 4.5 }));
+    await ok(await request("PATCH", `/v1/logs/${log.id}`, bia, { review: "melhor do que lembrava" }));
+    expect((await getDetail(film, bia)).myRating.rating).toBe(4.5);
+  });
+
+  it("apagar o único registro com nota mantém a nota", async () => {
+    const fresh = (await ok(await request("GET", "/v1/titles/by-tmdb/tv/7001", bia))).id;
+    const log = await ok(await request("POST", `/v1/titles/${fresh}/logs`, bia, { watchedOn: "2026-11-04", seasonNumber: 3, rating: 2.5 }), 201);
+    expect((await request("DELETE", `/v1/logs/${log.id}`, bia)).status).toBe(204);
+    expect((await getDetail(fresh, bia)).seasons[2].myRating).toBe(2.5);
+  });
+});

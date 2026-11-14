@@ -13,7 +13,10 @@ import {
 } from "@pap/db";
 import { type TmdbSearchResult, type TmdbType, kindFromTmdb } from "@pap/shared";
 import { and, asc, eq, lt, notExists, sql } from "drizzle-orm";
+import { pgErrorCode } from "../errors";
 import { createTtlCache } from "../places/cache";
+
+const PG_FOREIGN_KEY_VIOLATION = "23503";
 import { type TmdbClient, TmdbNotFound, TmdbUnavailable } from "./client";
 
 /**
@@ -270,8 +273,9 @@ export function createCatalog(deps: { db: Db; client: TmdbClient | null; now?: (
       const cutoff = new Date(now().getTime() - days * DAY_MS);
       const used = (table: typeof watchLogs | typeof titleRatings | typeof seasonRatings | typeof plotsWatchlist | typeof listItems | typeof favoriteTitles) =>
         notExists(db.select({ one: sql`1` }).from(table).where(eq(table.titleId, titles.id)));
-      const removed = await db
-        .delete(titles)
+      const candidates = await db
+        .select({ id: titles.id })
+        .from(titles)
         .where(
           and(
             lt(titles.fetchedAt, cutoff),
@@ -282,10 +286,19 @@ export function createCatalog(deps: { db: Db; client: TmdbClient | null; now?: (
             used(listItems),
             used(favoriteTitles),
           ),
-        )
-        .returning({ id: titles.id });
-      return removed.length;
+        );
+      let removed = 0;
+      for (const { id } of candidates) {
+        try {
+          // Um por vez: se alguém acabou de registrar o título, o banco recusa
+          // a exclusão (restrict) e ele só fica de fora desta limpeza.
+          const rows = await db.delete(titles).where(eq(titles.id, id)).returning({ id: titles.id });
+          removed += rows.length;
+        } catch (error) {
+          if (pgErrorCode(error) !== PG_FOREIGN_KEY_VIOLATION) throw error;
+        }
+      }
+      return removed;
     },
   };
 }
-

@@ -24,6 +24,12 @@ type LogSheetProps = {
   log?: WatchLog | null;
 };
 
+/** Temporada sugerida: a primeira (sem contar os especiais) ainda sem nota; senão a última. */
+function defaultSeason(title: TitleDetail): number | null {
+  const regular = title.seasons.filter((season) => season.number > 0);
+  return regular.find((season) => season.myRating === null)?.number ?? regular.at(-1)?.number ?? title.seasons[0]?.number ?? null;
+}
+
 /** Curtida: o coração salta quando marca. */
 function LikeToggle({ liked, onChange }: { liked: boolean; onChange: (liked: boolean) => void }) {
   const section = useSection();
@@ -52,7 +58,7 @@ function LikeToggle({ liked, onChange }: { liked: boolean; onChange: (liked: boo
 export function LogSheet({ title, open, onOpenChange, presetSeason, log }: LogSheetProps) {
   const isShow = title.tmdbType === "tv";
   const [seasonNumber, setSeasonNumber] = useState<number | null>(
-    log ? log.seasonNumber : (presetSeason ?? (isShow ? (title.seasons.find((season) => season.myRating === null)?.number ?? title.seasons[0]?.number ?? null) : null)),
+    log ? log.seasonNumber : (presetSeason ?? (isShow ? defaultSeason(title) : null)),
   );
   const [watchedOn, setWatchedOn] = useState(log?.watchedOn ?? todayIso());
   const [rating, setRating] = useState<number | null>(log?.rating ?? null);

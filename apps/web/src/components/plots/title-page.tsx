@@ -30,7 +30,7 @@ import { AddToListSheet } from "./add-to-list-sheet";
 import { LogSheet } from "./log-sheet";
 import { POSTER_TRANSITION } from "./open-title";
 import { Poster } from "./poster";
-import { JustWatchAttribution, TmdbAttribution } from "./tmdb-attribution";
+import { JustWatchAttribution } from "./tmdb-attribution";
 
 type SheetState = { kind: "log"; season: number | null; log: WatchLog | null } | { kind: "lists" } | null;
 
@@ -84,8 +84,6 @@ export function TitlePage() {
       <WhereToWatch title={title} />
       {title.tmdbType === "tv" ? <Seasons title={title} onLog={(season) => openSheet({ kind: "log", season, log: null })} /> : null}
       <Logs title={title} onEdit={(log) => openSheet({ kind: "log", season: log.seasonNumber, log })} />
-      <TmdbAttribution />
-
       <LogSheet
         key={`log${sheetKey}`}
         title={title}
@@ -107,6 +105,7 @@ function Hero({ title, onLog, onLists }: { title: TitleDetail; onLog: () => void
   const [favoriteError, setFavoriteError] = useState<string | null>(null);
 
   const toggleFavorite = () => {
+    if (!favorites.isSuccess) return;
     const current = (favorites.data ?? []).map((item) => item.id);
     setFavoriteError(null);
     if (title.favorite) {
@@ -166,7 +165,15 @@ function Hero({ title, onLog, onLists }: { title: TitleDetail; onLog: () => void
           {title.inWatchlist ? <BookmarkCheck aria-hidden /> : <Bookmark aria-hidden />}
           {title.inWatchlist ? "No quero ver" : "Quero ver"}
         </Button>
-        <Button variant="quiet" size="icon" aria-label={title.favorite ? "Tirar do Top 4" : "Pôr no Top 4"} aria-pressed={title.favorite} onClick={toggleFavorite}>
+        <Button
+          variant="quiet"
+          size="icon"
+          aria-label={title.favorite ? "Tirar do Top 4" : "Pôr no Top 4"}
+          aria-pressed={title.favorite}
+          // Só depois de saber o Top 4 atual: senão salvaria uma lista incompleta por cima.
+          disabled={!favorites.isSuccess}
+          onClick={toggleFavorite}
+        >
           <Star aria-hidden className={cn(title.favorite && "fill-current text-brand")} />
         </Button>
         <Button variant="quiet" size="icon" aria-label="Pôr em lista" onClick={onLists}>

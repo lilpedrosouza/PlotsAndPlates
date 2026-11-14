@@ -50,6 +50,13 @@
       "when": 1794688195834,
       "tag": "0006_grants_plots",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794690424240,
+      "tag": "0007_plots_restrict",
+      "breakpoints": true
     }
   ]
 }

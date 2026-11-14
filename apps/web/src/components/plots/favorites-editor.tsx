@@ -22,7 +22,8 @@ export function FavoritesEditor() {
   const titles = favorites.data ?? [];
   const ids = titles.map((title) => title.id);
 
-  const save = (next: string[]) => setFavorites.mutate(next);
+  // Só salva depois de saber o Top 4 atual (senão a lista incompleta iria por cima).
+  const save = (next: string[]) => favorites.isSuccess && setFavorites.mutate(next);
   const move = (index: number, delta: number) => {
     const next = [...ids];
     const [moved] = next.splice(index, 1);
@@ -57,7 +58,7 @@ export function FavoritesEditor() {
               ) : (
                 <button
                   type="button"
-                  disabled={slot !== titles.length}
+                  disabled={!favorites.isSuccess || slot !== titles.length}
                   onClick={() => {
                     setPickKey((key) => key + 1);
                     setPicking(slot);
@@ -65,7 +66,7 @@ export function FavoritesEditor() {
                   aria-label={`Escolher o ${slot + 1}º do Top 4`}
                   className={cn(
                     "flex aspect-[2/3] items-center justify-center border-2 border-dashed border-rule-strong text-soft transition-colors duration-fast",
-                    slot === titles.length ? "hover:border-brand hover:text-brand" : "opacity-40",
+                    favorites.isSuccess && slot === titles.length ? "hover:border-brand hover:text-brand" : "opacity-40",
                   )}
                 >
                   <Plus aria-hidden className="size-6" />

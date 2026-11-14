@@ -170,3 +170,31 @@ describe("manutenção do catálogo", () => {
     expect(left).toEqual(expect.arrayContaining([inDiary, wanted]));
   });
 });
+
+describe("tarefa da madrugada", () => {
+  const ANA = "11111111-1111-4111-8111-111111111111";
+
+  it("apaga primeiro o que ninguém usa e depois atualiza o resto", async () => {
+    const { maintainTmdb } = await import("../jobs");
+    const { watchLogs } = await import("@pap/db");
+    await test.createAuthUser(ANA).catch(() => ANA);
+    const { catalog } = setup();
+    const unused = await catalog.ensure("movie", 9001);
+    const used = await catalog.ensure("movie", 9002);
+    await test.db.insert(watchLogs).values({ userId: ANA, titleId: used, watchedOn: "2026-01-01" });
+    clock = new Date(clock.getTime() + 200 * DAY);
+    expect(await maintainTmdb({ tmdb: catalog })).toEqual({ pruned: 1, refreshed: 1 });
+    const left = (await test.db.select({ id: titles.id }).from(titles)).map((row) => row.id);
+    expect(left).toEqual([used]);
+    expect(left).not.toContain(unused);
+  });
+
+  it("título com registro no diário não pode ser apagado (o banco recusa)", async () => {
+    const { watchLogs } = await import("@pap/db");
+    await test.createAuthUser(ANA).catch(() => ANA);
+    const { catalog } = setup();
+    const id = await catalog.ensure("movie", 9003);
+    await test.db.insert(watchLogs).values({ userId: ANA, titleId: id, watchedOn: "2026-01-01" });
+    await expect(test.db.delete(titles).where(eq(titles.id, id))).rejects.toThrow();
+  });
+});

@@ -32,10 +32,15 @@ const userRef = (name: string) =>
   uuid(name)
     .notNull()
     .references(() => authUsers.id, { onDelete: "cascade" });
-const titleRef = () =>
+/**
+ * Dados das pessoas (diário, notas, listas, Top 4) impedem que o título seja
+ * apagado (restrict): a limpeza do catálogo nunca leva junto um registro, nem
+ * numa corrida com um registro sendo gravado. Temporadas vão junto (cascade).
+ */
+const titleRef = (onDelete: "cascade" | "restrict" = "restrict") =>
   uuid("title_id")
     .notNull()
-    .references(() => titles.id, { onDelete: "cascade" });
+    .references(() => titles.id, { onDelete });
 const rating = (name: string) => numeric(name, { precision: 2, scale: 1 });
 const ratingCheck = (column: AnyPgColumn) => sql`${column} between 0.5 and 5 and ${column} * 2 = floor(${column} * 2)`;
 const isMine = (column: AnyPgColumn) => sql`${column} = ${authUid}`;
@@ -92,7 +97,7 @@ export const titles = pgTable(
 export const seasons = pgTable(
   "seasons",
   {
-    titleId: titleRef(),
+    titleId: titleRef("cascade"),
     number: smallint("number").notNull(),
     name: text("name").notNull().default(""),
     episodeCount: smallint("episode_count"),

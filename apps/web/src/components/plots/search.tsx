@@ -10,7 +10,6 @@ import { useTransitionNavigate } from "@/lib/transition-router";
 import { cn } from "@/lib/utils";
 import { POSTER_TRANSITION } from "./open-title";
 import { Poster } from "./poster";
-import { TmdbAttribution } from "./tmdb-attribution";
 
 /** Busca de filmes e séries no TMDB. Tocar num pôster abre a página do título. */
 export function Search() {
@@ -109,8 +108,6 @@ export function Search() {
           })}
         </ul>
       )}
-
-      <TmdbAttribution />
     </div>
   );
 }

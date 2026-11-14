@@ -21,9 +21,11 @@ export async function assertSeasonFor(ctx: PlotsContext, title: Title, seasonNum
 }
 
 /**
- * A nota atual do filme (ou da temporada) é a do registro mais recente com
- * nota. Chamada depois de criar, editar ou apagar um registro. A nota da série
- * inteira não muda aqui: é dada à parte.
+ * A nota atual do filme (ou da temporada) passa a ser a do registro mais
+ * recente com nota. Só é chamada quando algo que mexe na nota mudou (registro
+ * com nota criado, nota/data/temporada editada, registro com nota apagado).
+ * Sem nenhum registro com nota, a nota atual fica como está: pode ter sido
+ * dada direto na página. A nota da série inteira nunca muda aqui.
  */
 export async function syncCurrentRating(ctx: PlotsContext, title: Title, seasonNumber: number | null) {
   const { tx, userId } = ctx;
@@ -34,24 +36,10 @@ export async function syncCurrentRating(ctx: PlotsContext, title: Title, seasonN
     .where(and(eq(watchLogs.userId, userId), eq(watchLogs.titleId, title.id), sameTarget, isNotNull(watchLogs.rating)))
     .orderBy(desc(watchLogs.watchedOn), desc(watchLogs.createdAt))
     .limit(1);
+  if (!latest?.rating) return;
 
   if (title.tmdbType === "movie") {
-    const [lastLog] = await tx
-      .select({ liked: watchLogs.liked })
-      .from(watchLogs)
-      .where(and(eq(watchLogs.userId, userId), eq(watchLogs.titleId, title.id)))
-      .orderBy(desc(watchLogs.watchedOn), desc(watchLogs.createdAt))
-      .limit(1);
-    if (!latest && !lastLog) {
-      await tx.delete(titleRatings).where(and(eq(titleRatings.userId, userId), eq(titleRatings.titleId, title.id)));
-      return;
-    }
-    const values = {
-      rating: latest?.rating ?? null,
-      liked: lastLog?.liked ?? false,
-      isPrivate: latest?.isPrivate ?? false,
-      updatedAt: new Date(),
-    };
+    const values = { rating: latest.rating, isPrivate: latest.isPrivate, updatedAt: new Date() };
     await tx
       .insert(titleRatings)
       .values({ userId, titleId: title.id, ...values })
@@ -60,15 +48,18 @@ export async function syncCurrentRating(ctx: PlotsContext, title: Title, seasonN
   }
 
   if (seasonNumber === null) return;
-  if (!latest?.rating) {
-    await tx
-      .delete(seasonRatings)
-      .where(and(eq(seasonRatings.userId, userId), eq(seasonRatings.titleId, title.id), eq(seasonRatings.seasonNumber, seasonNumber)));
-    return;
-  }
   const values = { rating: latest.rating, isPrivate: latest.isPrivate, updatedAt: new Date() };
   await tx
     .insert(seasonRatings)
     .values({ userId, titleId: title.id, seasonNumber, ...values })
     .onConflictDoUpdate({ target: [seasonRatings.userId, seasonRatings.titleId, seasonRatings.seasonNumber], set: values });
+}
+
+/** Curtir um filme num registro marca a curtida do filme (desmarcar é na página). */
+export async function markLiked(ctx: PlotsContext, title: Title) {
+  if (title.tmdbType !== "movie") return;
+  await ctx.tx
+    .insert(titleRatings)
+    .values({ userId: ctx.userId, titleId: title.id, liked: true })
+    .onConflictDoUpdate({ target: [titleRatings.userId, titleRatings.titleId], set: { liked: true, updatedAt: new Date() } });
 }

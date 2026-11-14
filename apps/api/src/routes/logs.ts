@@ -17,7 +17,7 @@ import { Hono } from "hono";
 import { badRequest, notFound } from "../errors";
 import { decodeCursor, encodeCursor } from "../plates/cursor";
 import { type PlotsContext, findTitle, toLog } from "../plots/queries";
-import { assertSeasonFor, syncCurrentRating } from "../plots/ratings";
+import { assertSeasonFor, markLiked, syncCurrentRating } from "../plots/ratings";
 import type { AppDeps, AppEnv } from "../types";
 import { validate } from "../validate";
 import { routeId } from "./restaurants";
@@ -47,7 +47,8 @@ export async function insertLog(ctx: PlotsContext, title: Title, input: Required
     })
     .returning();
   if (!row) throw new Error("O registro não foi criado.");
-  await syncCurrentRating(ctx, title, seasonNumber);
+  if (row.rating !== null) await syncCurrentRating(ctx, title, seasonNumber);
+  if (row.liked) await markLiked(ctx, title);
   return toLog(row);
 }
 
@@ -89,8 +90,13 @@ export function logRoutes(deps: Pick<AppDeps, "db">) {
         .where(eq(watchLogs.id, logId))
         .returning();
       if (!row) throw notFound("Registro não encontrado.");
-      await syncCurrentRating(ctx, title, row.seasonNumber);
-      if (current.seasonNumber !== row.seasonNumber) await syncCurrentRating(ctx, title, current.seasonNumber);
+      // Só recalcula a nota atual se mudou algo que mexe nela.
+      const touchesRating = rating !== undefined || patch.watchedOn !== undefined || patch.seasonNumber !== undefined;
+      if (touchesRating) {
+        await syncCurrentRating(ctx, title, row.seasonNumber);
+        if (current.seasonNumber !== row.seasonNumber) await syncCurrentRating(ctx, title, current.seasonNumber);
+      }
+      if (patch.liked === true) await markLiked(ctx, title);
       return toLog(row);
     });
     return c.json(log);
@@ -106,7 +112,7 @@ export function logRoutes(deps: Pick<AppDeps, "db">) {
         .returning();
       if (!removed) throw notFound("Registro não encontrado.");
       const title = await findTitle(tx, removed.titleId);
-      if (title) await syncCurrentRating({ tx, userId: user.id }, title, removed.seasonNumber);
+      if (title && removed.rating !== null) await syncCurrentRating({ tx, userId: user.id }, title, removed.seasonNumber);
     });
     return c.body(null, 204);
   });

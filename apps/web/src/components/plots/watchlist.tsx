@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { LogSheet } from "./log-sheet";
 import { useOpenTitle } from "./open-title";
 import { Poster } from "./poster";
-import { TmdbAttribution } from "./tmdb-attribution";
+import { JustWatchAttribution } from "./tmdb-attribution";
 
 /** Quero ver: pôsteres, com a faixa "No seu …" quando está num streaming do perfil. */
 export function Watchlist() {
@@ -88,7 +88,8 @@ export function Watchlist() {
         </ul>
       )}
 
-      <TmdbAttribution />
+      {/* A faixa "No seu …" vem dos dados de onde assistir da JustWatch. */}
+      <JustWatchAttribution />
       {watching ? <AssistimosLauncher key={launchKey} titleId={watching} onDone={() => setWatching(null)} /> : null}
     </div>
   );

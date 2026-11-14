@@ -15,11 +15,15 @@ type JobDeps = {
   tmdb: Catalog;
 };
 
-/** Dados do TMDB nunca passam de 6 meses: atualiza os de mais de 150 dias e limpa o que ninguém usa. */
+/**
+ * Dados do TMDB nunca passam de 6 meses: primeiro apaga o que ninguém usa
+ * (senão a atualização renovaria a data deles e eles nunca sairiam), depois
+ * atualiza os de mais de 150 dias.
+ */
 export async function maintainTmdb({ tmdb }: Pick<JobDeps, "tmdb">) {
-  const refreshed = await tmdb.refreshOlderThan(150, 200);
   const pruned = await tmdb.pruneUnused(150);
-  return { refreshed, pruned };
+  const refreshed = await tmdb.refreshOlderThan(150, 200);
+  return { pruned, refreshed };
 }
 
 /**
