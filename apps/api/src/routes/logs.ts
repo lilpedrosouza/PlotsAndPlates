@@ -124,7 +124,8 @@ export function logRoutes(deps: Pick<AppDeps, "db">) {
       if (!title) throw notFound("Título não encontrado.");
       const seasonNumber = patch.seasonNumber !== undefined ? patch.seasonNumber : current.seasonNumber;
       if (patch.seasonNumber !== undefined) await assertSeasonFor(ctx, title, seasonNumber);
-      const { rating, ...rest } = patch;
+      // "Juntos" só vale na criação, quando nasce o registro do par; editar não mexe nele.
+      const { rating, together: _together, ...rest } = patch;
       const [row] = await tx
         .update(watchLogs)
         .set({ ...rest, ...(rating !== undefined ? { rating: numeric(rating) } : {}), seasonNumber: seasonNumber ?? null, updatedAt: new Date() })

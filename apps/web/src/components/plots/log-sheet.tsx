@@ -4,12 +4,14 @@ import { type TitleDetail, type WatchLog, isRewatch, todayIso } from "@pap/share
 import { Heart } from "lucide-react";
 import * as m from "motion/react-m";
 import { useState } from "react";
+import { TogetherToggle } from "@/components/couple/together-toggle";
 import { Sheet } from "@/components/plates/sheet";
 import { useSection } from "@/components/shell/section-context";
 import { Button } from "@/components/ui/button";
 import { ChipToggle } from "@/components/ui/chip";
 import { TextAreaField, TextField } from "@/components/ui/field";
 import { RatingInput } from "@/components/ui/rating";
+import { usePartner } from "@/lib/couple/queries";
 import { POP } from "@/lib/motion";
 import { useAddLog, useAssistimos, useUpdateLog } from "@/lib/plots/mutations";
 import { cn } from "@/lib/utils";
@@ -65,6 +67,10 @@ export function LogSheet({ title, open, onOpenChange, presetSeason, log }: LogSh
   const [liked, setLiked] = useState(log?.liked ?? false);
   const [isPrivate, setPrivate] = useState(log?.isPrivate ?? false);
   const [review, setReview] = useState(log?.review ?? "");
+  // "Vimos juntos" só na criação: é quando nasce o registro do par.
+  const partner = usePartner();
+  const showTogether = partner !== null && !log;
+  const [together, setTogether] = useState(true);
   // "Reassistido" sugerido pelo histórico; só vai na requisição se a pessoa mexer.
   const suggestedRewatch = log ? log.rewatch : isRewatch(title.logs, seasonNumber);
   const [rewatch, setRewatch] = useState<boolean | null>(null);
@@ -88,6 +94,7 @@ export function LogSheet({ title, open, onOpenChange, presetSeason, log }: LogSh
       review,
       seasonNumber: isShow ? seasonNumber : null,
       ...(rewatch !== null ? { rewatch } : {}),
+      ...(showTogether ? { together } : {}),
     };
     const done = { onSuccess: () => onOpenChange(false), onError: (failure: Error) => setError(failure.message) };
     if (log) update.mutate({ logId: log.id, patch: body }, done);
@@ -121,6 +128,7 @@ export function LogSheet({ title, open, onOpenChange, presetSeason, log }: LogSh
           </fieldset>
         ) : null}
         <TextField label="Quando" type="date" value={watchedOn} max={todayIso()} onChange={(event) => setWatchedOn(event.target.value)} />
+        {showTogether && partner ? <TogetherToggle partner={partner} label="Vimos juntos" where="diário" value={together} onChange={setTogether} /> : null}
         <div className="flex flex-col gap-1">
           <span className="font-micro text-[0.8125rem] text-soft">{isShow ? "Nota da temporada" : "Nota"}</span>
           <RatingInput label={isShow ? "Nota da temporada" : "Nota"} value={rating} onChange={setRating} />

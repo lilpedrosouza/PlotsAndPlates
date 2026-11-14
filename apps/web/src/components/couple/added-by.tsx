@@ -36,7 +36,10 @@ export function AddedBy({ people, className }: { people: PersonRef[]; className?
           />
         ))}
       </span>
-      <span>Adicionado {label}</span>
+      <span>
+        <span className="sr-only">Adicionado </span>
+        {label}
+      </span>
     </p>
   );
 }

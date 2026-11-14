@@ -3,6 +3,7 @@
 import { TITLE_KINDS, TITLE_KIND_LABELS, type TitleKind, type WatchlistItem } from "@pap/shared";
 import Link from "next/link";
 import { useState } from "react";
+import { AddedBy } from "@/components/couple/added-by";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ChipToggle } from "@/components/ui/chip";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -113,6 +114,7 @@ function WatchlistCard({ item, onWatched }: { item: WatchlistItem; onWatched: ()
         <span className="font-display line-clamp-2 text-[0.9375rem] leading-[1.14]">{item.title.title}</span>
         <span className="font-micro -mt-1 text-[0.625rem] text-soft">{creditLine(item.title)}</span>
       </Link>
+      <AddedBy people={item.addedBy} />
       <Button size="sm" variant="secondary" onClick={onWatched} className="mt-auto px-2">
         Assistimos!
       </Button>

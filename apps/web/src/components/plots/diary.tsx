@@ -121,9 +121,18 @@ function DiaryRow({ entry }: { entry: DiaryEntry }) {
             </span>
           ) : null}
           {entry.isPrivate ? <span>Privado</span> : null}
+          {entry.together ? <span className="text-foreground">Juntos</span> : null}
         </p>
       </div>
-      {entry.rating !== null ? <Stamp value={entry.rating} size="sm" /> : null}
+      {entry.rating !== null ? (
+        <Stamp value={entry.rating} size="sm" />
+      ) : entry.together ? (
+        <span className="font-micro flex size-14 shrink-0 items-center justify-center border border-dashed border-rule-strong text-center text-[0.625rem] leading-tight text-soft">
+          Dar
+          <br />
+          nota
+        </span>
+      ) : null}
     </Link>
   );
 }

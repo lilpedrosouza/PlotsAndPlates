@@ -53,6 +53,13 @@ describe("vimos juntos", () => {
     expect(await diary("ana")).toHaveLength(3);
   });
 
+  it("editar não liga nem desliga o juntos (não há como criar ou desfazer o registro do par por aqui)", async () => {
+    const solo = (await diary("ana")).find((entry: { watchedOn: string }) => entry.watchedOn === "2026-11-03");
+    const edited = await api.ok(await api.request("PATCH", `/v1/logs/${solo.id}`, t.ana!, { together: true, review: "revi" }));
+    expect(edited).toMatchObject({ together: false, review: "revi" });
+    expect(await diary("bia")).toHaveLength(2);
+  });
+
   it("quem é de fora não ganha registro", async () => {
     expect(await diary("caio")).toHaveLength(0);
   });

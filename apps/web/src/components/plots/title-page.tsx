@@ -9,6 +9,7 @@ import {
   type TitleKind,
   type WatchLog,
   formatRating,
+  sideBySide,
   tmdbImage,
 } from "@pap/shared";
 import { Bookmark, BookmarkCheck, Heart, ListPlus, Pencil, RotateCcw, Star, Trash2 } from "lucide-react";
@@ -16,6 +17,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { firstName } from "@/components/couple/added-by";
+import { CommunitySection } from "@/components/people/community-section";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { RatingInput, RatingStars } from "@/components/ui/rating";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -84,6 +87,7 @@ export function TitlePage() {
       <WhereToWatch title={title} />
       {title.tmdbType === "tv" ? <Seasons title={title} onLog={(season) => openSheet({ kind: "log", season, log: null })} /> : null}
       <Logs title={title} onEdit={(log) => openSheet({ kind: "log", season: log.seasonNumber, log })} />
+      <CommunitySection kind="titles" id={title.id} />
       <LogSheet
         key={`log${sheetKey}`}
         title={title}
@@ -196,10 +200,20 @@ function YourRating({ title }: { title: TitleDetail }) {
   const current = title.myRating?.rating ?? null;
   const suggestion = title.seasonSuggestion;
 
+  const partner = title.partner;
+  const pair = sideBySide(current, title.partnerRating);
+
   return (
-    <Block title={isShow ? "Nota da série" : "Sua nota"}>
+    <Block title={isShow ? "Nota da série" : partner ? "Nossas notas" : "Sua nota"}>
+      {partner ? (
+        <div className="flex items-end gap-2">
+          <Stamp value={pair.mine} caption="você" size="md" />
+          <Stamp value={pair.partner} caption={firstName(partner.displayName).toLowerCase()} size="sm" accent={partner.accent} />
+          <Stamp value={pair.couple} caption="casal" size="sm" tone="ink" />
+        </div>
+      ) : null}
       <div className="flex items-center gap-5">
-        <Stamp value={current} caption="você" size="md" />
+        {partner ? null : <Stamp value={current} caption="você" size="md" />}
         <div className="flex flex-col gap-2">
           <RatingInput
             label={isShow ? "Nota da série inteira" : "Nota do filme"}
@@ -316,6 +330,7 @@ function WhereToWatch({ title }: { title: TitleDetail }) {
 
 function Seasons({ title, onLog }: { title: TitleDetail; onLog: (season: number) => void }) {
   const rate = useRateSeason(title.id);
+  const partnerName = title.partner ? firstName(title.partner.displayName) : null;
   return (
     <Block title="Temporadas">
       <ol className="flex flex-col">
@@ -324,7 +339,14 @@ function Seasons({ title, onLog }: { title: TitleDetail; onLog: (season: number)
             <div className="min-w-0">
               <p className="font-display text-[1.0625rem] leading-tight">{season.number === 0 ? "Especiais" : `T${season.number}`}</p>
               <p className="font-micro mt-1 text-[0.6875rem] text-soft">
-                {[season.name, season.episodeCount ? `${season.episodeCount} episódios` : "", season.year ?? ""].filter(Boolean).join(" · ")}
+                {[
+                  season.name,
+                  season.episodeCount ? `${season.episodeCount} episódios` : "",
+                  season.year ?? "",
+                  partnerName && season.partnerRating !== null ? `${partnerName} ${formatRating(season.partnerRating)}` : "",
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -371,6 +393,7 @@ function Logs({ title, onEdit }: { title: TitleDetail; onEdit: (log: WatchLog) =
                 ) : null}
                 {log.liked ? <Heart aria-label="Curtido" className="size-3.5 fill-current text-brand" /> : null}
                 {log.isPrivate ? <span className="text-soft">Privado</span> : null}
+                {log.together && title.partner ? <span className="text-foreground">Juntos</span> : null}
               </p>
               {log.rating !== null ? <RatingStars value={log.rating} size={14} className="mt-1.5" /> : null}
               {log.review ? <p className="mt-2 max-w-[60ch] leading-relaxed">{log.review}</p> : null}
