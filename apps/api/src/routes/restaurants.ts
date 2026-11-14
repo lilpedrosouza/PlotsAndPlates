@@ -1,6 +1,8 @@
 import {
   type Db,
+  dishRatings,
   dishes,
+  restaurantRatings,
   restaurantPhotos,
   restaurantWishlist,
   restaurants,
@@ -15,11 +17,11 @@ import {
   restaurantListQuerySchema,
   restaurantPatchSchema,
 } from "@pap/shared";
-import { and, count, eq, inArray } from "drizzle-orm";
+import { and, count, eq, inArray, ne } from "drizzle-orm";
 import { Hono } from "hono";
 import { ApiFailure, PG_UNIQUE_VIOLATION, conflict, notFound, pgErrorCode } from "../errors";
 import { createFindExisting } from "../places/existing";
-import { assertOwnPhoto, removePhotos } from "../plates/paths";
+import { type OwnedPhoto, assertOwnPhoto, removePhotos } from "../plates/paths";
 import {
   type PlatesContext,
   canEditRestaurant,
@@ -77,18 +79,18 @@ export async function withRestaurant<T>(
   });
 }
 
-/** Todas as fotos ligadas ao restaurante, de qualquer pessoa (para limpar o Storage). */
-async function photoPathsOf(db: Db, restaurantId: string): Promise<string[]> {
+/** Todas as fotos ligadas ao restaurante, de qualquer pessoa, com o dono de cada linha. */
+async function photosOf(db: Db, restaurantId: string): Promise<OwnedPhoto[]> {
   const [restaurant] = await db
-    .select({ coverPath: restaurants.coverPath })
+    .select({ coverPath: restaurants.coverPath, createdBy: restaurants.createdBy })
     .from(restaurants)
     .where(eq(restaurants.id, restaurantId));
   const own = await db
-    .select({ path: restaurantPhotos.path })
+    .select({ path: restaurantPhotos.path, ownerId: restaurantPhotos.ownerId })
     .from(restaurantPhotos)
     .where(eq(restaurantPhotos.restaurantId, restaurantId));
   const dishPhotos = await db
-    .select({ path: dishes.photoPath })
+    .select({ path: dishes.photoPath, ownerId: dishes.createdBy })
     .from(dishes)
     .where(eq(dishes.restaurantId, restaurantId));
   const visitIds = (await db.select({ id: visits.id }).from(visits).where(eq(visits.restaurantId, restaurantId))).map(
@@ -96,14 +98,37 @@ async function photoPathsOf(db: Db, restaurantId: string): Promise<string[]> {
   );
   const fromVisits =
     visitIds.length > 0
-      ? await db.select({ path: visitPhotos.path }).from(visitPhotos).where(inArray(visitPhotos.visitId, visitIds))
+      ? await db
+          .select({ path: visitPhotos.path, ownerId: visitPhotos.ownerId })
+          .from(visitPhotos)
+          .where(inArray(visitPhotos.visitId, visitIds))
       : [];
-  return [
-    restaurant?.coverPath ?? null,
-    ...own.map((row) => row.path),
-    ...dishPhotos.map((row) => row.path),
-    ...fromVisits.map((row) => row.path),
-  ].filter((path): path is string => Boolean(path));
+  const cover: OwnedPhoto[] = restaurant ? [{ path: restaurant.coverPath, ownerId: restaurant.createdBy }] : [];
+  return [...cover, ...own, ...dishPhotos, ...fromVisits];
+}
+
+/** Outras pessoas têm visita, nota ou "quero ir" neste restaurante? */
+async function usedByOthers(db: Db, restaurantId: string, userId: string): Promise<boolean> {
+  const checks = await Promise.all([
+    db.select({ id: visits.id }).from(visits).where(and(eq(visits.restaurantId, restaurantId), ne(visits.userId, userId))).limit(1),
+    db
+      .select({ id: restaurantRatings.id })
+      .from(restaurantRatings)
+      .where(and(eq(restaurantRatings.restaurantId, restaurantId), ne(restaurantRatings.userId, userId)))
+      .limit(1),
+    db
+      .select({ id: restaurantWishlist.id })
+      .from(restaurantWishlist)
+      .where(and(eq(restaurantWishlist.restaurantId, restaurantId), ne(restaurantWishlist.userId, userId)))
+      .limit(1),
+    db
+      .select({ id: dishRatings.id })
+      .from(dishRatings)
+      .innerJoin(dishes, eq(dishes.id, dishRatings.dishId))
+      .where(and(eq(dishes.restaurantId, restaurantId), ne(dishRatings.userId, userId)))
+      .limit(1),
+  ]);
+  return checks.some((rows) => rows.length > 0);
 }
 
 export function restaurantRoutes(deps: Pick<AppDeps, "db" | "storage">) {
@@ -179,15 +204,17 @@ export function restaurantRoutes(deps: Pick<AppDeps, "db" | "storage">) {
     const patch = c.req.valid("json");
     assertOwnPhoto(patch.coverPath, "restaurant", user.id);
 
-    let replacedCover: string | null = null;
+    let replacedCover: OwnedPhoto | null = null;
     try {
       const detail = await withRestaurant(deps, user, id, { edit: true }, async (ctx) => {
         if (patch.coverPath !== undefined) {
           const [current] = await ctx.tx
-            .select({ coverPath: restaurants.coverPath })
+            .select({ coverPath: restaurants.coverPath, createdBy: restaurants.createdBy })
             .from(restaurants)
             .where(eq(restaurants.id, id));
-          if (current?.coverPath && current.coverPath !== patch.coverPath) replacedCover = current.coverPath;
+          if (current?.coverPath && current.coverPath !== patch.coverPath) {
+            replacedCover = { path: current.coverPath, ownerId: current.createdBy };
+          }
         }
         await ctx.tx
           .update(restaurants)
@@ -211,11 +238,21 @@ export function restaurantRoutes(deps: Pick<AppDeps, "db" | "storage">) {
     const id = routeId(c.req.param("id"));
     // Coletadas antes da transação (incluem fotos de visitas de outras pessoas,
     // que o RLS esconde); só são apagadas se a exclusão for autorizada.
-    const paths = await photoPathsOf(db, id);
+    // Lidos antes da transação (com a conexão sem RLS, que enxerga as linhas de
+    // todo mundo); só valem se a exclusão for autorizada logo abaixo.
+    const photos = await photosOf(db, id);
+    const shared = await usedByOthers(db, id, user.id);
     await withRestaurant(deps, user, id, { edit: true }, async (ctx) => {
+      // O restaurante é compartilhado: apagar levaria o diário de outras pessoas junto.
+      if (shared) {
+        throw conflict(
+          "restaurant_in_use",
+          "Outras pessoas já registraram visitas ou notas neste restaurante, então ele não pode ser apagado.",
+        );
+      }
       await ctx.tx.delete(restaurants).where(eq(restaurants.id, id));
     });
-    await removePhotos(storage, paths);
+    await removePhotos(storage, photos);
     return c.body(null, 204);
   });
 
@@ -249,9 +286,9 @@ export function restaurantRoutes(deps: Pick<AppDeps, "db" | "storage">) {
       const [row] = await ctx.tx
         .delete(restaurantPhotos)
         .where(and(eq(restaurantPhotos.id, photoId), eq(restaurantPhotos.restaurantId, id)))
-        .returning({ path: restaurantPhotos.path });
+        .returning({ path: restaurantPhotos.path, ownerId: restaurantPhotos.ownerId });
       if (!row) throw notFound("Foto não encontrada.");
-      return row.path;
+      return row;
     });
     await removePhotos(storage, [removed]);
     return c.body(null, 204);

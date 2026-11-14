@@ -55,6 +55,8 @@ export function Notebook({ status }: { status: Status }) {
   const filters = filtersFromSearchParams(new URLSearchParams(searchParams.toString()), defaults);
   const view: View = searchParams.get("ver") === "indice" ? "indice" : "grade";
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // A folha monta de novo a cada abertura, com os filtros atuais da URL.
+  const [filtersKey, setFiltersKey] = useState(0);
 
   const query = useRestaurants(toListQuery({ ...filters, status }));
   const items = query.data?.pages.flatMap((page) => page.items) ?? [];
@@ -113,7 +115,14 @@ export function Notebook({ status }: { status: Status }) {
       <header className="flex flex-col gap-4">
         <h1 className="font-display text-[clamp(2rem,8vw,3rem)] leading-[1.05]">{copy.title}</h1>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" onClick={() => setFiltersOpen(true)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              setFiltersKey((key) => key + 1);
+              setFiltersOpen(true);
+            }}
+          >
             <SlidersHorizontal aria-hidden />
             Filtros{filtered ? ` (${activeFilterCount(filters)})` : ""}
           </Button>
@@ -186,6 +195,7 @@ export function Notebook({ status }: { status: Status }) {
       {isFetchingNextPage ? <p className="font-micro text-center text-[0.75rem] text-soft">Carregando mais…</p> : null}
 
       <FiltersSheet
+        key={filtersKey}
         open={filtersOpen}
         onOpenChange={setFiltersOpen}
         filters={{ ...filters, status }}

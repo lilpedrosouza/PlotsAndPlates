@@ -217,3 +217,38 @@ describe("upload de fotos de Plates", () => {
     expect(body.thumbPath).toBeUndefined();
   });
 });
+
+describe("segurança das fotos e exclusão compartilhada", () => {
+  it("não apaga do Storage a foto de outra pessoa gravada direto no banco", async () => {
+    const { restaurantPhotos } = await import("@pap/db");
+    const id = await create(bia, { name: "Restaurante da Bia" });
+    // Simula a Bia gravando, pela API de dados do Supabase, o caminho de uma foto da Ana.
+    const [row] = await withUser(h.test.db, { sub: BIA }, (tx) =>
+      tx.insert(restaurantPhotos).values({ restaurantId: id, ownerId: BIA, path: `restaurants/${ANA}/da-ana.webp` }).returning(),
+    );
+    const before = h.removed.length;
+    expect((await request("DELETE", `/v1/restaurants/${id}/photos/${row!.id}`, bia)).status).toBe(204);
+    expect(h.removed.slice(before)).not.toContain(`restaurants/${ANA}/da-ana.webp`);
+  });
+
+  it("não apaga a capa alheia ao apagar o próprio restaurante", async () => {
+    const { restaurants: table } = await import("@pap/db");
+    const { eq } = await import("drizzle-orm");
+    const id = await create(bia, { name: "Capa Roubada" });
+    await withUser(h.test.db, { sub: BIA }, (tx) =>
+      tx.update(table).set({ coverPath: `restaurants/${ANA}/capa-da-ana.webp` }).where(eq(table.id, id)),
+    );
+    const before = h.removed.length;
+    expect((await request("DELETE", `/v1/restaurants/${id}`, bia)).status).toBe(204);
+    expect(h.removed.slice(before)).not.toContain(`restaurants/${ANA}/capa-da-ana.webp`);
+  });
+
+  it("não deixa apagar um restaurante que tem visitas ou notas de outras pessoas", async () => {
+    const id = await create(ana, { name: "Compartilhado" });
+    expect((await request("POST", `/v1/restaurants/${id}/visits`, bia, { visitedOn: "2026-11-01" })).status).toBe(201);
+    const response = await request("DELETE", `/v1/restaurants/${id}`, ana);
+    expect(response.status).toBe(409);
+    expect((await bodyOf(response)).error.code).toBe("restaurant_in_use");
+    expect((await request("GET", `/v1/restaurants/${id}`, ana)).status).toBe(200);
+  });
+});

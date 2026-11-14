@@ -18,6 +18,7 @@ export function EditRestaurant() {
   const update = useUpdateRestaurant(id);
   const remove = useDeleteRestaurant(id);
   const [error, setError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   if (query.isPending) return <RestaurantSkeleton />;
   const restaurant = query.data;
@@ -74,18 +75,27 @@ export function EditRestaurant() {
       <section className="flex flex-col items-start gap-3 border-t border-rule-strong pt-6">
         <h2 className="font-display text-xl leading-tight">Apagar restaurante</h2>
         <p className="max-w-[52ch] text-sm text-soft">
-          Apaga o restaurante, os pratos, as visitas e as notas de todo mundo que avaliou. Não dá para desfazer.
+          Apaga o restaurante, os pratos, as suas visitas e as suas notas. Não dá para desfazer. Se outras pessoas já registraram visitas ou notas aqui, ele não pode ser apagado.
         </p>
         <Button
           variant="danger"
           busy={remove.isPending}
           onClick={() => {
             if (!window.confirm(`Apagar ${restaurant.name} de vez?`)) return;
-            remove.mutate(undefined, { onSuccess: () => router.push("/plates") });
+            setDeleteError(null);
+            remove.mutate(undefined, {
+              onSuccess: () => router.push("/plates"),
+              onError: (failure) => setDeleteError(failure instanceof Error ? failure.message : "Não deu para apagar."),
+            });
           }}
         >
           Apagar restaurante
         </Button>
+        {deleteError ? (
+          <p role="alert" className="max-w-[52ch] text-sm font-medium text-danger">
+            {deleteError}
+          </p>
+        ) : null}
       </section>
     </div>
   );

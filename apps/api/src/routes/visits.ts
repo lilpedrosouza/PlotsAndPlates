@@ -3,7 +3,7 @@ import { visitInputSchema, visitPatchSchema } from "@pap/shared";
 import { and, eq, inArray, notInArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { notFound } from "../errors";
-import { assertOwnPhoto, removePhotos } from "../plates/paths";
+import { type OwnedPhoto, assertOwnPhoto, removePhotos } from "../plates/paths";
 import { type PlatesContext, loadVisits } from "../plates/queries";
 import { assertDishesOf, insertVisit } from "../plates/visits";
 import type { AppDeps, AppEnv } from "../types";
@@ -33,7 +33,7 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
     const { dishIds, photoPaths, ...fields } = c.req.valid("json");
     for (const path of photoPaths ?? []) assertOwnPhoto(path, "visit", user.id);
 
-    let dropped: string[] = [];
+    let dropped: OwnedPhoto[] = [];
     const visit = await withUser(db, { sub: user.id }, async (tx) => {
       const ctx: PlatesContext = { tx, userId: user.id, storage };
       // O RLS só mostra as visitas da própria pessoa: a dos outros é 404.
@@ -57,8 +57,8 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
         const removed = await tx
           .delete(visitPhotos)
           .where(and(eq(visitPhotos.visitId, visitId), keep))
-          .returning({ path: visitPhotos.path });
-        dropped = removed.map((row) => row.path);
+          .returning({ path: visitPhotos.path, ownerId: visitPhotos.ownerId });
+        dropped = removed;
         const existing = await tx
           .select({ path: visitPhotos.path })
           .from(visitPhotos)
@@ -82,9 +82,12 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
     const paths = await withUser(db, { sub: user.id }, async (tx) => {
       const [current] = await tx.select().from(visits).where(eq(visits.id, visitId));
       if (!current) throw notFound("Visita não encontrada.");
-      const photos = await tx.select({ path: visitPhotos.path }).from(visitPhotos).where(eq(visitPhotos.visitId, visitId));
+      const photos = await tx
+        .select({ path: visitPhotos.path, ownerId: visitPhotos.ownerId })
+        .from(visitPhotos)
+        .where(eq(visitPhotos.visitId, visitId));
       await tx.delete(visits).where(eq(visits.id, visitId));
-      return photos.map((photo) => photo.path);
+      return photos;
     });
     await removePhotos(storage, paths);
     return c.body(null, 204);

@@ -3,7 +3,7 @@ import { dishInputSchema, dishPatchSchema } from "@pap/shared";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { notFound } from "../errors";
-import { assertOwnPhoto, removePhotos } from "../plates/paths";
+import { type OwnedPhoto, assertOwnPhoto, removePhotos } from "../plates/paths";
 import { canEditRestaurant, toDish } from "../plates/queries";
 import type { AppDeps, AppEnv } from "../types";
 import { validate } from "../validate";
@@ -43,12 +43,12 @@ export function dishRoutes(deps: Pick<AppDeps, "db" | "storage">) {
     const patch = c.req.valid("json");
     assertOwnPhoto(patch.photoPath, "dish", user.id);
 
-    let replaced: string | null = null;
+    let replaced: OwnedPhoto | null = null;
     const dish = await withUser(db, { sub: user.id }, async (tx) => {
       const current = await findDish(tx, dishId);
       if (!(await canEditRestaurant(tx, current.restaurantId))) throw forbidden();
       if (patch.photoPath !== undefined && current.photoPath && current.photoPath !== patch.photoPath) {
-        replaced = current.photoPath;
+        replaced = { path: current.photoPath, ownerId: current.createdBy };
       }
       const [row] = await tx
         .update(dishes)
@@ -69,7 +69,7 @@ export function dishRoutes(deps: Pick<AppDeps, "db" | "storage">) {
       const current = await findDish(tx, dishId);
       if (!(await canEditRestaurant(tx, current.restaurantId))) throw forbidden();
       await tx.delete(dishes).where(eq(dishes.id, dishId));
-      return current.photoPath;
+      return { path: current.photoPath, ownerId: current.createdBy };
     });
     await removePhotos(storage, [photo]);
     return c.body(null, 204);

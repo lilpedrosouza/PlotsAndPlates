@@ -56,12 +56,14 @@ export function PlaceSearch({
     }
   };
 
+  // O nome que segue para o rascunho é o que a pessoa digitou, nunca o nome
+  // vindo do Google (os termos só permitem guardar o place_id).
   const choose = (suggestion: PlaceSuggestion) =>
     resolve(
       suggestion.id,
       suggestion.googlePlaceId
-        ? { googlePlaceId: suggestion.googlePlaceId, query: suggestion.primary, session }
-        : { osmRef: suggestion.osmRef ?? "", query: suggestion.primary },
+        ? { googlePlaceId: suggestion.googlePlaceId, query: q.trim().slice(0, 100), session }
+        : { osmRef: suggestion.osmRef ?? "", query: suggestion.primary.slice(0, 100) },
     );
 
   const manual = () => onDraft({ source: "manual", fields: { name: q.trim().slice(0, 80) }, osmAttribution: false }, q.trim());

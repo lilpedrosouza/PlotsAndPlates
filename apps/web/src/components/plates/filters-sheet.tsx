@@ -49,10 +49,7 @@ export function FiltersSheet({
   return (
     <Sheet
       open={open}
-      onOpenChange={(next) => {
-        if (next) setDraft(filters);
-        onOpenChange(next);
-      }}
+      onOpenChange={onOpenChange}
       title="Filtros"
       footer={
         <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
