@@ -41,7 +41,7 @@ describe("saúde e rotas desconhecidas", () => {
   it("GET /health responde sem autenticação", async () => {
     const response = await call("/health");
     expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ ok: true, service: "pap-api" });
+    expect(await response.json()).toMatchObject({ ok: true, service: "pap-api", commit: null });
   });
 
   it("rota inexistente devolve 404 no formato da API", async () => {

@@ -16,4 +16,6 @@ export type AppDeps = {
   webOrigins: string[];
   /** Requisições por minuto, por usuário. */
   rateLimitPerMinute?: number;
+  /** Commit em execução (curto), mostrado no /health para conferir o deploy. */
+  commit?: string | null;
 };

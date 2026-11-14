@@ -19,6 +19,8 @@ const app = createApp({
   verifyToken: createSupabaseVerifier(env.SUPABASE_URL),
   storage: createSupabaseStorage(supabase, env.SUPABASE_URL, env.MEDIA_BUCKET),
   webOrigins: env.WEB_ORIGINS,
+  // A Railway preenche esta variável em deploys vindos do GitHub.
+  commit: process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
 });
 
 ensureBuckets(supabase, env.MEDIA_BUCKET, env.BACKUP_BUCKET).catch((error: unknown) => {

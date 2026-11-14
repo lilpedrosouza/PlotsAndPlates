@@ -25,7 +25,9 @@ export function createApp(deps: AppDeps) {
   );
   app.use(bodyLimit({ maxSize: 256 * 1024 }));
 
-  app.get("/health", (c) => c.json({ ok: true, service: "pap-api", time: new Date().toISOString() }));
+  app.get("/health", (c) =>
+    c.json({ ok: true, service: "pap-api", commit: deps.commit ?? null, time: new Date().toISOString() }),
+  );
 
   const v1 = new Hono<AppEnv>();
   // Antes da autenticação: segura rajadas (e tentativas com token inválido) por IP.
