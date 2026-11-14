@@ -6,6 +6,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { requireAuth } from "./auth";
 import { ApiFailure } from "./errors";
 import { clientIp, rateLimit } from "./rate-limit";
+import { coupleRoutes } from "./routes/couple";
 import { dishRoutes } from "./routes/dishes";
 import { listRoutes } from "./routes/lists";
 import { logRoutes } from "./routes/logs";
@@ -55,6 +56,7 @@ export function createApp(deps: AppDeps) {
   v1.route("/", logRoutes(deps));
   v1.route("/", plotsWatchlistRoutes(deps));
   v1.route("/", listRoutes(deps));
+  v1.route("/", coupleRoutes(deps));
   app.route("/v1", v1);
 
   app.notFound((c) => c.json({ error: { code: "not_found", message: "Rota não encontrada." } }, 404));

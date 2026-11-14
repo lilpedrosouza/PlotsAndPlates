@@ -31,7 +31,7 @@ const UPLOAD_FOLDERS: Record<UploadKind, string> = {
   dish: "dishes",
 };
 
-function toPublicProfile(row: Profile, storage: MediaStorage): PublicProfile {
+export function toPublicProfile(row: Profile, storage: MediaStorage): PublicProfile {
   return {
     id: row.id,
     username: row.username,
