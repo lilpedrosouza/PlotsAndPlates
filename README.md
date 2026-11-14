@@ -121,7 +121,8 @@ A ordem que dá menos idas e vindas: Supabase → Railway (API) → Vercel (site
 ### API na Railway
 
 1. Suba o repositório para o GitHub.
-2. Na Railway: **New Project → Deploy from GitHub repo**. O `railway.json` da raiz já aponta para `apps/api/Dockerfile`, roda as migrations antes de cada deploy (`node dist/migrate.js`) e configura o healthcheck em `/health`.
+2. Na Railway: **New Project → Deploy from GitHub repo**. O `railway.json` da raiz já aponta para `apps/api/Dockerfile`, define o comando de início, roda as migrations antes de cada deploy (`node dist/migrate.js`) e configura o healthcheck em `/health`.
+   - A Railway detecta o monorepo e pode criar **dois serviços** (`@pap/web` e `@pap/api`). Apague o `@pap/web` (**Settings → Danger → Delete Service**): o site fica na Vercel. Na Railway fica só a API.
 3. Em **Variables**, defina:
 
    | Variável | Valor |
