@@ -10,6 +10,8 @@ type StampProps = {
   /** Quem deu a nota, em letra miúda: "você", "ana", "casal". */
   caption?: string;
   size?: "sm" | "md" | "lg";
+  /** Giro do carimbo em Plates, em graus (padrão −6°). Cada rótulo pode ter o seu. */
+  tilt?: number;
   className?: string;
 };
 
@@ -24,7 +26,7 @@ const SIZES = {
  * A nota como selo. Em Plates é um carimbo redondo, levemente torto, com anel
  * duplo; em Plots é um bloco reto de cartaz preenchido com o acento.
  */
-export function Stamp({ value, caption, size = "md", className }: StampProps) {
+export function Stamp({ value, caption, size = "md", tilt, className }: StampProps) {
   const section = useSection();
   const text = formatRating(value, 2);
   const s = SIZES[size];
@@ -32,6 +34,7 @@ export function Stamp({ value, caption, size = "md", className }: StampProps) {
   return (
     <span
       role="img"
+      style={section === "plates" && tilt !== undefined ? { rotate: `${tilt}deg` } : undefined}
       aria-label={`${caption ? `${caption}: ` : ""}${value === null ? "sem nota" : `nota ${text}`}`}
       className={cn(
         "relative inline-flex shrink-0 flex-col items-center justify-center",

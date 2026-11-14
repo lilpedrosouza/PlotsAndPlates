@@ -336,6 +336,31 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Folha inferior (Plates: avaliação, visita, prato, filtros)
+   -------------------------------------------------------------------------- */
+@keyframes pap-fade-in { from { opacity: 0; } }
+@keyframes pap-fade-out { to { opacity: 0; } }
+@keyframes pap-sheet-up { from { transform: translateY(100%); } }
+@keyframes pap-sheet-down { to { transform: translateY(100%); } }
+@keyframes pap-sheet-rise { from { opacity: 0; transform: translateY(1.5rem) scale(0.98); } }
+@keyframes pap-sheet-sink { to { opacity: 0; transform: translateY(1rem) scale(0.98); } }
+
+@layer components {
+  .sheet-overlay[data-state="open"] { animation: pap-fade-in var(--pap-dur) var(--pap-ease-out); }
+  .sheet-overlay[data-state="closed"] { animation: pap-fade-out var(--pap-dur-fast) var(--pap-ease-in); }
+  .sheet-content[data-state="open"] { animation: pap-sheet-up var(--pap-dur-slow) var(--pap-ease-out); }
+  .sheet-content[data-state="closed"] { animation: pap-sheet-down var(--pap-dur) var(--pap-ease-in); }
+  @media (min-width: 768px) {
+    .sheet-content[data-state="open"] { animation: pap-sheet-rise var(--pap-dur) var(--pap-ease-out); }
+    .sheet-content[data-state="closed"] { animation: pap-sheet-sink var(--pap-dur-fast) var(--pap-ease-in); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet-content[data-state="open"] { animation: pap-fade-in 160ms linear; }
+    .sheet-content[data-state="closed"] { animation: pap-fade-out 120ms linear; }
+  }
+}
+
 /* ==========================================================================
    Troca de mundo (View Transitions)
    to-plots:  o cartaz é colado por cima do rótulo

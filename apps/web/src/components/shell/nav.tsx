@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpenText, CircleUserRound, Clapperboard, type LucideIcon } from "lucide-react";
+import { BookOpenText, Bookmark, CircleUserRound, Clapperboard, type LucideIcon, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Section } from "@/lib/section";
@@ -8,22 +8,34 @@ import { cn } from "@/lib/utils";
 import { SectionSwitch } from "./section-switch";
 import { Wordmark } from "./wordmark";
 
-type NavItem = { href: string; label: string; icon: LucideIcon };
+type NavItem = { href: string; label: string; icon: LucideIcon; /** Outras rotas em que o item fica ativo. */ also?: RegExp };
 
-/** Destinos de cada mundo. Quero ir, mapa, diário e quero ver entram nas próximas fases. */
-function navItems(section: Section): { start: NavItem; end: NavItem } {
+/**
+ * Destinos de cada mundo: dois de cada lado do alternador no celular.
+ * Plates: Caderno, Mapa | Quero ir, Perfil. Plots ganha os dele na fase 3.
+ */
+function navItems(section: Section): { start: NavItem[]; end: NavItem[] } {
+  if (section === "plates") {
+    return {
+      start: [
+        { href: "/plates", label: "Caderno", icon: BookOpenText, also: /^\/plates\/(r\/|novo)/ },
+        { href: "/plates/mapa", label: "Mapa", icon: MapIcon },
+      ],
+      end: [
+        { href: "/plates/quero-ir", label: "Quero ir", icon: Bookmark },
+        { href: "/plates/perfil", label: "Perfil", icon: CircleUserRound },
+      ],
+    };
+  }
   return {
-    start:
-      section === "plates"
-        ? { href: "/plates", label: "Caderno", icon: BookOpenText }
-        : { href: "/plots", label: "Diário", icon: Clapperboard },
-    end: { href: `/${section}/perfil`, label: "Perfil", icon: CircleUserRound },
+    start: [{ href: "/plots", label: "Diário", icon: Clapperboard }],
+    end: [{ href: "/plots/perfil", label: "Perfil", icon: CircleUserRound }],
   };
 }
 
 function NavLink({ item, variant }: { item: NavItem; variant: "bar" | "inline" }) {
   const pathname = usePathname();
-  const active = pathname === item.href;
+  const active = pathname === item.href || Boolean(item.also?.test(pathname));
   const Icon = item.icon;
 
   if (variant === "inline") {
@@ -66,8 +78,9 @@ export function TopBar({ section }: { section: Section }) {
         <Wordmark section={section} className={section === "plates" ? "text-[2.5rem]" : "text-[2.375rem]"} />
       </Link>
       <div className="hidden items-center gap-2 md:flex">
-        <NavLink item={items.start} variant="inline" />
-        <NavLink item={items.end} variant="inline" />
+        {[...items.start, ...items.end].map((item) => (
+          <NavLink key={item.href} item={item} variant="inline" />
+        ))}
         <SectionSwitch section={section} className="ml-3" />
       </div>
     </header>
@@ -83,9 +96,13 @@ export function BottomBar({ section }: { section: Section }) {
         aria-label="Navegação principal"
         className="mx-auto flex max-w-md items-center gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5"
       >
-        <NavLink item={items.start} variant="bar" />
+        {items.start.map((item) => (
+          <NavLink key={item.href} item={item} variant="bar" />
+        ))}
         <SectionSwitch section={section} className="shrink-0" />
-        <NavLink item={items.end} variant="bar" />
+        {items.end.map((item) => (
+          <NavLink key={item.href} item={item} variant="bar" />
+        ))}
       </nav>
     </div>
   );
