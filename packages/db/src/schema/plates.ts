@@ -41,6 +41,8 @@ const ratingCheck = (column: AnyPgColumn) => sql`${column} between 0.5 and 5 and
 
 const canEdit = (restaurantId: AnyPgColumn) => sql`public.can_edit_restaurant(${restaurantId})`;
 const isMine = (column: AnyPgColumn) => sql`${column} = ${authUid}`;
+/** Linha do par de quem está logado (`public.partner_of`, migration custom). */
+const isPartners = (column: AnyPgColumn) => sql`${column} = public.partner_of(${authUid})`;
 
 export const restaurants = pgTable(
   "restaurants",
@@ -140,20 +142,25 @@ export const visits = pgTable(
     index("visits_user_date_idx").on(table.userId, table.visitedOn.desc()),
     index("visits_restaurant_idx").on(table.restaurantId),
     check("visits_amount", sql`${table.amountCents} >= 0`),
-    pgPolicy("visits_select_own", { for: "select", to: authenticatedRole, using: isMine(table.userId) }),
+    // "Juntos": o par vê e edita a visita (inclusive para desmarcar o "juntos").
+    pgPolicy("visits_select_own", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`${isMine(table.userId)} or (${table.together} and ${isPartners(table.userId)})`,
+    }),
     pgPolicy("visits_insert_own", { for: "insert", to: authenticatedRole, withCheck: isMine(table.userId) }),
     pgPolicy("visits_update_own", {
       for: "update",
       to: authenticatedRole,
-      using: isMine(table.userId),
-      withCheck: isMine(table.userId),
+      using: sql`${isMine(table.userId)} or (${table.together} and ${isPartners(table.userId)})`,
+      withCheck: sql`${isMine(table.userId)} or ${isPartners(table.userId)}`,
     }),
     pgPolicy("visits_delete_own", { for: "delete", to: authenticatedRole, using: isMine(table.userId) }),
   ],
 );
 
-const ownsVisit = (visitId: AnyPgColumn) =>
-  sql`exists (select 1 from public.visits v where v.id = ${visitId} and v.user_id = ${authUid})`;
+/** A visita existe para quem está logado (a policy de visits já filtra: dono ou par em "juntos"). */
+const ownsVisit = (visitId: AnyPgColumn) => sql`exists (select 1 from public.visits v where v.id = ${visitId})`;
 
 export const visitPhotos = pgTable(
   "visit_photos",
@@ -168,13 +175,13 @@ export const visitPhotos = pgTable(
   },
   (table) => [
     index("visit_photos_visit_idx").on(table.visitId),
-    pgPolicy("visit_photos_select_own", { for: "select", to: authenticatedRole, using: isMine(table.ownerId) }),
+    pgPolicy("visit_photos_select_own", { for: "select", to: authenticatedRole, using: ownsVisit(table.visitId) }),
     pgPolicy("visit_photos_insert_own", {
       for: "insert",
       to: authenticatedRole,
       withCheck: sql`${isMine(table.ownerId)} and ${ownsVisit(table.visitId)}`,
     }),
-    pgPolicy("visit_photos_delete_own", { for: "delete", to: authenticatedRole, using: isMine(table.ownerId) }),
+    pgPolicy("visit_photos_delete_own", { for: "delete", to: authenticatedRole, using: ownsVisit(table.visitId) }),
   ],
 );
 
@@ -239,7 +246,7 @@ const ratingPolicies = (prefix: string, userId: AnyPgColumn, isPrivate: AnyPgCol
   pgPolicy(`${prefix}_select_visible`, {
     for: "select",
     to: authenticatedRole,
-    using: sql`${isMine(userId)} or not ${isPrivate}`,
+    using: sql`${isMine(userId)} or not ${isPrivate} or ${isPartners(userId)}`,
   }),
   pgPolicy(`${prefix}_insert_own`, { for: "insert", to: authenticatedRole, withCheck: isMine(userId) }),
   pgPolicy(`${prefix}_update_own`, {
@@ -334,7 +341,11 @@ export const restaurantWishlist = pgTable(
   (table) => [
     uniqueIndex("restaurant_wishlist_restaurant_user_key").on(table.restaurantId, table.userId),
     check("restaurant_wishlist_priority", sql`${table.priority} in ('alta', 'media', 'baixa')`),
-    pgPolicy("restaurant_wishlist_select_own", { for: "select", to: authenticatedRole, using: isMine(table.userId) }),
+    pgPolicy("restaurant_wishlist_select_own", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`${isMine(table.userId)} or ${isPartners(table.userId)}`,
+    }),
     pgPolicy("restaurant_wishlist_insert_own", { for: "insert", to: authenticatedRole, withCheck: isMine(table.userId) }),
     pgPolicy("restaurant_wishlist_update_own", {
       for: "update",
@@ -342,7 +353,11 @@ export const restaurantWishlist = pgTable(
       using: isMine(table.userId),
       withCheck: isMine(table.userId),
     }),
-    pgPolicy("restaurant_wishlist_delete_own", { for: "delete", to: authenticatedRole, using: isMine(table.userId) }),
+    pgPolicy("restaurant_wishlist_delete_own", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`${isMine(table.userId)} or ${isPartners(table.userId)}`,
+    }),
   ],
 );
 

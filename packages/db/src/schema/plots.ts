@@ -44,10 +44,16 @@ const titleRef = (onDelete: "cascade" | "restrict" = "restrict") =>
 const rating = (name: string) => numeric(name, { precision: 2, scale: 1 });
 const ratingCheck = (column: AnyPgColumn) => sql`${column} between 0.5 and 5 and ${column} * 2 = floor(${column} * 2)`;
 const isMine = (column: AnyPgColumn) => sql`${column} = ${authUid}`;
+/** Linha do par de quem está logado (`public.partner_of`, migration custom). */
+const isPartners = (column: AnyPgColumn) => sql`${column} = public.partner_of(${authUid})`;
 
 /** Políticas de conteúdo pessoal com opção de privado: o dono faz tudo; os outros leem o que é público. */
 const ownedPolicies = (prefix: string, userId: AnyPgColumn, isPrivate: AnyPgColumn) => [
-  pgPolicy(`${prefix}_select_visible`, { for: "select", to: authenticatedRole, using: sql`${isMine(userId)} or not ${isPrivate}` }),
+  pgPolicy(`${prefix}_select_visible`, {
+    for: "select",
+    to: authenticatedRole,
+    using: sql`${isMine(userId)} or not ${isPrivate} or ${isPartners(userId)}`,
+  }),
   pgPolicy(`${prefix}_insert_own`, { for: "insert", to: authenticatedRole, withCheck: isMine(userId) }),
   pgPolicy(`${prefix}_update_own`, { for: "update", to: authenticatedRole, using: isMine(userId), withCheck: isMine(userId) }),
   pgPolicy(`${prefix}_delete_own`, { for: "delete", to: authenticatedRole, using: isMine(userId) }),
@@ -125,11 +131,14 @@ export const watchLogs = pgTable(
     rewatch: boolean("rewatch").notNull().default(false),
     /** "Juntos": só passa a valer com o vínculo de casal (fase 4). */
     together: boolean("together").notNull().default(false),
+    /** Liga a sessão "juntos" ao registro espelhado do par. */
+    groupId: uuid("group_id"),
     isPrivate: boolean("is_private").notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
   (table) => [
+    index("watch_logs_group_idx").on(table.groupId),
     index("watch_logs_user_date_idx").on(table.userId, table.watchedOn.desc(), table.createdAt.desc()),
     index("watch_logs_title_idx").on(table.titleId),
     check("watch_logs_rating", ratingCheck(table.rating)),
@@ -185,10 +194,18 @@ export const plotsWatchlist = pgTable(
   },
   (table) => [
     uniqueIndex("watchlist_user_title_key").on(table.userId, table.titleId),
-    pgPolicy("watchlist_select_own", { for: "select", to: authenticatedRole, using: isMine(table.userId) }),
+    pgPolicy("watchlist_select_own", {
+      for: "select",
+      to: authenticatedRole,
+      using: sql`${isMine(table.userId)} or ${isPartners(table.userId)}`,
+    }),
     pgPolicy("watchlist_insert_own", { for: "insert", to: authenticatedRole, withCheck: isMine(table.userId) }),
     pgPolicy("watchlist_update_own", { for: "update", to: authenticatedRole, using: isMine(table.userId), withCheck: isMine(table.userId) }),
-    pgPolicy("watchlist_delete_own", { for: "delete", to: authenticatedRole, using: isMine(table.userId) }),
+    pgPolicy("watchlist_delete_own", {
+      for: "delete",
+      to: authenticatedRole,
+      using: sql`${isMine(table.userId)} or ${isPartners(table.userId)}`,
+    }),
   ],
 );
 
@@ -211,7 +228,7 @@ export const customLists = pgTable(
 );
 
 const listVisible = (listId: AnyPgColumn) =>
-  sql`exists (select 1 from public.custom_lists l where l.id = ${listId} and (l.owner_id = ${authUid} or not l.is_private))`;
+  sql`exists (select 1 from public.custom_lists l where l.id = ${listId} and (l.owner_id = ${authUid} or not l.is_private or l.owner_id = public.partner_of(${authUid})))`;
 const listMine = (listId: AnyPgColumn) =>
   sql`exists (select 1 from public.custom_lists l where l.id = ${listId} and l.owner_id = ${authUid})`;
 

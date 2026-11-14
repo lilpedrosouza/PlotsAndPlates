@@ -57,6 +57,27 @@
       "when": 1794690424240,
       "tag": "0007_plots_restrict",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794693082849,
+      "tag": "0008_partner_helpers",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794693084083,
+      "tag": "0009_couples",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794693085348,
+      "tag": "0010_grants_couples",
+      "breakpoints": true
     }
   ]
 }
