@@ -1,6 +1,6 @@
 "use client";
 
-import { formatRating } from "@pap/shared";
+import { type AccentKey, formatRating } from "@pap/shared";
 import { useSection } from "@/components/shell/section-context";
 import { cn } from "@/lib/utils";
 import { NumberRoll } from "./number-roll";
@@ -13,6 +13,10 @@ type StampProps = {
   /** Giro do carimbo em Plates, em graus (padrão −6°). Cada rótulo pode ter o seu. */
   tilt?: number;
   className?: string;
+  /** Nota de outra pessoa (o par): o carimbo sai na cor de destaque dela. */
+  accent?: AccentKey;
+  /** "ink": em tinta, sem a cor de destaque (a média do casal). */
+  tone?: "brand" | "ink";
 };
 
 /** `long` é o tamanho do número quando ele tem três algarismos (ex.: 4,25). */
@@ -26,13 +30,14 @@ const SIZES = {
  * A nota como selo. Em Plates é um carimbo redondo, levemente torto, com anel
  * duplo; em Plots é um bloco reto de cartaz preenchido com o acento.
  */
-export function Stamp({ value, caption, size = "md", tilt, className }: StampProps) {
+export function Stamp({ value, caption, size = "md", tilt, className, accent, tone = "brand" }: StampProps) {
   const section = useSection();
   const text = formatRating(value, 2);
   const s = SIZES[size];
 
   return (
     <span
+      {...(accent ? { "data-theme": section, "data-accent": accent } : {})}
       role="img"
       style={section === "plates" && tilt !== undefined ? { rotate: `${tilt}deg` } : undefined}
       aria-label={`${caption ? `${caption}: ` : ""}${value === null ? "sem nota" : `nota ${text}`}`}
@@ -40,8 +45,13 @@ export function Stamp({ value, caption, size = "md", tilt, className }: StampPro
         "relative inline-flex shrink-0 flex-col items-center justify-center",
         s.box,
         section === "plates"
-          ? "-rotate-6 rounded-full border-2 border-brand text-brand outline outline-1 -outline-offset-[5px] outline-brand/70"
-          : "bg-brand text-on-brand",
+          ? cn(
+              "-rotate-6 rounded-full border-2 outline outline-1 -outline-offset-[5px]",
+              tone === "ink" ? "border-foreground text-foreground outline-foreground/60" : "border-brand text-brand outline-brand/70",
+            )
+          : tone === "ink"
+            ? "border border-rule-strong bg-sunken text-foreground"
+            : "bg-brand text-on-brand",
         value === null && "opacity-60",
         className,
       )}

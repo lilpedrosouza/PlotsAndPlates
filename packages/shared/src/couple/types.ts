@@ -1,8 +1,8 @@
 import { coupleRating } from "../ratings";
-import type { PublicProfile } from "../profile";
+import type { AccentKey, PublicProfile } from "../profile";
 
 /** Uma pessoa, no mínimo para mostrar nome e foto. */
-export type PersonRef = { id: string; username: string; displayName: string; avatarUrl: string | null };
+export type PersonRef = { id: string; username: string; displayName: string; avatarUrl: string | null; accent: AccentKey };
 
 export type Invite = { id: string; from: PersonRef; to: PersonRef; createdAt: string };
 

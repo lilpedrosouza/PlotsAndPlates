@@ -3,18 +3,23 @@
 import {
   DISH_CATEGORY_LABELS,
   type DishWithScore,
+  type PersonRef,
   RESTAURANT_CRITERIA,
   RESTAURANT_CRITERIA_LABELS,
   type RestaurantDetail,
   type Visit,
   WISHLIST_PRIORITY_LABELS,
   formatRating,
+  sideBySide,
 } from "@pap/shared";
 import { Bookmark, Pencil, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { AddedBy, firstName } from "@/components/couple/added-by";
+import { CommunitySection } from "@/components/people/community-section";
+import { Avatar } from "@/components/ui/avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { RatingStars } from "@/components/ui/rating";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -102,6 +107,7 @@ export function RestaurantPage() {
         onEdit={(visit) => openSheet({ kind: "visit", visit })}
       />
       <About restaurant={restaurant} />
+      <CommunitySection kind="restaurants" id={restaurant.id} />
 
       <RatingSheet key={`r${sheetKey}`} restaurantId={restaurant.id} current={restaurant.myRating} open={sheet?.kind === "rating" || ratingFromLink} onOpenChange={close} />
       <VisitSheet
@@ -159,6 +165,7 @@ function Hero({ restaurant, onRate, onVisit }: { restaurant: RestaurantDetail; o
               No quero ir · prioridade {WISHLIST_PRIORITY_LABELS[restaurant.wishlist.priority].toLowerCase()}
             </p>
             {restaurant.wishlist.reason ? <p className="font-display italic leading-snug">“{restaurant.wishlist.reason}”</p> : null}
+            <AddedBy people={restaurant.wishlist.addedBy} />
             <FomosButton restaurantId={restaurant.id} block />
           </div>
         ) : (
@@ -201,6 +208,8 @@ function AddToWishlist({ restaurantId }: { restaurantId: string }) {
 /** As notas como a tabela de informação de um rótulo de mercearia. */
 function Ratings({ restaurant, onRate }: { restaurant: RestaurantDetail; onRate: () => void }) {
   const rating = restaurant.myRating;
+  const partner = restaurant.partner;
+  if (partner) return <CoupleRatings restaurant={restaurant} partner={partner} onRate={onRate} />;
   return (
     <Block title="Nossas notas">
       {rating ? (
@@ -228,7 +237,7 @@ function Ratings({ restaurant, onRate }: { restaurant: RestaurantDetail; onRate:
           {rating.review ? (
             <blockquote className="font-display border-l-0 text-[1.1875rem] italic leading-relaxed text-foreground">“{rating.review}”</blockquote>
           ) : null}
-          <p className="text-sm text-soft">A nota do seu par aparece aqui ao lado quando vocês se vincularem.</p>
+          <p className="text-sm text-soft">Com um par vinculado no perfil, a nota dele aparece aqui ao lado, com a média do casal.</p>
         </div>
       ) : (
         <div className="flex flex-col items-start gap-3">
@@ -238,6 +247,99 @@ function Ratings({ restaurant, onRate }: { restaurant: RestaurantDetail; onRate:
           </Button>
         </div>
       )}
+    </Block>
+  );
+}
+
+const cell = (value: number | null) => (value === null ? "–" : formatRating(value));
+
+/** Com par: colunas você · par · casal por critério e os três carimbos da nota geral. */
+function CoupleRatings({ restaurant, partner, onRate }: { restaurant: RestaurantDetail; partner: PersonRef; onRate: () => void }) {
+  const mine = restaurant.myRating;
+  const theirs = restaurant.partnerRating;
+  const name = firstName(partner.displayName);
+  if (!mine && !theirs) {
+    return (
+      <Block title="Nossas notas">
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-soft">Nenhum de vocês deu nota ainda. Dá para avaliar só a comida agora e completar depois.</p>
+          <Button variant="secondary" onClick={onRate}>
+            Avaliar
+          </Button>
+        </div>
+      </Block>
+    );
+  }
+  const overall = sideBySide(mine?.overall, theirs?.overall);
+  const reviews = [
+    mine?.review ? { who: "Você", text: mine.review, isPrivate: mine.isPrivate } : null,
+    theirs?.review ? { who: name, text: theirs.review, isPrivate: theirs.isPrivate } : null,
+  ].filter((item) => item !== null);
+
+  return (
+    <Block title="Nossas notas">
+      <div className="flex flex-col gap-5">
+        <div className="border-2 border-foreground px-4 pt-3 pb-4">
+          <p className="font-micro border-b border-foreground pb-2 text-[0.75rem]">Informação de avaliação · por pessoa</p>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="font-micro text-[0.6875rem] text-soft">
+                <th scope="col" className="py-2 text-left font-[inherit]">
+                  <span className="sr-only">Critério</span>
+                </th>
+                <th scope="col" className="w-14 py-2 text-right font-[inherit]">
+                  Você
+                </th>
+                <th scope="col" className="w-14 truncate py-2 text-right font-[inherit]">
+                  {name}
+                </th>
+                <th scope="col" className="w-16 py-2 text-right font-[inherit] text-foreground">
+                  Casal
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-rule border-t border-rule">
+              {RESTAURANT_CRITERIA.map((key) => {
+                const row = sideBySide(mine?.[key], theirs?.[key]);
+                return (
+                  <tr key={key}>
+                    <th scope="row" className="py-2.5 text-left font-semibold">
+                      {RESTAURANT_CRITERIA_LABELS[key]}
+                    </th>
+                    <td className="font-display py-2.5 text-right tabular-nums">{cell(row.mine)}</td>
+                    <td className="font-display py-2.5 text-right tabular-nums">{cell(row.partner)}</td>
+                    <td className="font-display py-2.5 text-right font-semibold tabular-nums">{cell(row.couple)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-3 border-t-[6px] border-foreground pt-3">
+            <span className="font-display text-xl">Nota geral</span>
+            <div className="flex items-center gap-2.5">
+              <Stamp value={overall.mine} caption="você" size="sm" tilt={-7} />
+              <Stamp value={overall.partner} caption={name.toLowerCase()} size="sm" tilt={-3} accent={partner.accent} />
+              <Stamp value={overall.couple} caption="casal" size="md" tone="ink" tilt={-5} />
+            </div>
+          </div>
+        </div>
+        {[mine?.isPrivate ? "a sua" : null, theirs?.isPrivate ? `a de ${name}` : null].some(Boolean) ? (
+          <p className="text-sm text-soft">
+            Privada: {[mine?.isPrivate ? "a sua" : null, theirs?.isPrivate ? `a de ${name}` : null].filter(Boolean).join(" e ")}. Só vocês dois veem.
+          </p>
+        ) : null}
+        {reviews.map((review) => (
+          <figure key={review.who} className="flex flex-col gap-1">
+            <blockquote className="font-display text-[1.1875rem] italic leading-relaxed">“{review.text}”</blockquote>
+            <figcaption className="font-micro text-[0.6875rem] text-soft">— {review.who}</figcaption>
+          </figure>
+        ))}
+        {!mine ? (
+          <Button variant="secondary" className="self-start" onClick={onRate}>
+            Dar a minha nota
+          </Button>
+        ) : null}
+      </div>
     </Block>
   );
 }
@@ -263,7 +365,12 @@ function Dishes({ restaurant, onAdd, onOpen }: { restaurant: RestaurantDetail; o
       ) : (
         <ol className="flex flex-col">
           {restaurant.dishes.map((dish, index) => {
+            const pair =
+              restaurant.partner && (dish.myRating || dish.partnerRating !== null)
+                ? `você ${cell(dish.myRating?.rating ?? null)} · ${firstName(restaurant.partner.displayName)} ${cell(dish.partnerRating)}`
+                : "";
             const meta = [
+              pair,
               DISH_CATEGORY_LABELS[dish.category],
               money(dish.priceCents),
               dish.myRating?.wouldOrderAgain === true ? "pediria de novo" : dish.myRating?.wouldOrderAgain === false ? "não pediria" : "",
@@ -329,7 +436,18 @@ function Visits({ restaurant, onAdd, onEdit }: { restaurant: RestaurantDetail; o
           {restaurant.visits.map((visit, index) => (
             <li key={visit.id} className="flex flex-col gap-2.5">
               <div className="flex items-baseline justify-between gap-3">
-                <p className="font-micro text-[0.75rem] text-soft">Visita nº {catalog(total - index)}</p>
+                <p className="font-micro flex flex-wrap items-center gap-x-2 text-[0.75rem] text-soft">
+                  <span>Visita nº {catalog(total - index)}</span>
+                  {visit.together && restaurant.partner ? <span className="border border-rule-strong px-1.5 leading-[1.4] text-foreground">juntos</span> : null}
+                  {visit.registeredBy ? (
+                    <span className="inline-flex items-center gap-1">
+                      <span aria-hidden className="flex">
+                        <Avatar name={visit.registeredBy.displayName} src={visit.registeredBy.avatarUrl} size={16} />
+                      </span>
+                      registrada por {firstName(visit.registeredBy.displayName)}
+                    </span>
+                  ) : null}
+                </p>
                 <span className="flex gap-4">
                 <button
                   type="button"
@@ -341,11 +459,14 @@ function Visits({ restaurant, onAdd, onEdit }: { restaurant: RestaurantDetail; o
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm("Apagar esta visita? As fotos dela também somem.")) remove.mutate(visit.id);
+                    const question = visit.registeredBy
+                      ? `Tirar esta visita do seu caderno? Ela continua no caderno de ${firstName(visit.registeredBy.displayName)}.`
+                      : "Apagar esta visita? As fotos dela também somem.";
+                    if (window.confirm(question)) remove.mutate(visit.id);
                   }}
                   className="text-sm text-soft underline-offset-3 hover:text-danger hover:underline"
                 >
-                  Apagar
+                  {visit.registeredBy ? "Tirar do meu caderno" : "Apagar"}
                 </button>
                 </span>
               </div>

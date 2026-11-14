@@ -1,5 +1,5 @@
 import { type Db, type Profile, type Tx, coupleMembers, profiles } from "@pap/db";
-import type { PersonRef } from "@pap/shared";
+import type { AccentKey, PersonRef } from "@pap/shared";
 import { and, eq, inArray, ne } from "drizzle-orm";
 import type { MediaStorage } from "../storage";
 
@@ -16,12 +16,13 @@ export async function partnerOf(db: Reader, userId: string): Promise<string | nu
   return other?.userId ?? null;
 }
 
-export function personRef(row: Pick<Profile, "id" | "username" | "displayName" | "avatarPath">, storage: MediaStorage): PersonRef {
+export function personRef(row: Pick<Profile, "id" | "username" | "displayName" | "avatarPath" | "accent">, storage: MediaStorage): PersonRef {
   return {
     id: row.id,
     username: row.username,
     displayName: row.displayName,
     avatarUrl: row.avatarPath ? storage.publicUrl(row.avatarPath) : null,
+    accent: row.accent as AccentKey,
   };
 }
 

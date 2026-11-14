@@ -3,6 +3,7 @@
 import { type RestaurantSummary, WISHLIST_PRIORITY_LABELS } from "@pap/shared";
 import Link from "next/link";
 import type { MouseEvent } from "react";
+import { AddedBy } from "@/components/couple/added-by";
 import { Stamp } from "@/components/ui/stamp";
 import { placeLine, shortDate, tiltFor, visitsLabel } from "@/lib/plates/format";
 import { useTransitionNavigate } from "@/lib/transition-router";
@@ -66,6 +67,7 @@ export function RestaurantCard({ restaurant, priority }: { restaurant: Restauran
           <p className={cn("font-micro text-[0.6875rem]", wish.priority === "alta" ? "text-brand" : "text-soft")}>
             Prioridade {WISHLIST_PRIORITY_LABELS[wish.priority].toLowerCase()}
           </p>
+          <AddedBy people={wish.addedBy} />
           <FomosButton restaurantId={restaurant.id} size="sm" block />
         </div>
       ) : (

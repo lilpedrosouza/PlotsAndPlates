@@ -16,11 +16,13 @@ import {
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { TogetherToggle } from "@/components/couple/together-toggle";
 import { Button } from "@/components/ui/button";
 import { ChipToggle } from "@/components/ui/chip";
 import { TextAreaField, TextField } from "@/components/ui/field";
 import { RatingInput } from "@/components/ui/rating";
 import { Stamp } from "@/components/ui/stamp";
+import { usePartner } from "@/lib/couple/queries";
 import { skipsOptimizer } from "@/lib/image";
 import { money } from "@/lib/plates/format";
 import {
@@ -56,7 +58,7 @@ function PrivateToggle({ value, onChange }: { value: boolean; onChange: (value: 
         Avaliação privada
       </ChipToggle>
       <p className="text-sm text-soft">
-        {value ? "Só você vê (e o seu par, quando vocês se vincularem)." : "Outras pessoas do PAP podem ver esta nota."}
+        {value ? "Só você e o seu par veem esta nota." : "Outras pessoas do PAP podem ver esta nota."}
       </p>
     </div>
   );
@@ -159,6 +161,10 @@ export function VisitSheet({
   const [occasion, setOccasion] = useState(visit?.occasion ?? "");
   const [amount, setAmount] = useState(moneyInput(visit?.amountCents));
   const [dishIds, setDishIds] = useState<string[]>(visit?.dishIds ?? []);
+  const partner = usePartner();
+  const [together, setTogether] = useState(visit ? visit.together : partner !== null);
+  // Só quem registrou desmarca o "juntos" aqui; o par tira a visita do caderno dele apagando.
+  const showTogether = partner !== null && (!visit || visit.registeredBy === null);
   const [photos, setPhotos] = useState<{ path: string; preview: string }[]>(
     visit?.photos.map((photo) => ({ path: photo.path, preview: photo.thumbUrl })) ?? [],
   );
@@ -193,7 +199,14 @@ export function VisitSheet({
 
   const save = () => {
     setError(null);
-    const body = { visitedOn, occasion, amountCents: parseMoney(amount), dishIds, photoPaths: photos.map((photo) => photo.path) };
+    const body = {
+      visitedOn,
+      occasion,
+      amountCents: parseMoney(amount),
+      dishIds,
+      photoPaths: photos.map((photo) => photo.path),
+      ...(showTogether ? { together } : {}),
+    };
     const done = { onSuccess: () => onOpenChange(false), onError: (failure: unknown) => setError(errorText(failure)) };
     if (visit) update.mutate({ visitId: visit.id, patch: body }, done);
     else add.mutate(body, done);
@@ -215,6 +228,7 @@ export function VisitSheet({
           <TextField label="Quando" type="date" value={visitedOn} max={todayIso()} onChange={(event) => setVisitedOn(event.target.value)} />
           <TextField label="Quanto gastamos" inputMode="decimal" prefix="R$" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="0,00" />
         </div>
+        {showTogether && partner ? <TogetherToggle partner={partner} label="Fomos juntos" where="caderno" value={together} onChange={setTogether} /> : null}
         <TextField label="Ocasião" value={occasion} onChange={(event) => setOccasion(event.target.value)} maxLength={80} placeholder="Aniversário, almoço de domingo…" />
         {options.length > 0 || canEdit ? (
           <fieldset className="flex flex-col gap-3">
