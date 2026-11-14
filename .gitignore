@@ -1,0 +1,24 @@
+node_modules
+.pnpm-store
+dist
+.next
+out
+coverage
+.turbo
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+*.pem
+*.log
+
+# variáveis de ambiente: só os .env.example entram no repositório
+.env
+.env.*
+!.env.example
+
+# artefatos locais da revisão de design
+apps/web/.impeccable/review/
+apps/web/.impeccable/direction-payload.json
+apps/web/.impeccable/brief-shell.md
+apps/web/.impeccable/questions/

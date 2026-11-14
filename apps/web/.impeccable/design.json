@@ -1,0 +1,766 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T14:54:32Z",
+  "title": "Design System: PlotsAndPlates (PAP)",
+  "extensions": {
+    "colorMeta": {
+      "plates-bg": {
+        "role": "neutral",
+        "displayName": "Papel Creme",
+        "canonical": "#f3e9d6",
+        "tonalRamp": [
+          "oklch(15% 0.027 83.5)",
+          "oklch(26% 0.027 83.5)",
+          "oklch(38% 0.027 83.5)",
+          "oklch(50% 0.027 83.5)",
+          "oklch(62% 0.027 83.5)",
+          "oklch(74% 0.027 83.5)",
+          "oklch(85% 0.027 83.5)",
+          "oklch(95% 0.027 83.5)"
+        ]
+      },
+      "plates-surface": {
+        "role": "neutral",
+        "displayName": "Folha",
+        "canonical": "#fbf5e8",
+        "tonalRamp": [
+          "oklch(15% 0.018 86.1)",
+          "oklch(26% 0.018 86.1)",
+          "oklch(38% 0.018 86.1)",
+          "oklch(50% 0.018 86.1)",
+          "oklch(62% 0.018 86.1)",
+          "oklch(74% 0.018 86.1)",
+          "oklch(85% 0.018 86.1)",
+          "oklch(95% 0.018 86.1)"
+        ]
+      },
+      "plates-sunken": {
+        "role": "neutral",
+        "displayName": "Rebaixo",
+        "canonical": "#e9dcc3",
+        "tonalRamp": [
+          "oklch(15% 0.036 83.8)",
+          "oklch(26% 0.036 83.8)",
+          "oklch(38% 0.036 83.8)",
+          "oklch(50% 0.036 83.8)",
+          "oklch(62% 0.036 83.8)",
+          "oklch(74% 0.036 83.8)",
+          "oklch(85% 0.036 83.8)",
+          "oklch(95% 0.036 83.8)"
+        ]
+      },
+      "plates-ink": {
+        "role": "neutral",
+        "displayName": "Tinta Café",
+        "canonical": "#2b1d14",
+        "tonalRamp": [
+          "oklch(15% 0.027 53.8)",
+          "oklch(26% 0.027 53.8)",
+          "oklch(38% 0.027 53.8)",
+          "oklch(50% 0.027 53.8)",
+          "oklch(62% 0.027 53.8)",
+          "oklch(74% 0.027 53.8)",
+          "oklch(85% 0.027 53.8)",
+          "oklch(95% 0.027 53.8)"
+        ]
+      },
+      "plates-ink-soft": {
+        "role": "neutral",
+        "displayName": "Café Suave",
+        "canonical": "#6a5444",
+        "tonalRamp": [
+          "oklch(15% 0.038 57.6)",
+          "oklch(26% 0.038 57.6)",
+          "oklch(38% 0.038 57.6)",
+          "oklch(50% 0.038 57.6)",
+          "oklch(62% 0.038 57.6)",
+          "oklch(74% 0.038 57.6)",
+          "oklch(85% 0.038 57.6)",
+          "oklch(95% 0.038 57.6)"
+        ]
+      },
+      "plates-rule": {
+        "role": "neutral",
+        "displayName": "Fio",
+        "canonical": "#d6c7ab",
+        "tonalRamp": [
+          "oklch(15% 0.041 83.1)",
+          "oklch(26% 0.041 83.1)",
+          "oklch(38% 0.041 83.1)",
+          "oklch(50% 0.041 83.1)",
+          "oklch(62% 0.041 83.1)",
+          "oklch(74% 0.041 83.1)",
+          "oklch(85% 0.041 83.1)",
+          "oklch(95% 0.041 83.1)"
+        ]
+      },
+      "plates-rule-strong": {
+        "role": "neutral",
+        "displayName": "Fio Forte",
+        "canonical": "#8c7a5c",
+        "tonalRamp": [
+          "oklch(15% 0.044 76.5)",
+          "oklch(26% 0.044 76.5)",
+          "oklch(38% 0.044 76.5)",
+          "oklch(50% 0.044 76.5)",
+          "oklch(62% 0.044 76.5)",
+          "oklch(74% 0.044 76.5)",
+          "oklch(85% 0.044 76.5)",
+          "oklch(95% 0.044 76.5)"
+        ]
+      },
+      "plates-accent": {
+        "role": "primary",
+        "displayName": "Terracota de Rótulo",
+        "canonical": "#a93f23",
+        "tonalRamp": [
+          "oklch(15% 0.146 35.6)",
+          "oklch(26% 0.146 35.6)",
+          "oklch(38% 0.146 35.6)",
+          "oklch(50% 0.146 35.6)",
+          "oklch(62% 0.146 35.6)",
+          "oklch(74% 0.146 35.6)",
+          "oklch(85% 0.146 35.6)",
+          "oklch(95% 0.146 35.6)"
+        ]
+      },
+      "plates-second": {
+        "role": "secondary",
+        "displayName": "Oliva de Segunda Tinta",
+        "canonical": "#555c2c",
+        "tonalRamp": [
+          "oklch(15% 0.070 116.1)",
+          "oklch(26% 0.070 116.1)",
+          "oklch(38% 0.070 116.1)",
+          "oklch(50% 0.070 116.1)",
+          "oklch(62% 0.070 116.1)",
+          "oklch(74% 0.070 116.1)",
+          "oklch(85% 0.070 116.1)",
+          "oklch(95% 0.070 116.1)"
+        ]
+      },
+      "plates-danger": {
+        "role": "tertiary",
+        "displayName": "Erro (Plates)",
+        "canonical": "#9b1c1c",
+        "tonalRamp": [
+          "oklch(15% 0.162 26.8)",
+          "oklch(26% 0.162 26.8)",
+          "oklch(38% 0.162 26.8)",
+          "oklch(50% 0.162 26.8)",
+          "oklch(62% 0.162 26.8)",
+          "oklch(74% 0.162 26.8)",
+          "oklch(85% 0.162 26.8)",
+          "oklch(95% 0.162 26.8)"
+        ]
+      },
+      "plates-accent-mostarda": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Mostarda (Plates)",
+        "canonical": "#7c5a0a",
+        "tonalRamp": [
+          "oklch(15% 0.097 81.8)",
+          "oklch(26% 0.097 81.8)",
+          "oklch(38% 0.097 81.8)",
+          "oklch(50% 0.097 81.8)",
+          "oklch(62% 0.097 81.8)",
+          "oklch(74% 0.097 81.8)",
+          "oklch(85% 0.097 81.8)",
+          "oklch(95% 0.097 81.8)"
+        ]
+      },
+      "plates-accent-vinho": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Vinho (Plates)",
+        "canonical": "#7d2437",
+        "tonalRamp": [
+          "oklch(15% 0.123 12.0)",
+          "oklch(26% 0.123 12.0)",
+          "oklch(38% 0.123 12.0)",
+          "oklch(50% 0.123 12.0)",
+          "oklch(62% 0.123 12.0)",
+          "oklch(74% 0.123 12.0)",
+          "oklch(85% 0.123 12.0)",
+          "oklch(95% 0.123 12.0)"
+        ]
+      },
+      "plates-accent-petroleo": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Petróleo (Plates)",
+        "canonical": "#1f5c63",
+        "tonalRamp": [
+          "oklch(15% 0.062 205.8)",
+          "oklch(26% 0.062 205.8)",
+          "oklch(38% 0.062 205.8)",
+          "oklch(50% 0.062 205.8)",
+          "oklch(62% 0.062 205.8)",
+          "oklch(74% 0.062 205.8)",
+          "oklch(85% 0.062 205.8)",
+          "oklch(95% 0.062 205.8)"
+        ]
+      },
+      "plates-accent-ameixa": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Ameixa (Plates)",
+        "canonical": "#5e3a6b",
+        "tonalRamp": [
+          "oklch(15% 0.090 316.7)",
+          "oklch(26% 0.090 316.7)",
+          "oklch(38% 0.090 316.7)",
+          "oklch(50% 0.090 316.7)",
+          "oklch(62% 0.090 316.7)",
+          "oklch(74% 0.090 316.7)",
+          "oklch(85% 0.090 316.7)",
+          "oklch(95% 0.090 316.7)"
+        ]
+      },
+      "plots-bg": {
+        "role": "neutral",
+        "displayName": "Preto Fosco",
+        "canonical": "#0c0c0e",
+        "tonalRamp": [
+          "oklch(15% 0.004 285.9)",
+          "oklch(26% 0.004 285.9)",
+          "oklch(38% 0.004 285.9)",
+          "oklch(50% 0.004 285.9)",
+          "oklch(62% 0.004 285.9)",
+          "oklch(74% 0.004 285.9)",
+          "oklch(85% 0.004 285.9)",
+          "oklch(95% 0.004 285.9)"
+        ]
+      },
+      "plots-surface": {
+        "role": "neutral",
+        "displayName": "Grafite",
+        "canonical": "#16171a",
+        "tonalRamp": [
+          "oklch(15% 0.006 271.1)",
+          "oklch(26% 0.006 271.1)",
+          "oklch(38% 0.006 271.1)",
+          "oklch(50% 0.006 271.1)",
+          "oklch(62% 0.006 271.1)",
+          "oklch(74% 0.006 271.1)",
+          "oklch(85% 0.006 271.1)",
+          "oklch(95% 0.006 271.1)"
+        ]
+      },
+      "plots-sunken": {
+        "role": "neutral",
+        "displayName": "Grafite Rebaixado",
+        "canonical": "#1f2024",
+        "tonalRamp": [
+          "oklch(15% 0.008 274.6)",
+          "oklch(26% 0.008 274.6)",
+          "oklch(38% 0.008 274.6)",
+          "oklch(50% 0.008 274.6)",
+          "oklch(62% 0.008 274.6)",
+          "oklch(74% 0.008 274.6)",
+          "oklch(85% 0.008 274.6)",
+          "oklch(95% 0.008 274.6)"
+        ]
+      },
+      "plots-ink": {
+        "role": "neutral",
+        "displayName": "Tinta de Tela",
+        "canonical": "#f2efe8",
+        "tonalRamp": [
+          "oklch(15% 0.010 87.5)",
+          "oklch(26% 0.010 87.5)",
+          "oklch(38% 0.010 87.5)",
+          "oklch(50% 0.010 87.5)",
+          "oklch(62% 0.010 87.5)",
+          "oklch(74% 0.010 87.5)",
+          "oklch(85% 0.010 87.5)",
+          "oklch(95% 0.010 87.5)"
+        ]
+      },
+      "plots-ink-soft": {
+        "role": "neutral",
+        "displayName": "Cinza de Créditos",
+        "canonical": "#a9a69d",
+        "tonalRamp": [
+          "oklch(15% 0.013 91.6)",
+          "oklch(26% 0.013 91.6)",
+          "oklch(38% 0.013 91.6)",
+          "oklch(50% 0.013 91.6)",
+          "oklch(62% 0.013 91.6)",
+          "oklch(74% 0.013 91.6)",
+          "oklch(85% 0.013 91.6)",
+          "oklch(95% 0.013 91.6)"
+        ]
+      },
+      "plots-rule": {
+        "role": "neutral",
+        "displayName": "Fio (Plots)",
+        "canonical": "#2a2b30",
+        "tonalRamp": [
+          "oklch(15% 0.009 276.8)",
+          "oklch(26% 0.009 276.8)",
+          "oklch(38% 0.009 276.8)",
+          "oklch(50% 0.009 276.8)",
+          "oklch(62% 0.009 276.8)",
+          "oklch(74% 0.009 276.8)",
+          "oklch(85% 0.009 276.8)",
+          "oklch(95% 0.009 276.8)"
+        ]
+      },
+      "plots-rule-strong": {
+        "role": "neutral",
+        "displayName": "Fio Forte (Plots)",
+        "canonical": "#6b6d75",
+        "tonalRamp": [
+          "oklch(15% 0.012 273.2)",
+          "oklch(26% 0.012 273.2)",
+          "oklch(38% 0.012 273.2)",
+          "oklch(50% 0.012 273.2)",
+          "oklch(62% 0.012 273.2)",
+          "oklch(74% 0.012 273.2)",
+          "oklch(85% 0.012 273.2)",
+          "oklch(95% 0.012 273.2)"
+        ]
+      },
+      "plots-accent": {
+        "role": "primary",
+        "displayName": "Amarelo-legenda",
+        "canonical": "#ffd60a",
+        "tonalRamp": [
+          "oklch(15% 0.181 94.8)",
+          "oklch(26% 0.181 94.8)",
+          "oklch(38% 0.181 94.8)",
+          "oklch(50% 0.181 94.8)",
+          "oklch(62% 0.181 94.8)",
+          "oklch(74% 0.181 94.8)",
+          "oklch(85% 0.181 94.8)",
+          "oklch(95% 0.181 94.8)"
+        ]
+      },
+      "plots-danger": {
+        "role": "tertiary",
+        "displayName": "Erro (Plots)",
+        "canonical": "#ff7a7a",
+        "tonalRamp": [
+          "oklch(15% 0.163 21.9)",
+          "oklch(26% 0.163 21.9)",
+          "oklch(38% 0.163 21.9)",
+          "oklch(50% 0.163 21.9)",
+          "oklch(62% 0.163 21.9)",
+          "oklch(74% 0.163 21.9)",
+          "oklch(85% 0.163 21.9)",
+          "oklch(95% 0.163 21.9)"
+        ]
+      },
+      "plots-accent-terracota": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Terracota (Plots)",
+        "canonical": "#ff7a52",
+        "tonalRamp": [
+          "oklch(15% 0.172 37.4)",
+          "oklch(26% 0.172 37.4)",
+          "oklch(38% 0.172 37.4)",
+          "oklch(50% 0.172 37.4)",
+          "oklch(62% 0.172 37.4)",
+          "oklch(74% 0.172 37.4)",
+          "oklch(85% 0.172 37.4)",
+          "oklch(95% 0.172 37.4)"
+        ]
+      },
+      "plots-accent-oliva": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Oliva (Plots)",
+        "canonical": "#c5e04a",
+        "tonalRamp": [
+          "oklch(15% 0.173 119.0)",
+          "oklch(26% 0.173 119.0)",
+          "oklch(38% 0.173 119.0)",
+          "oklch(50% 0.173 119.0)",
+          "oklch(62% 0.173 119.0)",
+          "oklch(74% 0.173 119.0)",
+          "oklch(85% 0.173 119.0)",
+          "oklch(95% 0.173 119.0)"
+        ]
+      },
+      "plots-accent-vinho": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Vinho (Plots)",
+        "canonical": "#ff5c8a",
+        "tonalRamp": [
+          "oklch(15% 0.200 6.6)",
+          "oklch(26% 0.200 6.6)",
+          "oklch(38% 0.200 6.6)",
+          "oklch(50% 0.200 6.6)",
+          "oklch(62% 0.200 6.6)",
+          "oklch(74% 0.200 6.6)",
+          "oklch(85% 0.200 6.6)",
+          "oklch(95% 0.200 6.6)"
+        ]
+      },
+      "plots-accent-petroleo": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Petróleo (Plots)",
+        "canonical": "#40d9cc",
+        "tonalRamp": [
+          "oklch(15% 0.126 186.6)",
+          "oklch(26% 0.126 186.6)",
+          "oklch(38% 0.126 186.6)",
+          "oklch(50% 0.126 186.6)",
+          "oklch(62% 0.126 186.6)",
+          "oklch(74% 0.126 186.6)",
+          "oklch(85% 0.126 186.6)",
+          "oklch(95% 0.126 186.6)"
+        ]
+      },
+      "plots-accent-ameixa": {
+        "role": "primary",
+        "displayName": "Tinta pessoal: Ameixa (Plots)",
+        "canonical": "#b99aff",
+        "tonalRamp": [
+          "oklch(15% 0.145 296.9)",
+          "oklch(26% 0.145 296.9)",
+          "oklch(38% 0.145 296.9)",
+          "oklch(50% 0.145 296.9)",
+          "oklch(62% 0.145 296.9)",
+          "oklch(74% 0.145 296.9)",
+          "oklch(85% 0.145 296.9)",
+          "oklch(95% 0.145 296.9)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "plates-display": {
+        "displayName": "Display · Plates (Besley)",
+        "purpose": "Título da tela em Plates, um por tela, em caixa mista."
+      },
+      "plates-headline": {
+        "displayName": "Headline · Plates",
+        "purpose": "Título de seção dentro da tela e nome no perfil."
+      },
+      "plates-title": {
+        "displayName": "Title · Plates",
+        "purpose": "Título de bloco e nome do restaurante dentro do rótulo."
+      },
+      "plates-body": {
+        "displayName": "Texto · Plates (Sofia Sans)",
+        "purpose": "Texto corrido; 1,0625rem na abertura, 1rem no comum, 0,875rem em dicas e erros."
+      },
+      "plots-display": {
+        "displayName": "Display · Plots (Jost)",
+        "purpose": "Título da tela em Plots, sempre em caixa alta, entrelinha 1,14."
+      },
+      "plots-headline": {
+        "displayName": "Headline · Plots",
+        "purpose": "Título de seção dentro da tela, em caixa alta."
+      },
+      "plots-title": {
+        "displayName": "Title · Plots",
+        "purpose": "Título de bloco e título do cartaz, em caixa alta."
+      },
+      "plots-body": {
+        "displayName": "Texto · Plots (Jost)",
+        "purpose": "Texto corrido de Plots, com tracking de 0,005em."
+      },
+      "plots-button": {
+        "displayName": "Rótulo de botão · Plots",
+        "purpose": "Botões e etiquetas de Plots: caixa alta, peso 700, tracking 0,08em."
+      },
+      "micro": {
+        "displayName": "Letra miúda (Sofia Sans Extra Condensed)",
+        "purpose": "Número de catálogo, linha de créditos, rótulo de campo, legenda de selo e rótulo de navegação, nos dois mundos. Caixa alta, algarismos tabulares, de 0,75 a 0,9375rem."
+      }
+    },
+    "shadows": [
+      {
+        "name": "plates-shadow-sheet",
+        "value": "0 -10px 28px -14px rgb(43 29 20 / 0.28), 0 -1px 0 rgb(43 29 20 / 0.08)",
+        "purpose": "Folha de cima em Plates: a barra inferior do celular sobre o conteúdo que rola."
+      },
+      {
+        "name": "plots-shadow-sheet",
+        "value": "0 -16px 36px -12px rgb(0 0 0 / 0.85), 0 -1px 0 rgb(242 239 232 / 0.06)",
+        "purpose": "Folha de cima em Plots: a barra inferior do celular."
+      },
+      {
+        "name": "plates-shadow-lift",
+        "value": "0 14px 30px -16px rgb(43 29 20 / 0.35), 0 2px 4px -2px rgb(43 29 20 / 0.12)",
+        "purpose": "Peça solta em Plates: controle pousado sobre uma fotografia (trocar capa, trocar foto)."
+      },
+      {
+        "name": "plots-shadow-lift",
+        "value": "0 20px 40px -18px rgb(0 0 0 / 0.9), 0 3px 6px -3px rgb(0 0 0 / 0.6)",
+        "purpose": "Peça solta em Plots: controle pousado sobre uma fotografia."
+      },
+      {
+        "name": "plates-button-inner-rule",
+        "value": "inset 0 0 0 3px var(--pap-accent), inset 0 0 0 4px color-mix(in srgb, var(--pap-on-accent) 55%, transparent)",
+        "purpose": "Fio interno impresso no botão principal de Plates; não é elevação."
+      }
+    ],
+    "motion": [
+      {
+        "name": "plates-ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Papel: entrada que assenta macio."
+      },
+      {
+        "name": "plates-ease-in",
+        "value": "cubic-bezier(0.7, 0, 0.84, 0)",
+        "purpose": "Papel: saída."
+      },
+      {
+        "name": "plates-ease-in-out",
+        "value": "cubic-bezier(0.65, 0, 0.35, 1)",
+        "purpose": "Papel: ida e volta; brilho do esqueleto."
+      },
+      {
+        "name": "plates-dur-fast / dur / dur-slow",
+        "value": "140ms / 260ms / 520ms",
+        "purpose": "Durações de Plates; a rápida serve às transições de cor."
+      },
+      {
+        "name": "plots-ease-out",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "Corte de cinema: entrada seca, sem sobra."
+      },
+      {
+        "name": "plots-ease-in",
+        "value": "cubic-bezier(0.8, 0, 1, 0.6)",
+        "purpose": "Corte de cinema: saída."
+      },
+      {
+        "name": "plots-ease-in-out",
+        "value": "cubic-bezier(0.76, 0, 0.24, 1)",
+        "purpose": "Corte de cinema: ida e volta."
+      },
+      {
+        "name": "plots-dur-fast / dur / dur-slow",
+        "value": "110ms / 200ms / 420ms",
+        "purpose": "Durações de Plots."
+      },
+      {
+        "name": "spring-plates-press",
+        "value": "spring(stiffness 520, damping 32, mass 0.6)",
+        "purpose": "Toque em botão e etiqueta (escala 0,96 e 0,94) em Plates."
+      },
+      {
+        "name": "spring-plates-pop",
+        "value": "spring(stiffness 380, damping 14, mass 0.7)",
+        "purpose": "Estrela que salta ao confirmar a nota em Plates."
+      },
+      {
+        "name": "spring-plates-settle",
+        "value": "spring(stiffness 260, damping 24)",
+        "purpose": "Dígitos que giram até o valor em Plates."
+      },
+      {
+        "name": "spring-plots-press",
+        "value": "spring(stiffness 700, damping 40, mass 0.5)",
+        "purpose": "Toque em botão e etiqueta em Plots."
+      },
+      {
+        "name": "spring-plots-pop",
+        "value": "spring(stiffness 560, damping 20, mass 0.6)",
+        "purpose": "Estrela que salta em Plots."
+      },
+      {
+        "name": "spring-plots-settle",
+        "value": "spring(stiffness 420, damping 36)",
+        "purpose": "Dígitos que giram em Plots."
+      },
+      {
+        "name": "vt-to-plots",
+        "value": "pap-paste-in 640ms cubic-bezier(0.16, 1, 0.3, 1) sobre pap-under-out 640ms cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "Troca para Plots: o cartaz desce de -102% com giro de -3° e cola por cima; o rótulo recua a 93% e 35% de opacidade."
+      },
+      {
+        "name": "vt-to-plates",
+        "value": "pap-peel-out 540ms cubic-bezier(0.7, 0, 0.84, 0) sobre pap-under-in 640ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Troca para Plates: o cartaz descola pelo canto, cai a 104% com giro de 5°, e o rótulo volta."
+      },
+      {
+        "name": "vt-wordmark-letters",
+        "value": "grupo 560ms cubic-bezier(0.16, 1, 0.3, 1); queda 260ms; entrada 420ms com atraso de 140ms",
+        "purpose": "P, L, T, S viajam entre as palavras; A e E caem, O entra."
+      },
+      {
+        "name": "vt-switch-thumb",
+        "value": "460ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "O bloco do alternador desliza de um lado para o outro."
+      },
+      {
+        "name": "vt-chrome",
+        "value": "260ms",
+        "purpose": "A barra inferior fica ancorada e só dissolve entre os dois temas."
+      },
+      {
+        "name": "vt-default",
+        "value": "200ms",
+        "purpose": "Navegação comum, sem tipo: dissolução curta."
+      },
+      {
+        "name": "vt-reduced-motion",
+        "value": "pap-fade-out / pap-fade-in 160ms linear",
+        "purpose": "Com prefers-reduced-motion: dissolução sem deslocamento; o brilho do esqueleto para."
+      },
+      {
+        "name": "skeleton-shimmer",
+        "value": "pap-shimmer 1.4s ease-in-out do mundo, infinito",
+        "purpose": "Brilho que atravessa o esqueleto de carregamento."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão principal · Plates",
+      "kind": "button",
+      "refersTo": "button-primary-plates",
+      "description": "Etiqueta impressa com fio interno; a única peça preenchida com a cor de destaque numa tela de Plates.",
+      "html": "<div class=\"ds-w-btn-p\"><button class=\"ds-btn-primary-plates\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5v14\"/></svg>Fomos!</button></div>",
+      "css": ".ds-w-btn-p { --bg:#f3e9d6;--surface:#fbf5e8;--sunken:#e9dcc3;--ink:#2b1d14;--soft:#6a5444;--rule:#d6c7ab;--rule-strong:#8c7a5c;--accent:#a93f23;--on-accent:#fbf5e8;--second:#555c2c;--danger:#9b1c1c;--display:'Besley','Clarendon','Rockwell',Georgia,serif;--body:'Sofia Sans','Segoe UI',Roboto,sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:140ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-btn-primary-plates { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 20px; font: inherit; font-weight: 600; font-size: 16px; cursor: pointer; transition: background-color var(--fast), filter var(--fast), transform var(--fast); background: var(--accent); color: var(--on-accent); border: none; border-radius: 4px; box-shadow: inset 0 0 0 3px var(--accent), inset 0 0 0 4px color-mix(in srgb, var(--on-accent) 55%, transparent); } .ds-btn-primary-plates:hover { filter: brightness(1.1); } .ds-btn-primary-plates:active { filter: brightness(0.95); transform: scale(0.96); } .ds-btn-primary-plates:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Botão principal · Plots",
+      "kind": "button",
+      "refersTo": "button-primary-plots",
+      "description": "Bloco de cartaz em caixa alta, preenchido com a cor de destaque.",
+      "html": "<div class=\"ds-w-btn-q\"><button class=\"ds-btn-primary-plots\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5v14\"/></svg>Assistimos!</button></div>",
+      "css": ".ds-w-btn-q { --bg:#0c0c0e;--surface:#16171a;--sunken:#1f2024;--ink:#f2efe8;--soft:#a9a69d;--rule:#2a2b30;--rule-strong:#6b6d75;--accent:#ffd60a;--on-accent:#0c0c0e;--danger:#ff7a7a;--display:'Jost','Futura','Century Gothic',sans-serif;--body:'Jost','Futura','Century Gothic',sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:110ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-btn-primary-plots { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 20px; font: inherit; font-weight: 600; font-size: 16px; cursor: pointer; transition: background-color var(--fast), filter var(--fast), transform var(--fast); background: var(--accent); color: var(--on-accent); border: none; border-radius: 2px; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; } .ds-btn-primary-plots:hover { filter: brightness(1.1); } .ds-btn-primary-plots:active { filter: brightness(0.95); transform: scale(0.96); } .ds-btn-primary-plots:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão secundário e discreto",
+      "kind": "button",
+      "refersTo": "button-secondary-plates",
+      "description": "Tinta e fio, sem destaque: secundário com contorno no fio forte, discreto sem contorno. Mostrado em Plates e em Plots.",
+      "html": "<div class=\"ds-w-sec-p\"><button class=\"ds-btn-secondary\">Depois eu vejo</button><button class=\"ds-btn-secondary ds-btn-quiet\">Cancelar</button></div><div class=\"ds-w-sec-q\"><button class=\"ds-btn-secondary ds-btn-plots\">Depois eu vejo</button><button class=\"ds-btn-secondary ds-btn-quiet ds-btn-plots\">Cancelar</button></div>",
+      "css": ".ds-w-sec-p { --bg:#f3e9d6;--surface:#fbf5e8;--sunken:#e9dcc3;--ink:#2b1d14;--soft:#6a5444;--rule:#d6c7ab;--rule-strong:#8c7a5c;--accent:#a93f23;--on-accent:#fbf5e8;--second:#555c2c;--danger:#9b1c1c;--display:'Besley','Clarendon','Rockwell',Georgia,serif;--body:'Sofia Sans','Segoe UI',Roboto,sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:140ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-w-sec-q { --bg:#0c0c0e;--surface:#16171a;--sunken:#1f2024;--ink:#f2efe8;--soft:#a9a69d;--rule:#2a2b30;--rule-strong:#6b6d75;--accent:#ffd60a;--on-accent:#0c0c0e;--danger:#ff7a7a;--display:'Jost','Futura','Century Gothic',sans-serif;--body:'Jost','Futura','Century Gothic',sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:110ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 20px; font: inherit; font-weight: 600; font-size: 16px; cursor: pointer; transition: background-color var(--fast), filter var(--fast), transform var(--fast); background: transparent; color: var(--ink); border: 1px solid var(--rule-strong); border-radius: 4px; } .ds-btn-quiet { border-color: transparent; } .ds-btn-plots { border-radius: 2px; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; } .ds-btn-secondary:hover { background: var(--sunken); } .ds-btn-secondary:active { transform: scale(0.96); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Etiqueta de marcar",
+      "kind": "chip",
+      "refersTo": "chip-plates",
+      "description": "Filtro de marcar e desmarcar. Marcada inverte para tinta sobre fundo, sem usar a cor de destaque.",
+      "html": "<div class=\"ds-w-chip-p\"><button class=\"ds-chip ds-chip-on\" aria-pressed=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Italiana</button><button class=\"ds-chip\" aria-pressed=\"false\">Japonesa</button><button class=\"ds-chip\" aria-pressed=\"false\">Boteco</button></div><div class=\"ds-w-chip-q\"><button class=\"ds-chip ds-chip-plots ds-chip-on\" aria-pressed=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>Filme</button><button class=\"ds-chip ds-chip-plots\" aria-pressed=\"false\">Série</button><button class=\"ds-chip ds-chip-plots\" aria-pressed=\"false\">Anime</button></div>",
+      "css": ".ds-w-chip-p { --bg:#f3e9d6;--surface:#fbf5e8;--sunken:#e9dcc3;--ink:#2b1d14;--soft:#6a5444;--rule:#d6c7ab;--rule-strong:#8c7a5c;--accent:#a93f23;--on-accent:#fbf5e8;--second:#555c2c;--danger:#9b1c1c;--display:'Besley','Clarendon','Rockwell',Georgia,serif;--body:'Sofia Sans','Segoe UI',Roboto,sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:140ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-w-chip-q { --bg:#0c0c0e;--surface:#16171a;--sunken:#1f2024;--ink:#f2efe8;--soft:#a9a69d;--rule:#2a2b30;--rule-strong:#6b6d75;--accent:#ffd60a;--on-accent:#0c0c0e;--danger:#ff7a7a;--display:'Jost','Futura','Century Gothic',sans-serif;--body:'Jost','Futura','Century Gothic',sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:110ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; font: inherit; font-size: 14px; font-weight: 600; background: transparent; color: var(--ink); border: 1px solid var(--rule-strong); border-radius: 4px; cursor: pointer; transition: background-color var(--fast), transform var(--fast); } .ds-chip-plots { border-radius: 2px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; } .ds-chip:hover { background: var(--sunken); } .ds-chip-on, .ds-chip-on:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); } .ds-chip:active { transform: scale(0.94); } .ds-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "field-plates",
+      "description": "Rótulo sempre visível em letra miúda; borda vai para a cor de destaque no foco e para a cor de erro quando inválido.",
+      "html": "<div class=\"ds-w-field-p\"><label class=\"ds-field\"><span class=\"ds-field-label\">Nome do lugar</span><input class=\"ds-field-input\" placeholder=\"Como está na fachada\"></label><label class=\"ds-field\"><span class=\"ds-field-label\">Username</span><input class=\"ds-field-input ds-field-invalid\" value=\"@ana\" aria-invalid=\"true\"><span class=\"ds-field-error\">Esse @username já está em uso.</span></label></div><div class=\"ds-w-field-q\"><label class=\"ds-field\"><span class=\"ds-field-label\">Nome do lugar</span><input class=\"ds-field-input ds-field-plots\" placeholder=\"Como está na fachada\"></label></div>",
+      "css": ".ds-w-field-p { --bg:#f3e9d6;--surface:#fbf5e8;--sunken:#e9dcc3;--ink:#2b1d14;--soft:#6a5444;--rule:#d6c7ab;--rule-strong:#8c7a5c;--accent:#a93f23;--on-accent:#fbf5e8;--second:#555c2c;--danger:#9b1c1c;--display:'Besley','Clarendon','Rockwell',Georgia,serif;--body:'Sofia Sans','Segoe UI',Roboto,sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:140ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-w-field-q { --bg:#0c0c0e;--surface:#16171a;--sunken:#1f2024;--ink:#f2efe8;--soft:#a9a69d;--rule:#2a2b30;--rule-strong:#6b6d75;--accent:#ffd60a;--on-accent:#0c0c0e;--danger:#ff7a7a;--display:'Jost','Futura','Century Gothic',sans-serif;--body:'Jost','Futura','Century Gothic',sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:110ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-field { display: flex; flex-direction: column; gap: 6px; flex: 1 1 220px; } .ds-field-label { font-family: var(--micro); font-weight: 600; font-size: 13px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--soft); } .ds-field-input { height: 48px; padding: 0 14px; font: inherit; font-size: 16px; color: var(--ink); background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 4px; outline: none; transition: border-color var(--fast); } .ds-field-plots { background: var(--sunken); border-radius: 2px; } .ds-field-input::placeholder { color: var(--soft); } .ds-field-input:hover { border-color: color-mix(in srgb, var(--ink) 60%, transparent); } .ds-field-input:focus-visible { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 0; } .ds-field-invalid, .ds-field-invalid:hover { border-color: var(--danger); } .ds-field-error { font-size: 14px; font-weight: 500; color: var(--danger); }"
+    },
+    {
+      "name": "Nota: estrelas, carimbo e selo",
+      "kind": "custom",
+      "refersTo": "stamp-plates",
+      "description": "A nota de cada pessoa e a do casal. Em Plates é carimbo redondo e torto com anel duplo; em Plots é selo reto preenchido.",
+      "html": "<div class=\"ds-w-nota-p\"><span class=\"ds-stars\" role=\"img\" aria-label=\"Nota 4,5 de 5\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\" clip-path=\"inset(0 50% 0 0)\"/></svg></span><span class=\"ds-stamp-plates\"><b>4,5</b><i>você</i></span><span class=\"ds-stamp-plates\"><b>4</b><i>par</i></span><span class=\"ds-stamp-plates ds-stamp-lg\"><b>4,25</b><i>casal</i></span></div><div class=\"ds-w-nota-q\"><span class=\"ds-stars\" role=\"img\" aria-label=\"Nota 4,5 de 5\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/></svg><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"none\" stroke=\"var(--rule-strong)\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z\" fill=\"var(--accent)\" stroke=\"var(--accent)\" stroke-width=\"1.4\" stroke-linejoin=\"round\" clip-path=\"inset(0 50% 0 0)\"/></svg></span><span class=\"ds-stamp-plots\"><b>4,5</b><i>você</i></span><span class=\"ds-stamp-plots\"><b>4</b><i>par</i></span><span class=\"ds-stamp-plots ds-stamp-lg\"><b>4,25</b><i>casal</i></span></div>",
+      "css": ".ds-w-nota-p { --bg:#f3e9d6;--surface:#fbf5e8;--sunken:#e9dcc3;--ink:#2b1d14;--soft:#6a5444;--rule:#d6c7ab;--rule-strong:#8c7a5c;--accent:#a93f23;--on-accent:#fbf5e8;--second:#555c2c;--danger:#9b1c1c;--display:'Besley','Clarendon','Rockwell',Georgia,serif;--body:'Sofia Sans','Segoe UI',Roboto,sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:140ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-w-nota-q { --bg:#0c0c0e;--surface:#16171a;--sunken:#1f2024;--ink:#f2efe8;--soft:#a9a69d;--rule:#2a2b30;--rule-strong:#6b6d75;--accent:#ffd60a;--on-accent:#0c0c0e;--danger:#ff7a7a;--display:'Jost','Futura','Century Gothic',sans-serif;--body:'Jost','Futura','Century Gothic',sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:110ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-stars { display: inline-flex; gap: 4px; flex-basis: 100%; } .ds-stamp-plates, .ds-stamp-plots { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 72px; } .ds-stamp-plates { transform: rotate(-6deg); border-radius: 999px; border: 2px solid var(--accent); color: var(--accent); outline: 1px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset: -5px; } .ds-stamp-plots { background: var(--accent); color: var(--on-accent); } .ds-stamp-lg { width: 96px; height: 96px; } .ds-stamp-plates b { font-family: var(--display); font-weight: 700; font-size: 24px; line-height: 1; letter-spacing: -0.015em; } .ds-stamp-plots b { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1; letter-spacing: -0.02em; } .ds-stamp-lg b { font-size: 28px; } .ds-stamp-plates i, .ds-stamp-plots i { margin-top: 2px; font-family: var(--micro); font-style: normal; font-weight: 600; font-size: 11px; line-height: 1; letter-spacing: 0.09em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Rótulo de registro · Plates",
+      "kind": "card",
+      "refersTo": "",
+      "description": "Um restaurante como frente impressa: moldura de rótulo, foto em arco 4:5, fio duplo, número de catálogo e carimbo. Dados de exemplo.",
+      "html": "<div class=\"ds-w-rotulo\"><article class=\"ds-rotulo\"><svg class=\"ds-rotulo-arch\" viewBox=\"0 0 200 250\" preserveAspectRatio=\"xMidYMid slice\" role=\"img\" aria-label=\"Ilustração de um prato\"><rect width=\"200\" height=\"250\" fill=\"var(--sunken)\"/><g fill=\"none\" stroke=\"var(--second)\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"100\" cy=\"138\" r=\"70\" fill=\"var(--surface)\"/><circle cx=\"100\" cy=\"138\" r=\"52\" stroke-width=\"1.2\"/><circle cx=\"100\" cy=\"138\" r=\"64\" stroke-width=\"0.8\" stroke-dasharray=\"1 5\"/></g><g fill=\"none\" stroke=\"var(--accent)\" stroke-width=\"2.4\" stroke-linecap=\"round\" transform=\"translate(0 30)\"><path d=\"M70 104c8-18 30-24 44-12s10 30-6 34-30-6-26-18 22-12 26-2-8 14-14 8\"/><path d=\"M82 124c10 8 28 8 38-2\"/><circle cx=\"118\" cy=\"92\" r=\"4.5\" fill=\"var(--accent)\" stroke=\"none\"/><circle cx=\"88\" cy=\"118\" r=\"3.5\" fill=\"var(--accent)\" stroke=\"none\"/></g></svg><div class=\"ds-rotulo-text\"><h3 class=\"ds-rotulo-title\">Cantina de Exemplo</h3><p class=\"ds-rotulo-sub\">Italiana · bairro fictício</p><div class=\"ds-rotulo-foot\"><span class=\"ds-rotulo-micro\">Visita nº 0012</span><span class=\"ds-rotulo-stamp\"><b>4,25</b><i>casal</i></span></div></div></article></div>",
+      "css": ".ds-w-rotulo { --bg:#f3e9d6;--surface:#fbf5e8;--sunken:#e9dcc3;--ink:#2b1d14;--soft:#6a5444;--rule:#d6c7ab;--rule-strong:#8c7a5c;--accent:#a93f23;--on-accent:#fbf5e8;--second:#555c2c;--danger:#9b1c1c;--display:'Besley','Clarendon','Rockwell',Georgia,serif;--body:'Sofia Sans','Segoe UI',Roboto,sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:140ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-rotulo { width: 240px; margin: 4px; padding: 16px; background: var(--surface); border: 1px solid var(--rule-strong); outline: 1px solid var(--rule-strong); outline-offset: 3px; border-radius: 2px; } .ds-rotulo-arch { display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 999px 999px 4px 4px; } .ds-rotulo-text { margin-top: 16px; padding-top: 12px; border-top: 3px double var(--rule-strong); } .ds-rotulo-title { margin: 0; font-family: var(--display); font-weight: 700; font-size: 24px; line-height: 1.25; letter-spacing: -0.015em; } .ds-rotulo-sub { margin: 4px 0 0; color: var(--soft); } .ds-rotulo-foot { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; } .ds-rotulo-micro { font-family: var(--micro); font-weight: 600; font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; font-variant-numeric: tabular-nums; color: var(--soft); } .ds-rotulo-stamp { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 56px; height: 56px; transform: rotate(-6deg); border-radius: 999px; border: 2px solid var(--accent); color: var(--accent); outline: 1px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset: -5px; } .ds-rotulo-stamp b { font-family: var(--display); font-size: 15px; line-height: 1; } .ds-rotulo-stamp i { margin-top: 2px; font-family: var(--micro); font-style: normal; font-weight: 600; font-size: 11px; line-height: 1; letter-spacing: 0.09em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Cartaz de registro · Plots",
+      "kind": "card",
+      "refersTo": "",
+      "description": "Um título como cartaz: pôster 2:3 de canto vivo, título na cor de destaque e as notas na linha de créditos. Dados de exemplo.",
+      "html": "<div class=\"ds-w-cartaz\"><article class=\"ds-cartaz\"><svg class=\"ds-cartaz-poster\" viewBox=\"0 0 200 300\" preserveAspectRatio=\"xMidYMid slice\" role=\"img\" aria-label=\"Cartaz de exemplo\"><rect width=\"200\" height=\"300\" fill=\"var(--sunken)\"/><circle cx=\"100\" cy=\"118\" r=\"62\" fill=\"var(--accent)\"/><rect x=\"0\" y=\"150\" width=\"200\" height=\"150\" fill=\"var(--surface)\"/><path d=\"M0 150h200\" stroke=\"var(--ink)\" stroke-width=\"3\"/><path d=\"M20 176h160M44 200h112M68 224h64\" stroke=\"var(--accent)\" stroke-width=\"5\"/></svg><div class=\"ds-cartaz-text\"><p class=\"ds-cartaz-title\">Título de exemplo</p><p class=\"ds-cartaz-credits\">Sessão nº 0087 · Você <b>4,5</b> · Par <b>4</b> · Casal <b>4,25</b></p></div></article></div>",
+      "css": ".ds-w-cartaz { --bg:#0c0c0e;--surface:#16171a;--sunken:#1f2024;--ink:#f2efe8;--soft:#a9a69d;--rule:#2a2b30;--rule-strong:#6b6d75;--accent:#ffd60a;--on-accent:#0c0c0e;--danger:#ff7a7a;--display:'Jost','Futura','Century Gothic',sans-serif;--body:'Jost','Futura','Century Gothic',sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:110ms; background: var(--bg); color: var(--ink); font-family: var(--body); padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; } .ds-cartaz { width: 224px; background: var(--surface); border: 1px solid var(--rule-strong); } .ds-cartaz-poster { display: block; width: 100%; aspect-ratio: 2 / 3; } .ds-cartaz-text { padding: 12px 12px 14px; } .ds-cartaz-title { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.14; letter-spacing: -0.02em; text-transform: uppercase; color: var(--accent); } .ds-cartaz-credits { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); font-family: var(--micro); font-weight: 600; font-size: 12px; line-height: 1.375; letter-spacing: 0.09em; text-transform: uppercase; font-variant-numeric: tabular-nums; color: var(--soft); } .ds-cartaz-credits b { font-weight: 600; color: var(--accent); }"
+    },
+    {
+      "name": "Barra inferior com alternador",
+      "kind": "nav",
+      "refersTo": "section-switch-plates",
+      "description": "Navegação do celular: um destino de cada lado e o alternador Plates ↔ Plots no meio. É a folha de cima, a única com sombra.",
+      "html": "<div class=\"ds-w-nav\"><nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-active\" href=\"#\" aria-current=\"page\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 7v14\"/><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"/></svg><span>Caderno</span></a><div class=\"ds-switch\"><span class=\"ds-switch-thumb\"></span><a class=\"ds-switch-opt ds-switch-on\" href=\"#\" aria-current=\"true\">Plates</a><a class=\"ds-switch-opt\" href=\"#\">Plots</a></div><a class=\"ds-nav-item\" href=\"#\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/><path d=\"M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662\"/></svg><span>Perfil</span></a></nav></div>",
+      "css": ".ds-w-nav { --bg:#f3e9d6;--surface:#fbf5e8;--sunken:#e9dcc3;--ink:#2b1d14;--soft:#6a5444;--rule:#d6c7ab;--rule-strong:#8c7a5c;--accent:#a93f23;--on-accent:#fbf5e8;--second:#555c2c;--danger:#9b1c1c;--display:'Besley','Clarendon','Rockwell',Georgia,serif;--body:'Sofia Sans','Segoe UI',Roboto,sans-serif;--micro:'Sofia Sans Extra Condensed','Arial Narrow',sans-serif;--fast:140ms; background: var(--bg); font-family: var(--body); padding: 40px 0 0; } .ds-nav { display: flex; align-items: center; gap: 4px; padding: 6px 8px 8px; background: var(--surface); border-top: 1px solid var(--rule); box-shadow: 0 -10px 28px -14px rgb(43 29 20 / 0.28), 0 -1px 0 rgb(43 29 20 / 0.08); } .ds-nav-item { flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--soft); text-decoration: none; transition: color var(--fast); } .ds-nav-item span { font-family: var(--micro); font-weight: 600; font-size: 12px; line-height: 1; letter-spacing: 0.09em; text-transform: uppercase; } .ds-nav-active, .ds-nav-item:hover { color: var(--ink); } .ds-switch { position: relative; display: grid; grid-template-columns: 1fr 1fr; height: 44px; padding: 3px; background: var(--bg); border: 1px solid var(--rule-strong); border-radius: 4px; } .ds-switch-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); background: var(--accent); border-radius: 3px; } .ds-switch-opt { position: relative; min-width: 72px; padding: 0 12px; display: flex; align-items: center; justify-content: center; font-family: var(--micro); font-weight: 600; font-size: 15px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--soft); text-decoration: none; transition: color var(--fast); } .ds-switch-opt:hover { color: var(--ink); } .ds-switch-on, .ds-switch-on:hover { color: var(--on-accent); } .ds-nav-item:focus-visible, .ds-switch-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Rótulo & Cartaz",
+    "overview": "O PAP são dois cadernos impressos num app só. Plates é um rótulo de mercearia: papel creme, duas tintas e tinta café, Clarendon nos títulos, foto em arco, fio duplo e a nota carimbada torta. Plots é um cartaz de cinema: preto fosco, uma tinta luminosa, Futura em caixa alta, pôster de canto vivo e as notas escritas no bloco de créditos. Cada registro é uma frente impressa, e não um cartão com foto, nome e estrelas.\n\nOs dois mundos usam os mesmos nomes de token (`--pap-*`) com valores próprios, escolhidos por `[data-theme=\"plates\"]` ou `[data-theme=\"plots\"]` no invólucro da seção. Cor, tipo, raio, sombra, curva e duração mudam juntos. O que atravessa os dois é pouco e deliberado: a letra miúda condensada, o número de catálogo (Nº 0012), a cor de destaque escolhida pela pessoa e a barra de navegação, que fica ancorada enquanto o mundo troca atrás dela.\n\nA densidade é de celular usado com uma mão: uma coluna, controles de 44 a 48px de altura, a ação principal na cor de destaque e todo o resto em tinta e fio. O movimento tem o caráter do material: o papel assenta macio, com uma sobra leve; o cartaz corta seco.",
+    "keyCharacteristics": [
+      "Dois conjuntos completos de tokens sob os mesmos nomes; um componente serve aos dois mundos e muda de forma, não só de cor.",
+      "Uma cor de destaque por pessoa, com um valor calibrado para cada mundo.",
+      "Três vozes tipográficas por mundo: título (Besley ou Jost), texto (Sofia Sans ou Jost) e a letra miúda condensada, comum aos dois.",
+      "Profundidade por fio e tom de papel; sombra só no que está por cima.",
+      "Troca de mundo como colagem: o cartaz cola por cima do rótulo e descola na volta, com as letras P, L, T, S da marca viajando.",
+      "Ilustrações autorais em SVG, desenhadas com os tokens do mundo, ocupam o lugar das fotos enquanto não há conteúdo real."
+    ],
+    "rules": [
+      {
+        "name": "A Regra da Tinta Pessoal",
+        "body": "A cor de destaque é da pessoa, não do tema. Nenhum componente escreve um hex de destaque: usa `brand`, `on-brand` e `star`. Toda chave nova de `data-accent` entra com os dois valores, um por mundo, e os dois passam AA contra o fundo e como fundo de texto (o par mais fraco hoje é a terracota de Plates, 5,1:1).",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra do Acento na Ação",
+        "body": "O destaque fica na ação principal, na nota (carimbo, selo, estrelas, notas nos créditos), no lado ativo do alternador, no @username e no foco. Seleção de etiqueta usa tinta sobre fundo invertido, não o destaque; botões secundários e discretos usam tinta e fio.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra das Duas Tintas",
+        "body": "Em Plates, uma ilustração é impressa em duas tintas (`brand` e `second`) sobre papel. Em Plots, uma ilustração usa a tinta clara, os tons de grafite e uma única forma na cor de destaque.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra da Caixa",
+        "body": "Em Plots, título, botão e etiqueta são sempre em caixa alta; em Plates, sempre em caixa mista. A caixa vem do token (`--pap-display-case`) e das variantes `plots:`, nunca do texto digitado.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra da Letra Miúda",
+        "body": "`font-micro` é para o que um impresso põe em letra miúda: número de catálogo, linha de créditos, rótulo de campo, legenda de selo, rótulo de navegação. Fica abaixo ou dentro da peça a que pertence. Nunca carrega texto corrido.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Número de Catálogo",
+        "body": "Todo registro tem número de série com quatro algarismos e zeros à esquerda: \"Visita nº 0012\" em Plates, \"Sessão nº 0087\" em Plots.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra do Acento Gráfico",
+        "body": "Título em caixa alta de Plots que pode quebrar em mais de uma linha usa entrelinha 1,14, para os acentos do português não encostarem na linha de cima. Entrelinha abaixo de 1 fica para a marca, uma palavra só e sem acento.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra da Folha de Cima",
+        "body": "Só tem sombra o que está por cima de outra coisa: a barra inferior sobre a página, um controle sobre uma foto. Registros, campos, botões e blocos são planos em repouso e em hover.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do envolver toda tela em um único `[data-theme]` e usar os nomes semânticos (`bg-brand`, `text-soft`, `border-rule-strong`, `rounded-md`); o mesmo componente tem de funcionar nos dois mundos.",
+      "Do usar `font-display` para títulos e `font-micro` para número de catálogo, créditos, rótulos de campo e de navegação; deixe a caixa e o peso virem do token.",
+      "Do dar a cada registro o material do seu mundo: em Plates, moldura de rótulo, arco 4:5, fio duplo e carimbo; em Plots, pôster 2:3 de canto vivo e notas na linha de créditos.",
+      "Do mostrar a nota de cada pessoa separada e a do casal ao lado, com legenda em letra miúda dizendo de quem é.",
+      "Do animar só `transform` e `opacity`, com as molas e durações do mundo, e trocar de mundo sempre pelo roteador de transição com o tipo `to-plots` ou `to-plates`.",
+      "Do manter 44px ou mais em todo alvo de toque e rótulo visível em todo campo.",
+      "Do conferir AA nos dois mundos e em todas as cores de destaque antes de acrescentar um par novo."
+    ],
+    "donts": [
+      "Don't escrever hex de cor em componente, nem a cor de destaque padrão: ela é da pessoa e muda com `data-accent`.",
+      "Don't levar forma de um mundo para o outro: sem arco, fio duplo, carimbo redondo ou círculo em Plots; sem caixa alta em título ou bloco preenchido como selo em Plates. A porta é a única tela com os dois mundos, cada um na sua metade.",
+      "Don't pôr sombra em registro, campo, botão ou bloco; sombra é só da barra inferior e de controle pousado sobre foto.",
+      "Don't usar a cor de destaque em etiqueta marcada, botão secundário ou divisória.",
+      "Don't escrever texto corrido em letra miúda, nem título de Plots em caixa mista.",
+      "Don't animar largura, altura, margem ou cor de fundo de página na troca de mundo, nem criar uma segunda transição de troca.",
+      "Don't apresentar ilustração ou dado de exemplo como registro real."
+    ]
+  }
+}

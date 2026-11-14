@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- PAP: o arco do rótulo dentro do cartaz, com o prato no meio -->
+  <rect width="512" height="512" rx="96" fill="#0c0c0e"/>
+  <path d="M136 400V256a120 120 0 0 1 240 0v144z" fill="#f3e9d6"/>
+  <circle cx="256" cy="282" r="74" fill="none" stroke="#a93f23" stroke-width="18"/>
+  <circle cx="256" cy="282" r="30" fill="#a93f23"/>
+  <circle cx="256" cy="96" r="22" fill="#ffd60a"/>
+</svg>

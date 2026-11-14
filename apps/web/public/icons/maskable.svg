@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Versão "maskable": o desenho fica na zona segura central -->
+  <rect width="512" height="512" fill="#0c0c0e"/>
+  <path d="M166 372V262a90 90 0 0 1 180 0v110z" fill="#f3e9d6"/>
+  <circle cx="256" cy="282" r="56" fill="none" stroke="#a93f23" stroke-width="14"/>
+  <circle cx="256" cy="282" r="22" fill="#a93f23"/>
+  <circle cx="256" cy="140" r="17" fill="#ffd60a"/>
+</svg>

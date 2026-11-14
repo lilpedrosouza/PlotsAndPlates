@@ -1,0 +1,485 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Variantes por mundo: `plates:` e `plots:` */
+@custom-variant plates (&:where([data-theme="plates"], [data-theme="plates"] *));
+@custom-variant plots (&:where([data-theme="plots"], [data-theme="plots"] *));
+
+/* ==========================================================================
+   PAP — tokens de design
+   Dois mundos, cada um com o próprio conjunto de tokens:
+     plates → rótulo de mercearia (papel creme, duas tintas, Clarendon)
+     plots  → cartaz de cinema (preto fosco, amarelo-legenda, Futura)
+   O mundo é escolhido por [data-theme] no invólucro de cada seção.
+   ========================================================================== */
+
+@theme inline {
+  /* Cores semânticas (resolvidas pelo tema ativo) */
+  --color-background: var(--pap-bg);
+  --color-foreground: var(--pap-ink);
+  --color-surface: var(--pap-surface);
+  --color-sunken: var(--pap-sunken);
+  --color-soft: var(--pap-ink-soft);
+  --color-rule: var(--pap-rule);
+  --color-rule-strong: var(--pap-rule-strong);
+  --color-brand: var(--pap-accent);
+  --color-on-brand: var(--pap-on-accent);
+  --color-second: var(--pap-second);
+  --color-on-second: var(--pap-on-second);
+  --color-danger: var(--pap-danger);
+  --color-star: var(--pap-star);
+
+  /* Nomes do shadcn/ui apontando para os mesmos tokens */
+  --color-card: var(--pap-surface);
+  --color-card-foreground: var(--pap-ink);
+  --color-popover: var(--pap-surface);
+  --color-popover-foreground: var(--pap-ink);
+  --color-primary: var(--pap-accent);
+  --color-primary-foreground: var(--pap-on-accent);
+  --color-secondary: var(--pap-sunken);
+  --color-secondary-foreground: var(--pap-ink);
+  --color-muted: var(--pap-sunken);
+  --color-muted-foreground: var(--pap-ink-soft);
+  --color-accent: var(--pap-sunken);
+  --color-accent-foreground: var(--pap-ink);
+  --color-destructive: var(--pap-danger);
+  --color-border: var(--pap-rule);
+  --color-input: var(--pap-rule-strong);
+  --color-ring: var(--pap-accent);
+
+  /* Tipografia */
+  --font-display: var(--pap-font-display);
+  --font-sans: var(--pap-font-body);
+  --font-micro: var(--font-sofia-condensed), "Arial Narrow", sans-serif;
+
+  /* Raios */
+  --radius-xs: var(--pap-radius-xs);
+  --radius-sm: var(--pap-radius-sm);
+  --radius-md: var(--pap-radius);
+  --radius-lg: var(--pap-radius-lg);
+
+  /* Sombra: só a folha de cima tem sombra */
+  --shadow-sheet: var(--pap-shadow-sheet);
+  --shadow-lift: var(--pap-shadow-lift);
+
+  /* Movimento */
+  --ease-out: var(--pap-ease-out);
+  --ease-in: var(--pap-ease-in);
+  --ease-in-out: var(--pap-ease-in-out);
+}
+
+/* --------------------------------------------------------------------------
+   Plates — rótulo
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="plates"] {
+  --pap-bg: #f3e9d6;
+  --pap-surface: #fbf5e8;
+  --pap-sunken: #e9dcc3;
+  --pap-ink: #2b1d14;
+  --pap-ink-soft: #6a5444;
+  --pap-rule: #d6c7ab;
+  --pap-rule-strong: #8c7a5c;
+  --pap-accent: #a93f23;
+  --pap-on-accent: #fbf5e8;
+  --pap-second: #555c2c;
+  --pap-on-second: #fbf5e8;
+  --pap-danger: #9b1c1c;
+  --pap-star: #a93f23;
+
+  --pap-font-display: var(--font-besley), "Clarendon", "Rockwell", Georgia, serif;
+  --pap-font-body: var(--font-sofia), "Segoe UI", Roboto, sans-serif;
+  --pap-display-weight: 700;
+  --pap-display-tracking: -0.015em;
+  --pap-display-case: none;
+
+  --pap-radius-xs: 1px;
+  --pap-radius-sm: 2px;
+  --pap-radius: 4px;
+  --pap-radius-lg: 8px;
+
+  --pap-shadow-sheet: 0 -10px 28px -14px rgb(43 29 20 / 0.28), 0 -1px 0 rgb(43 29 20 / 0.08);
+  --pap-shadow-lift: 0 14px 30px -16px rgb(43 29 20 / 0.35), 0 2px 4px -2px rgb(43 29 20 / 0.12);
+
+  /* Papel: movimento macio, assenta com um leve atraso */
+  --pap-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --pap-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --pap-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --pap-dur-fast: 140ms;
+  --pap-dur: 260ms;
+  --pap-dur-slow: 520ms;
+
+  --pap-space-page: 1.25rem;
+  --pap-space-section: 2.75rem;
+
+  color-scheme: light;
+}
+
+[data-theme="plates"][data-accent="terracota"] { --pap-accent: #a93f23; --pap-star: #a93f23; }
+[data-theme="plates"][data-accent="oliva"] { --pap-accent: #555c2c; --pap-star: #555c2c; --pap-second: #a93f23; }
+[data-theme="plates"][data-accent="mostarda"] { --pap-accent: #7c5a0a; --pap-star: #7c5a0a; }
+[data-theme="plates"][data-accent="vinho"] { --pap-accent: #7d2437; --pap-star: #7d2437; }
+[data-theme="plates"][data-accent="petroleo"] { --pap-accent: #1f5c63; --pap-star: #1f5c63; }
+[data-theme="plates"][data-accent="ameixa"] { --pap-accent: #5e3a6b; --pap-star: #5e3a6b; }
+
+/* --------------------------------------------------------------------------
+   Plots — cartaz
+   -------------------------------------------------------------------------- */
+[data-theme="plots"] {
+  --pap-bg: #0c0c0e;
+  --pap-surface: #16171a;
+  --pap-sunken: #1f2024;
+  --pap-ink: #f2efe8;
+  --pap-ink-soft: #a9a69d;
+  --pap-rule: #2a2b30;
+  --pap-rule-strong: #6b6d75;
+  --pap-accent: #ffd60a;
+  --pap-on-accent: #0c0c0e;
+  --pap-second: #f2efe8;
+  --pap-on-second: #0c0c0e;
+  --pap-danger: #ff7a7a;
+  --pap-star: #ffd60a;
+
+  --pap-font-display: var(--font-jost), "Futura", "Century Gothic", sans-serif;
+  --pap-font-body: var(--font-jost), "Futura", "Century Gothic", sans-serif;
+  --pap-display-weight: 800;
+  --pap-display-tracking: -0.02em;
+  --pap-display-case: uppercase;
+
+  --pap-radius-xs: 0px;
+  --pap-radius-sm: 0px;
+  --pap-radius: 2px;
+  --pap-radius-lg: 2px;
+
+  --pap-shadow-sheet: 0 -16px 36px -12px rgb(0 0 0 / 0.85), 0 -1px 0 rgb(242 239 232 / 0.06);
+  --pap-shadow-lift: 0 20px 40px -18px rgb(0 0 0 / 0.9), 0 3px 6px -3px rgb(0 0 0 / 0.6);
+
+  /* Corte de cinema: seco, sem sobra */
+  --pap-ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --pap-ease-in: cubic-bezier(0.8, 0, 1, 0.6);
+  --pap-ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --pap-dur-fast: 110ms;
+  --pap-dur: 200ms;
+  --pap-dur-slow: 420ms;
+
+  --pap-space-page: 1rem;
+  --pap-space-section: 2.25rem;
+
+  color-scheme: dark;
+}
+
+[data-theme="plots"][data-accent="terracota"] { --pap-accent: #ff7a52; --pap-star: #ff7a52; }
+[data-theme="plots"][data-accent="oliva"] { --pap-accent: #c5e04a; --pap-star: #c5e04a; }
+[data-theme="plots"][data-accent="mostarda"] { --pap-accent: #ffd60a; --pap-star: #ffd60a; }
+[data-theme="plots"][data-accent="vinho"] { --pap-accent: #ff5c8a; --pap-star: #ff5c8a; }
+[data-theme="plots"][data-accent="petroleo"] { --pap-accent: #40d9cc; --pap-star: #40d9cc; }
+[data-theme="plots"][data-accent="ameixa"] { --pap-accent: #b99aff; --pap-star: #b99aff; }
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+@layer base {
+  * {
+    border-color: var(--pap-rule);
+  }
+
+  html {
+    background: #f3e9d6;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* A área fora do conteúdo (overscroll, barra do sistema) acompanha o mundo. */
+  html:has([data-theme="plots"]) {
+    background: #0c0c0e;
+    color-scheme: dark;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-sofia), "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  [data-theme] {
+    background: var(--pap-bg);
+    color: var(--pap-ink);
+    font-family: var(--pap-font-body);
+    caret-color: var(--pap-accent);
+    accent-color: var(--pap-accent);
+    scrollbar-color: var(--pap-rule-strong) transparent;
+  }
+
+  [data-theme="plots"] {
+    font-weight: 400;
+    letter-spacing: 0.005em;
+  }
+
+  [data-theme] ::selection {
+    background: var(--pap-accent);
+    color: var(--pap-on-accent);
+  }
+
+  [data-theme] :focus-visible {
+    outline: 2px solid var(--pap-accent);
+    outline-offset: 3px;
+    border-radius: var(--pap-radius-sm);
+  }
+
+  [data-theme="plots"] :focus-visible {
+    outline-offset: 2px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tipografia dos dois mundos
+   -------------------------------------------------------------------------- */
+@utility font-display {
+  font-family: var(--pap-font-display);
+  font-weight: var(--pap-display-weight);
+  letter-spacing: var(--pap-display-tracking);
+  text-transform: var(--pap-display-case);
+  text-wrap: balance;
+}
+
+/* Letra miúda de rótulo e bloco de créditos de cartaz */
+@utility font-micro {
+  font-family: var(--font-micro);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility px-page {
+  padding-inline: var(--pap-space-page);
+}
+
+@utility duration-fast {
+  transition-duration: var(--pap-dur-fast);
+}
+
+@utility duration-base {
+  transition-duration: var(--pap-dur);
+}
+
+@utility duration-slow {
+  transition-duration: var(--pap-dur-slow);
+}
+
+/* --------------------------------------------------------------------------
+   Peças do rótulo (Plates)
+   -------------------------------------------------------------------------- */
+
+/* Fio duplo: a moldura clássica de rótulo impresso */
+@utility rule-double {
+  border-top: 3px double var(--pap-rule-strong);
+}
+
+@utility frame-label {
+  border: 1px solid var(--pap-rule-strong);
+  outline: 1px solid var(--pap-rule-strong);
+  outline-offset: 3px;
+  border-radius: var(--pap-radius-sm);
+}
+
+/* Arco: moldura das fotos nos rótulos */
+@utility arch {
+  border-radius: 999px 999px var(--pap-radius) var(--pap-radius);
+}
+
+/* --------------------------------------------------------------------------
+   Nomes de View Transition
+   -------------------------------------------------------------------------- */
+@layer components {
+  .vt-wm-p { view-transition-name: pap-wm-p; view-transition-class: wm-letter; }
+  .vt-wm-l { view-transition-name: pap-wm-l; view-transition-class: wm-letter; }
+  .vt-wm-t { view-transition-name: pap-wm-t; view-transition-class: wm-letter; }
+  .vt-wm-s { view-transition-name: pap-wm-s; view-transition-class: wm-letter; }
+  .vt-wm-a { view-transition-name: pap-wm-a; view-transition-class: wm-drop; }
+  .vt-wm-e { view-transition-name: pap-wm-e; view-transition-class: wm-drop; }
+  .vt-wm-o { view-transition-name: pap-wm-o; view-transition-class: wm-drop; }
+  .vt-chrome { view-transition-name: pap-chrome; view-transition-class: chrome; }
+  .vt-switch-thumb { view-transition-name: pap-switch-thumb; view-transition-class: switch-thumb; }
+}
+
+/* --------------------------------------------------------------------------
+   Estados compartilhados
+   -------------------------------------------------------------------------- */
+@keyframes pap-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+@utility skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--pap-sunken);
+  border-radius: var(--pap-radius-sm);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--pap-surface) 55%, transparent), transparent);
+    animation: pap-shimmer 1.4s var(--pap-ease-in-out) infinite;
+  }
+}
+
+/* ==========================================================================
+   Troca de mundo (View Transitions)
+   to-plots:  o cartaz é colado por cima do rótulo
+   to-plates: o cartaz descola e cai, e o rótulo volta
+   Só transform e opacity.
+   ========================================================================== */
+::view-transition {
+  pointer-events: none;
+}
+
+/* Sem tipo (navegação comum): só a dissolução padrão, curta. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+
+html:active-view-transition-type(to-plots)::view-transition-old(root),
+html:active-view-transition-type(to-plots)::view-transition-new(root),
+html:active-view-transition-type(to-plates)::view-transition-old(root),
+html:active-view-transition-type(to-plates)::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+/* to-plots: o cartaz cai colado por cima; o rótulo recua por baixo */
+html:active-view-transition-type(to-plots)::view-transition-new(root) {
+  transform-origin: 50% 0%;
+  animation: pap-paste-in 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html:active-view-transition-type(to-plots)::view-transition-old(root) {
+  transform-origin: 50% 40%;
+  animation: pap-under-out 640ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/* to-plates: o cartaz descola e cai; o rótulo volta por baixo */
+html:active-view-transition-type(to-plates)::view-transition-old(root) {
+  z-index: 1;
+  transform-origin: 0% 0%;
+  animation: pap-peel-out 540ms cubic-bezier(0.7, 0, 0.84, 0) both;
+}
+
+html:active-view-transition-type(to-plates)::view-transition-new(root) {
+  transform-origin: 50% 40%;
+  animation: pap-under-in 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pap-paste-in {
+  0% { transform: translate3d(0, -102%, 0) rotate(-3deg); }
+  62% { transform: translate3d(0, 0.6%, 0) rotate(0.5deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+@keyframes pap-under-out {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.93); opacity: 0.35; }
+}
+
+@keyframes pap-peel-out {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  100% { transform: translate3d(0, 104%, 0) rotate(5deg); }
+}
+
+@keyframes pap-under-in {
+  0% { transform: scale(0.93); opacity: 0.35; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* As letras da marca viajam de "Plates" para "Plots" */
+::view-transition-group(.wm-letter) {
+  z-index: 20;
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(.wm-letter),
+::view-transition-new(.wm-letter) {
+  animation-duration: 280ms;
+  height: 100%;
+  width: auto;
+}
+
+::view-transition-old(.wm-drop) {
+  animation: pap-letter-drop 260ms cubic-bezier(0.7, 0, 0.84, 0) both;
+}
+
+::view-transition-new(.wm-drop) {
+  animation: pap-letter-rise 420ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+}
+
+::view-transition-group(.wm-drop) {
+  z-index: 20;
+}
+
+@keyframes pap-letter-drop {
+  to { transform: translate3d(0, 60%, 0) scale(0.7); opacity: 0; }
+}
+
+@keyframes pap-letter-rise {
+  from { transform: translate3d(0, -60%, 0) scale(0.7); opacity: 0; }
+}
+
+/* A barra de navegação fica ancorada: o mundo muda atrás dela */
+::view-transition-group(.chrome) {
+  z-index: 30;
+}
+
+::view-transition-old(.chrome),
+::view-transition-new(.chrome) {
+  animation-duration: 260ms;
+}
+
+::view-transition-group(.switch-thumb) {
+  z-index: 31;
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Versão reduzida: troca por dissolução curta, sem deslocamento */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+  }
+
+  ::view-transition-old(*) {
+    animation: pap-fade-out 160ms linear both !important;
+  }
+
+  ::view-transition-new(*) {
+    animation: pap-fade-in 160ms linear both !important;
+  }
+
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+@keyframes pap-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes pap-fade-in {
+  from { opacity: 0; }
+}
