@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Camera, Check, LogOut } from "lucide-react";
 import Image from "next/image";
 import { type ChangeEvent, type FormEvent, useId, useState } from "react";
+import { PartnerBlock } from "@/components/couple/partner-block";
 import { useSection } from "@/components/shell/section-context";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -125,6 +126,8 @@ export function ProfileEditor() {
           </p>
         ) : null}
       </section>
+
+      <PartnerBlock />
 
       {/* Texto */}
       <form onSubmit={save} noValidate className="flex flex-col gap-5">
