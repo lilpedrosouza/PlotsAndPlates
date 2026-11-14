@@ -77,19 +77,21 @@ describe("RLS em profiles", () => {
     ).rejects.toThrow();
   });
 
-  it("ninguém apaga perfis, nem o próprio (não há policy de delete)", async () => {
-    const deleted = await withUser(test.db, { sub: ANA }, (tx) =>
-      tx.delete(profiles).where(eq(profiles.id, ANA)).returning(),
-    );
-    expect(deleted).toHaveLength(0);
+  it("ninguém apaga perfis, nem o próprio (sem permissão de delete)", async () => {
+    await expect(
+      withUser(test.db, { sub: ANA }, (tx) => tx.delete(profiles).where(eq(profiles.id, ANA)).returning()),
+    ).rejects.toThrow();
+    const [stillThere] = await test.db.select().from(profiles).where(eq(profiles.id, ANA));
+    expect(stillThere).toBeDefined();
   });
 
   it("o papel anônimo não lê nem escreve", async () => {
-    const rows = await test.db.transaction(async (tx) => {
-      await tx.execute(sql`set local role anon`);
-      return tx.select().from(profiles);
-    });
-    expect(rows).toHaveLength(0);
+    await expect(
+      test.db.transaction(async (tx) => {
+        await tx.execute(sql`set local role anon`);
+        return tx.select().from(profiles);
+      }),
+    ).rejects.toThrow();
 
     await expect(
       test.db.transaction(async (tx) => {
