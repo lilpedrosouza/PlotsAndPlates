@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import { SECTIONS, SECTION_LABEL, type Section, WORLD_TRANSITION, mirrorPath } from "@/lib/section";
 import { useTransitionNavigate } from "@/lib/transition-router";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,20 @@ import { cn } from "@/lib/utils";
  * que desliza de um lado para o outro na troca de mundo (view transition).
  */
 export function SectionSwitch({ section, className }: { section: Section; className?: string }) {
-  const pathname = usePathname();
+  // Em rotas com id desconhecido no build (ex.: /plates/r/[id]) o caminho só
+  // existe no navegador; até lá o lado inativo aponta para o início do outro mundo.
+  return (
+    <Suspense fallback={<SwitchView section={section} pathname={null} className={className} />}>
+      <SwitchWithPath section={section} className={className} />
+    </Suspense>
+  );
+}
+
+function SwitchWithPath({ section, className }: { section: Section; className?: string }) {
+  return <SwitchView section={section} pathname={usePathname()} className={className} />;
+}
+
+function SwitchView({ section, pathname, className }: { section: Section; pathname: string | null; className?: string }) {
   const navigate = useTransitionNavigate();
 
   return (
@@ -26,7 +40,7 @@ export function SectionSwitch({ section, className }: { section: Section; classN
         />
         {SECTIONS.map((target) => {
           const active = target === section;
-          const href = active ? `/${target}` : mirrorPath(pathname, target);
+          const href = active || pathname === null ? `/${target}` : mirrorPath(pathname, target);
           return (
             <Link
               key={target}

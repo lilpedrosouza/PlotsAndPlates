@@ -3,6 +3,7 @@
 import { BookOpenText, Bookmark, CircleUserRound, Clapperboard, type LucideIcon, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import type { Section } from "@/lib/section";
 import { cn } from "@/lib/utils";
 import { SectionSwitch } from "./section-switch";
@@ -33,9 +34,26 @@ function navItems(section: Section): { start: NavItem[]; end: NavItem[] } {
   };
 }
 
-function NavLink({ item, variant }: { item: NavItem; variant: "bar" | "inline" }) {
+type NavLinkProps = { item: NavItem; variant: "bar" | "inline" };
+
+/**
+ * O destaque do item ativo depende do caminho, que em rotas com id desconhecido
+ * no build só existe no navegador: até lá o link aparece sem destaque.
+ */
+function NavLink(props: NavLinkProps) {
+  return (
+    <Suspense fallback={<NavLinkView {...props} active={false} />}>
+      <ActiveNavLink {...props} />
+    </Suspense>
+  );
+}
+
+function ActiveNavLink({ item, variant }: NavLinkProps) {
   const pathname = usePathname();
-  const active = pathname === item.href || Boolean(item.also?.test(pathname));
+  return <NavLinkView item={item} variant={variant} active={pathname === item.href || Boolean(item.also?.test(pathname))} />;
+}
+
+function NavLinkView({ item, variant, active }: NavLinkProps & { active: boolean }) {
   const Icon = item.icon;
 
   if (variant === "inline") {

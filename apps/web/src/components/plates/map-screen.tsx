@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { Suspense } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMapPins } from "@/lib/plates/queries";
@@ -35,7 +36,9 @@ export function MapScreen() {
         {pins.isPending ? (
           <Skeleton className="h-full w-full rounded-md" />
         ) : (
-          <PlatesMap pins={pins.data ?? []} />
+          <Suspense fallback={<Skeleton className="h-full w-full rounded-md" />}>
+            <PlatesMap pins={pins.data ?? []} />
+          </Suspense>
         )}
         {pins.isSuccess && count === 0 ? (
           <div className="pointer-events-none absolute inset-x-3 top-16 flex justify-center">

@@ -3,6 +3,7 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 
 /**
  * O "+" de Plates: um carimbo redondo pousado acima da barra inferior, à
@@ -10,6 +11,15 @@ import { usePathname } from "next/navigation";
  * cobriria o cartão do restaurante escolhido).
  */
 export function AddStamp() {
+  // Depende do caminho (some no cadastro e no mapa): só aparece no navegador.
+  return (
+    <Suspense fallback={null}>
+      <AddStampLink />
+    </Suspense>
+  );
+}
+
+function AddStampLink() {
   const pathname = usePathname();
   if (pathname.startsWith("/plates/novo") || pathname.startsWith("/plates/mapa")) return null;
   return (

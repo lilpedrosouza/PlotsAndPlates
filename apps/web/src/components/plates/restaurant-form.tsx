@@ -11,7 +11,7 @@ import {
   restaurantInputSchema,
 } from "@pap/shared";
 import dynamic from "next/dynamic";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChipToggle } from "@/components/ui/chip";
 import { TextAreaField, TextField } from "@/components/ui/field";
@@ -133,11 +133,14 @@ export function RestaurantForm({
 
       <fieldset className="flex flex-col gap-3">
         <legend className="font-micro mb-3 text-[0.8125rem] text-soft">Onde fica no mapa</legend>
-        <PinPicker
-          lat={fields.lat}
-          lng={fields.lng}
-          onChange={(point) => set({ lat: Number(point.lat.toFixed(6)), lng: Number(point.lng.toFixed(6)) })}
-        />
+        {/* O mapa só existe no navegador: o Suspense segura a renderização no servidor. */}
+        <Suspense fallback={<Skeleton className="h-56 w-full rounded-md" />}>
+          <PinPicker
+            lat={fields.lat}
+            lng={fields.lng}
+            onChange={(point) => set({ lat: Number(point.lat.toFixed(6)), lng: Number(point.lng.toFixed(6)) })}
+          />
+        </Suspense>
         <p className="text-sm text-soft">
           {fields.lat != null ? "Arraste o pin se ele não estiver no lugar certo." : "Toque no mapa para marcar o restaurante."}
         </p>

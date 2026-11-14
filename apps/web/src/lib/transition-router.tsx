@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { type ReactNode, createContext, use, useCallback, useLayoutEffect, useRef } from "react";
+import { type ReactNode, Suspense, createContext, use, useCallback, useLayoutEffect, useRef } from "react";
 
 type TransitionNavigate = (href: string, options?: { types?: string[] }) => void;
 
@@ -20,15 +20,11 @@ const SAFETY_MS = 1500;
  */
 export function TransitionRouterProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
   const settle = useRef<(() => void) | null>(null);
-
-  // A rota nova já está no DOM: libera a segunda fotografia.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: dispara a cada troca de rota
-  useLayoutEffect(() => {
+  const release = useCallback(() => {
     settle.current?.();
     settle.current = null;
-  }, [pathname]);
+  }, []);
 
   const navigate = useCallback<TransitionNavigate>(
     (href, options) => {
@@ -52,7 +48,24 @@ export function TransitionRouterProvider({ children }: { children: ReactNode }) 
     [router],
   );
 
-  return <TransitionRouterContext value={navigate}>{children}</TransitionRouterContext>;
+  return (
+    <TransitionRouterContext value={navigate}>
+      {/* O caminho só existe no navegador em rotas com id desconhecido no build. */}
+      <Suspense fallback={null}>
+        <RouteSettler onRoute={release} />
+      </Suspense>
+      {children}
+    </TransitionRouterContext>
+  );
+}
+
+/** A rota nova já está no DOM: libera a segunda fotografia da transição. */
+function RouteSettler({ onRoute }: { onRoute: () => void }) {
+  const pathname = usePathname();
+  useLayoutEffect(() => {
+    onRoute();
+  }, [pathname, onRoute]);
+  return null;
 }
 
 export function useTransitionNavigate(): TransitionNavigate {
