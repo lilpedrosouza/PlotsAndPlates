@@ -3,3 +3,4 @@ export * from "./ratings";
 export * from "./visibility";
 export * from "./plates";
 export * from "./plots";
+export * from "./couple";

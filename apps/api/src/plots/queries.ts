@@ -51,6 +51,7 @@ export function toLog(row: WatchLogRow): WatchLog {
     liked: row.liked,
     rewatch: row.rewatch,
     isPrivate: row.isPrivate,
+    together: row.together,
   };
 }
 
@@ -115,8 +116,11 @@ export async function loadTitleDetail(ctx: PlotsContext, titleId: string): Promi
       year: season.year,
       posterPath: season.posterPath,
       myRating: seasonRating.get(season.number) ?? null,
+      partnerRating: null,
     })),
     myRating: rating ? { rating: toNumber(rating.rating), liked: rating.liked, isPrivate: rating.isPrivate } : null,
+    partnerRating: null,
+    partner: null,
     seasonSuggestion: suggestSeriesRating([...seasonRating.values()]),
     logs: logs.map(toLog),
     inWatchlist: Boolean(watch),

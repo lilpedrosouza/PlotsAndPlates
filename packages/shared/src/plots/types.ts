@@ -1,3 +1,4 @@
+import type { PersonRef } from "../couple/types";
 import type { TitleKind, TmdbType } from "./kind";
 
 export type TmdbSearchResult = {
@@ -30,6 +31,7 @@ export type SeasonInfo = {
   year: number | null;
   posterPath: string | null;
   myRating: number | null;
+  partnerRating: number | null;
 };
 
 export type WatchLog = {
@@ -42,6 +44,7 @@ export type WatchLog = {
   liked: boolean;
   rewatch: boolean;
   isPrivate: boolean;
+  together: boolean;
 };
 
 export type DiaryEntry = WatchLog & { title: TitleSummary; serial: number };
@@ -56,6 +59,8 @@ export type TitleDetail = TitleSummary & {
   providers: WatchProviders | null;
   seasons: SeasonInfo[];
   myRating: { rating: number | null; liked: boolean; isPrivate: boolean } | null;
+  partnerRating: number | null;
+  partner: PersonRef | null;
   /** Média das notas das temporadas (sugestão para a nota da série). */
   seasonSuggestion: number | null;
   logs: WatchLog[];
@@ -65,7 +70,14 @@ export type TitleDetail = TitleSummary & {
   fetchedAt: string;
 };
 
-export type WatchlistItem = { title: TitleSummary; note: string; addedAt: string; onMyStreamings: Provider[] };
+export type WatchlistItem = {
+  title: TitleSummary;
+  note: string;
+  addedAt: string;
+  onMyStreamings: Provider[];
+  /** Quem pôs no quero ver do casal (um ou os dois). */
+  addedBy: PersonRef[];
+};
 
 export type CustomList = {
   id: string;

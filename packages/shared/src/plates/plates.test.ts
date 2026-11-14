@@ -104,6 +104,7 @@ const dish = (id: string, score: number | null, ratingCount: number, name = id):
   ratingCount,
   wouldOrderAgainShare: null,
   myRating: null,
+  partnerRating: null,
 });
 
 describe("rankDishes", () => {

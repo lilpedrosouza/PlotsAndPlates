@@ -126,6 +126,7 @@ function toSummary(row: BaseRow, storage: MediaStorage): RestaurantSummary {
           priority: row.wishlist.priority as WishlistPriority,
           reason: row.wishlist.reason,
           createdAt: row.wishlist.createdAt.toISOString(),
+          addedBy: [],
         }
       : null,
   };
@@ -273,6 +274,7 @@ export async function loadDishes(ctx: PlatesContext, restaurantId: string, canEd
         wouldOrderAgainShare:
           answered.length > 0 ? answered.filter((rating) => rating.wouldOrderAgain).length / answered.length : null,
         myRating: own ? toDishRating(own) : null,
+        partnerRating: null,
       };
     }),
   );
@@ -302,6 +304,7 @@ export async function loadVisits(ctx: PlatesContext, restaurantId: string, visit
     together: row.together,
     photos: photos.filter((photo) => photo.visitId === row.id).map((photo) => photoOf(ctx.storage, photo.id, photo.path)),
     dishIds: links.filter((link) => link.visitId === row.id).map((link) => link.dishId),
+    registeredBy: null,
   }));
 }
 
@@ -336,6 +339,8 @@ export async function loadDetail(ctx: PlatesContext, restaurantId: string): Prom
     canEdit,
     photos: photos.map((photo) => photoOf(ctx.storage, photo.id, photo.path)),
     myRating: row.rating ? toRating(row.rating) : null,
+    partnerRating: null,
+    partner: null,
     dishes: dishList,
     visits: visitList,
   };

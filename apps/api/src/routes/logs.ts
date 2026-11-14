@@ -134,6 +134,7 @@ export function logRoutes(deps: Pick<AppDeps, "db">) {
           liked: watchLogs.liked,
           rewatch: watchLogs.rewatch,
           isPrivate: watchLogs.isPrivate,
+          together: watchLogs.together,
           createdAt: watchLogs.createdAt,
           serial: sql<number>`(row_number() over (order by ${watchLogs.watchedOn} asc, ${watchLogs.createdAt} asc))::int`.as("serial"),
         })
@@ -152,6 +153,7 @@ export function logRoutes(deps: Pick<AppDeps, "db">) {
             liked: numbered.liked,
             rewatch: numbered.rewatch,
             isPrivate: numbered.isPrivate,
+            together: numbered.together,
             serial: numbered.serial,
           },
           title: titles,
@@ -172,6 +174,7 @@ export function logRoutes(deps: Pick<AppDeps, "db">) {
         liked: log.liked,
         rewatch: log.rewatch,
         isPrivate: log.isPrivate,
+        together: log.together,
         serial: log.serial,
         title: {
           id: title.id,

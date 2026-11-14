@@ -99,6 +99,8 @@ export const visitInputSchema = z.object({
   amountCents: z.number().int().min(0).max(100_000_00).nullable().optional(),
   dishIds: z.array(z.uuid()).max(30).default([]),
   photoPaths: z.array(mediaPathSchema).max(10, "No máximo 10 fotos por visita.").default([]),
+  /** "Fomos juntos": a visita aparece para o par também. Ausente: juntos se houver par. */
+  together: z.boolean().optional(),
 });
 export type VisitInput = z.input<typeof visitInputSchema>;
 export const visitPatchSchema = patchOf(visitInputSchema);

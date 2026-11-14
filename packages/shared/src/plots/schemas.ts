@@ -20,6 +20,8 @@ export const logInputSchema = z.object({
   rewatch: z.boolean().optional(),
   isPrivate: z.boolean().default(false),
   seasonNumber: z.number().int().min(0).max(200).nullable().optional(),
+  /** "Vimos juntos": cria também o registro do par. Ausente: juntos se houver par. */
+  together: z.boolean().optional(),
 });
 export type LogInput = z.input<typeof logInputSchema>;
 export const logPatchSchema = patchOf(logInputSchema);

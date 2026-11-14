@@ -32,6 +32,7 @@ export function wishlistRoutes(deps: Pick<AppDeps, "db" | "storage">) {
         priority: row.priority as WishlistPriority,
         reason: row.reason,
         createdAt: row.createdAt.toISOString(),
+        addedBy: [],
       };
       return body;
     });

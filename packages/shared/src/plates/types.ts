@@ -1,3 +1,4 @@
+import type { PersonRef } from "../couple/types";
 import type { DishCategory, PriceLevel, RestaurantInput, WishlistPriority } from "./schemas";
 
 /** De onde veio a busca ou o rascunho. */
@@ -80,6 +81,8 @@ export type DishWithScore = Dish & {
   /** Fração (0–1) de "pediria de novo" entre quem respondeu. */
   wouldOrderAgainShare: number | null;
   myRating: DishRating | null;
+  /** Nota do par neste prato (null sem par ou sem nota). */
+  partnerRating: number | null;
 };
 
 export type Visit = {
@@ -91,12 +94,16 @@ export type Visit = {
   together: boolean;
   photos: Photo[];
   dishIds: string[];
+  /** Quem registrou (null quando foi quem está vendo). */
+  registeredBy: PersonRef | null;
 };
 
 export type WishlistItem = {
   priority: WishlistPriority;
   reason: string;
   createdAt: string;
+  /** Quem pôs no quero ir do casal (um ou os dois). */
+  addedBy: PersonRef[];
 };
 
 export type RestaurantSummary = {
@@ -128,6 +135,9 @@ export type RestaurantDetail = RestaurantSummary & {
   canEdit: boolean;
   photos: Photo[];
   myRating: RestaurantRating | null;
+  /** Avaliação do par (inclusive privada). */
+  partnerRating: RestaurantRating | null;
+  partner: PersonRef | null;
   dishes: DishWithScore[];
   visits: Visit[];
 };

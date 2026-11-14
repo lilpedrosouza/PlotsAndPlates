@@ -66,6 +66,7 @@ export function plotsWatchlistRoutes(deps: Pick<AppDeps, "db">) {
         note: item.note,
         addedAt: item.createdAt.toISOString(),
         onMyStreamings: (title.providers?.flatrate ?? []).filter((provider) => providers.has(provider.id)),
+        addedBy: [],
       }));
       const filtered = onlyMine ? mapped.filter((item) => item.onMyStreamings.length > 0) : mapped;
       return filtered.sort((a, b) =>
