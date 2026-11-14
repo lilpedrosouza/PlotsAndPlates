@@ -508,3 +508,52 @@ html:active-view-transition-type(to-plates)::view-transition-new(root) {
 @keyframes pap-fade-in {
   from { opacity: 0; }
 }
+
+/* --------------------------------------------------------------------------
+   Mapa (MapLibre): pin carimbado e atribuição no papel do mundo
+   -------------------------------------------------------------------------- */
+@layer components {
+  .pap-map-pin {
+    width: 30px;
+    height: 36px;
+    cursor: grab;
+  }
+  .pap-map-pin::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    background: var(--pap-accent);
+    border: 2px solid var(--pap-surface);
+    border-radius: 999px 999px 999px 2px;
+    rotate: -45deg;
+    box-shadow: var(--pap-shadow-lift);
+  }
+  .pap-map-pin::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--pap-surface);
+  }
+  .pap-map .maplibregl-ctrl-attrib {
+    background: color-mix(in srgb, var(--pap-surface) 88%, transparent);
+    color: var(--pap-ink-soft);
+    font-family: var(--font-body, inherit);
+    font-size: 11px;
+  }
+  .pap-map .maplibregl-ctrl-attrib a {
+    color: var(--pap-ink);
+  }
+  .pap-map .maplibregl-ctrl-group {
+    background: var(--pap-surface);
+    border: 1px solid var(--pap-rule-strong);
+    border-radius: var(--pap-radius);
+    box-shadow: none;
+  }
+}

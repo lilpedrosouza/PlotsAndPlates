@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/copy-map-worker.mjs && next dev",
+    "build": "node scripts/copy-map-worker.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "dev:local": "NEXT_PUBLIC_API_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=pap-local next dev"
+    "dev:local": "node scripts/copy-map-worker.mjs && NEXT_PUBLIC_API_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=pap-local next dev"
   },
   "dependencies": {
     "@pap/shared": "workspace:*",
