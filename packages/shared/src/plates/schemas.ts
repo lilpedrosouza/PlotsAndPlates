@@ -37,6 +37,17 @@ export function todayIso(now = new Date()): string {
   return local.toISOString().slice(0, 10);
 }
 
+/**
+ * Versão "edição parcial" de um schema de criação: tudo opcional e sem os
+ * valores padrão (senão um PATCH com um campo sobrescreveria os outros).
+ */
+function patchOf<Shape extends z.ZodRawShape>(schema: z.ZodObject<Shape>) {
+  const shape = Object.fromEntries(
+    Object.entries(schema.shape).map(([key, field]) => [key, field instanceof z.ZodDefault ? field.unwrap() : field]),
+  ) as { [Key in keyof Shape]: Shape[Key] extends z.ZodDefault<infer Inner> ? Inner : Shape[Key] };
+  return z.object(shape).partial();
+}
+
 const text = (max: number) => z.string().trim().max(max);
 const optionalText = (max: number) => text(max).default("");
 
@@ -79,9 +90,7 @@ export const restaurantInputSchema = z.object({
 export type RestaurantInput = z.input<typeof restaurantInputSchema>;
 export type RestaurantFields = z.output<typeof restaurantInputSchema>;
 
-export const restaurantPatchSchema = restaurantInputSchema
-  .partial()
-  .refine((value) => Object.keys(value).length > 0, "Nada para atualizar.");
+export const restaurantPatchSchema = patchOf(restaurantInputSchema).refine((value) => Object.keys(value).length > 0, "Nada para atualizar.");
 export type RestaurantPatch = z.input<typeof restaurantPatchSchema>;
 
 export const visitInputSchema = z.object({
@@ -92,7 +101,7 @@ export const visitInputSchema = z.object({
   photoPaths: z.array(mediaPathSchema).max(10, "No máximo 10 fotos por visita.").default([]),
 });
 export type VisitInput = z.input<typeof visitInputSchema>;
-export const visitPatchSchema = visitInputSchema.partial();
+export const visitPatchSchema = patchOf(visitInputSchema);
 export type VisitPatch = z.input<typeof visitPatchSchema>;
 
 export const dishInputSchema = z.object({
@@ -103,7 +112,7 @@ export const dishInputSchema = z.object({
   photoPath: mediaPathSchema.nullable().optional(),
 });
 export type DishInput = z.input<typeof dishInputSchema>;
-export const dishPatchSchema = dishInputSchema.partial();
+export const dishPatchSchema = patchOf(dishInputSchema);
 export type DishPatch = z.input<typeof dishPatchSchema>;
 
 const criterionShape = Object.fromEntries(

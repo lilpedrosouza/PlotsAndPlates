@@ -139,3 +139,12 @@ describe("cuisineLabel", () => {
     expect(cuisineLabel("desconhecida")).toBe("desconhecida");
   });
 });
+
+describe("schemas de edição parcial", () => {
+  it("não preenchem padrões nos campos que não vieram", async () => {
+    const { restaurantPatchSchema, visitPatchSchema, dishPatchSchema } = await import("./index");
+    expect(restaurantPatchSchema.parse({ phone: "11 1234-5678" })).toEqual({ phone: "11 1234-5678" });
+    expect(visitPatchSchema.parse({ occasion: "almoço" })).toEqual({ occasion: "almoço" });
+    expect(dishPatchSchema.parse({ priceCents: 1000 })).toEqual({ priceCents: 1000 });
+  });
+});
