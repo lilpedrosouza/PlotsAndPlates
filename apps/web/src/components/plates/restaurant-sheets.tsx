@@ -9,6 +9,7 @@ import {
   RESTAURANT_CRITERIA_LABELS,
   type RestaurantCriterion,
   type RestaurantRating,
+  type Visit,
   overallFromCriteria,
   todayIso,
 } from "@pap/shared";
@@ -30,6 +31,7 @@ import {
   useRateDish,
   useRateRestaurant,
   useUpdateDish,
+  useUpdateVisit,
 } from "@/lib/plates/mutations";
 import { PhotoButton, usePhotoUpload } from "./photo-picker";
 import { Sheet } from "./sheet";
@@ -141,49 +143,70 @@ export function RatingSheet({ restaurantId, current, open, onOpenChange }: Sheet
   );
 }
 
-/** Nova visita: data, ocasião, valor, pratos pedidos e fotos. */
-export function VisitSheet({ restaurantId, dishes, open, onOpenChange }: SheetBase & { restaurantId: string; dishes: DishWithScore[] }) {
-  const [visitedOn, setVisitedOn] = useState(todayIso());
-  const [occasion, setOccasion] = useState("");
-  const [amount, setAmount] = useState("");
-  const [dishIds, setDishIds] = useState<string[]>([]);
-  const [photos, setPhotos] = useState<{ path: string; preview: string }[]>([]);
+/**
+ * Nova visita ou edição de uma visita: data, ocasião, valor, pratos pedidos e
+ * fotos. Quem pode editar o restaurante cria o prato ali mesmo.
+ */
+export function VisitSheet({
+  restaurantId,
+  dishes,
+  visit,
+  canEdit,
+  open,
+  onOpenChange,
+}: SheetBase & { restaurantId: string; dishes: DishWithScore[]; visit?: Visit | null; canEdit: boolean }) {
+  const [visitedOn, setVisitedOn] = useState(visit?.visitedOn ?? todayIso());
+  const [occasion, setOccasion] = useState(visit?.occasion ?? "");
+  const [amount, setAmount] = useState(moneyInput(visit?.amountCents));
+  const [dishIds, setDishIds] = useState<string[]>(visit?.dishIds ?? []);
+  const [photos, setPhotos] = useState<{ path: string; preview: string }[]>(
+    visit?.photos.map((photo) => ({ path: photo.path, preview: photo.thumbUrl })) ?? [],
+  );
+  const [created, setCreated] = useState<{ id: string; name: string }[]>([]);
+  const [newDish, setNewDish] = useState("");
   const [uploading, setUploading] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const uploader = usePhotoUpload("visit");
   const add = useAddVisit(restaurantId);
+  const update = useUpdateVisit(restaurantId);
+  const addDish = useAddDish(restaurantId);
 
-  const reset = () => {
-    setVisitedOn(todayIso());
-    setOccasion("");
-    setAmount("");
-    setDishIds([]);
-    setPhotos([]);
-    setError(null);
-  };
+  // Pratos criados agora aparecem na hora, antes de a página recarregar a lista.
+  const options = [...dishes.map((dish) => ({ id: dish.id, name: dish.name })), ...created.filter((dish) => !dishes.some((known) => known.id === dish.id))];
 
-  const save = () => {
+  const createDish = () => {
+    const name = newDish.trim();
+    if (!name) return;
     setError(null);
-    add.mutate(
-      { visitedOn, occasion, amountCents: parseMoney(amount), dishIds, photoPaths: photos.map((photo) => photo.path) },
+    addDish.mutate(
+      { name, category: "principal" },
       {
-        onSuccess: () => {
-          reset();
-          onOpenChange(false);
+        onSuccess: (dish) => {
+          setCreated((current) => [...current, { id: dish.id, name: dish.name }]);
+          setDishIds((current) => [...current, dish.id]);
+          setNewDish("");
         },
         onError: (failure) => setError(errorText(failure)),
       },
     );
   };
 
+  const save = () => {
+    setError(null);
+    const body = { visitedOn, occasion, amountCents: parseMoney(amount), dishIds, photoPaths: photos.map((photo) => photo.path) };
+    const done = { onSuccess: () => onOpenChange(false), onError: (failure: unknown) => setError(errorText(failure)) };
+    if (visit) update.mutate({ visitId: visit.id, patch: body }, done);
+    else add.mutate(body, done);
+  };
+
   return (
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Nova visita"
+      title={visit ? "Editar visita" : "Nova visita"}
       footer={
-        <Button block onClick={save} busy={add.isPending} disabled={uploading > 0}>
-          Registrar visita
+        <Button block onClick={save} busy={add.isPending || update.isPending} disabled={uploading > 0 || addDish.isPending}>
+          {visit ? "Salvar visita" : "Registrar visita"}
         </Button>
       }
     >
@@ -193,20 +216,43 @@ export function VisitSheet({ restaurantId, dishes, open, onOpenChange }: SheetBa
           <TextField label="Quanto gastamos" inputMode="decimal" prefix="R$" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="0,00" />
         </div>
         <TextField label="Ocasião" value={occasion} onChange={(event) => setOccasion(event.target.value)} maxLength={80} placeholder="Aniversário, almoço de domingo…" />
-        {dishes.length > 0 ? (
+        {options.length > 0 || canEdit ? (
           <fieldset className="flex flex-col gap-3">
             <legend className="font-micro mb-3 text-[0.8125rem] text-soft">O que a gente pediu</legend>
-            <div className="flex flex-wrap gap-2">
-              {dishes.map((dish) => (
-                <ChipToggle
-                  key={dish.id}
-                  pressed={dishIds.includes(dish.id)}
-                  onPressedChange={(on) => setDishIds((current) => (on ? [...current, dish.id] : current.filter((id) => id !== dish.id)))}
-                >
-                  {dish.name}
-                </ChipToggle>
-              ))}
-            </div>
+            {options.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {options.map((dish) => (
+                  <ChipToggle
+                    key={dish.id}
+                    pressed={dishIds.includes(dish.id)}
+                    onPressedChange={(on) => setDishIds((current) => (on ? [...current, dish.id] : current.filter((id) => id !== dish.id)))}
+                  >
+                    {dish.name}
+                  </ChipToggle>
+                ))}
+              </div>
+            ) : null}
+            {canEdit ? (
+              <div className="flex items-end gap-2">
+                <TextField
+                  label="Prato que não está na lista"
+                  value={newDish}
+                  onChange={(event) => setNewDish(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      createDish();
+                    }
+                  }}
+                  maxLength={80}
+                  placeholder="Bolinho de bacalhau"
+                  className="min-w-0 flex-1"
+                />
+                <Button variant="secondary" onClick={createDish} busy={addDish.isPending} disabled={!newDish.trim()}>
+                  Anotar
+                </Button>
+              </div>
+            ) : null}
           </fieldset>
         ) : null}
         <div className="flex flex-col gap-3">

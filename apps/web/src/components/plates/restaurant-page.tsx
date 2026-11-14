@@ -6,6 +6,7 @@ import {
   RESTAURANT_CRITERIA,
   RESTAURANT_CRITERIA_LABELS,
   type RestaurantDetail,
+  type Visit,
   WISHLIST_PRIORITY_LABELS,
   formatRating,
 } from "@pap/shared";
@@ -32,7 +33,7 @@ import { DishRatingSheet, DishSheet, RatingSheet, VisitSheet } from "./restauran
 
 type SheetState =
   | { kind: "rating" }
-  | { kind: "visit" }
+  | { kind: "visit"; visit: Visit | null }
   | { kind: "dish"; dish: DishWithScore | null }
   | { kind: "dish-rating"; dish: DishWithScore }
   | null;
@@ -88,18 +89,30 @@ export function RestaurantPage() {
 
   return (
     <article className="flex flex-col gap-9 pt-2 pb-24">
-      <Hero restaurant={restaurant} onRate={() => openSheet({ kind: "rating" })} onVisit={() => openSheet({ kind: "visit" })} />
+      <Hero restaurant={restaurant} onRate={() => openSheet({ kind: "rating" })} onVisit={() => openSheet({ kind: "visit", visit: null })} />
       <Ratings restaurant={restaurant} onRate={() => openSheet({ kind: "rating" })} />
       <Dishes
         restaurant={restaurant}
         onAdd={() => openSheet({ kind: "dish", dish: null })}
         onOpen={(dish) => openSheet({ kind: "dish-rating", dish })}
       />
-      <Visits restaurant={restaurant} onAdd={() => openSheet({ kind: "visit" })} />
+      <Visits
+        restaurant={restaurant}
+        onAdd={() => openSheet({ kind: "visit", visit: null })}
+        onEdit={(visit) => openSheet({ kind: "visit", visit })}
+      />
       <About restaurant={restaurant} />
 
       <RatingSheet key={`r${sheetKey}`} restaurantId={restaurant.id} current={restaurant.myRating} open={sheet?.kind === "rating" || ratingFromLink} onOpenChange={close} />
-      <VisitSheet key={`v${sheetKey}`} restaurantId={restaurant.id} dishes={restaurant.dishes} open={sheet?.kind === "visit"} onOpenChange={close} />
+      <VisitSheet
+        key={`v${sheetKey}`}
+        restaurantId={restaurant.id}
+        dishes={restaurant.dishes}
+        visit={sheet?.kind === "visit" ? sheet.visit : null}
+        canEdit={restaurant.canEdit}
+        open={sheet?.kind === "visit"}
+        onOpenChange={close}
+      />
       <DishSheet
         key={`d${sheetKey}`}
         restaurantId={restaurant.id}
@@ -295,7 +308,7 @@ function Dishes({ restaurant, onAdd, onOpen }: { restaurant: RestaurantDetail; o
   );
 }
 
-function Visits({ restaurant, onAdd }: { restaurant: RestaurantDetail; onAdd: () => void }) {
+function Visits({ restaurant, onAdd, onEdit }: { restaurant: RestaurantDetail; onAdd: () => void; onEdit: (visit: Visit) => void }) {
   const remove = useDeleteVisit(restaurant.id);
   const dishName = new Map(restaurant.dishes.map((dish) => [dish.id, dish.name]));
   const total = restaurant.visits.length;
@@ -317,6 +330,14 @@ function Visits({ restaurant, onAdd }: { restaurant: RestaurantDetail; onAdd: ()
             <li key={visit.id} className="flex flex-col gap-2.5">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="font-micro text-[0.75rem] text-soft">Visita nº {catalog(total - index)}</p>
+                <span className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => onEdit(visit)}
+                  className="text-sm text-soft underline-offset-3 hover:text-foreground hover:underline"
+                >
+                  Editar
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -326,6 +347,7 @@ function Visits({ restaurant, onAdd }: { restaurant: RestaurantDetail; onAdd: ()
                 >
                   Apagar
                 </button>
+                </span>
               </div>
               <p className="font-display text-lg leading-tight">
                 {longDate(visit.visitedOn)}
