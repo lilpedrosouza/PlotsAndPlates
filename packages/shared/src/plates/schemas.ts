@@ -41,7 +41,7 @@ export function todayIso(now = new Date()): string {
  * Versão "edição parcial" de um schema de criação: tudo opcional e sem os
  * valores padrão (senão um PATCH com um campo sobrescreveria os outros).
  */
-function patchOf<Shape extends z.ZodRawShape>(schema: z.ZodObject<Shape>) {
+export function patchOf<Shape extends z.ZodRawShape>(schema: z.ZodObject<Shape>) {
   const shape = Object.fromEntries(
     Object.entries(schema.shape).map(([key, field]) => [key, field instanceof z.ZodDefault ? field.unwrap() : field]),
   ) as { [Key in keyof Shape]: Shape[Key] extends z.ZodDefault<infer Inner> ? Inner : Shape[Key] };
