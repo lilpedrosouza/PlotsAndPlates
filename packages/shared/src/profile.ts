@@ -105,8 +105,13 @@ export const updateProfileSchema = z
   .refine((value) => Object.keys(value).length > 0, "Nada para atualizar.");
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
-export const UPLOAD_KINDS = ["avatar", "banner"] as const;
+export const UPLOAD_KINDS = ["avatar", "banner", "restaurant", "visit", "dish"] as const;
 export type UploadKind = (typeof UPLOAD_KINDS)[number];
+/** Tipos de foto de Plates: sobem com miniatura. */
+export const PHOTO_UPLOAD_KINDS = ["restaurant", "visit", "dish"] as const satisfies readonly UploadKind[];
+export type PhotoUploadKind = (typeof PHOTO_UPLOAD_KINDS)[number];
+/** Imagens do perfil: sobem sem miniatura. */
+export type ProfileUploadKind = Exclude<UploadKind, PhotoUploadKind>;
 
 export const signUploadSchema = z.object({
   kind: z.enum(UPLOAD_KINDS),
@@ -146,6 +151,9 @@ export type SignedUpload = {
   path: string;
   token: string;
   bucket: string;
+  /** Só nas fotos de Plates: onde subir a miniatura. */
+  thumbPath?: string;
+  thumbToken?: string;
 };
 
 export type ApiError = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { ACCENTS, type AccentKey, STREAMINGS, type StreamingKey, type UploadKind, updateProfileSchema } from "@pap/shared";
+import { ACCENTS, type AccentKey, STREAMINGS, type StreamingKey, type ProfileUploadKind, updateProfileSchema } from "@pap/shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { Camera, Check, LogOut } from "lucide-react";
 import Image from "next/image";
@@ -27,8 +27,8 @@ export function ProfileEditor() {
   const [draft, setDraft] = useState<{ displayName: string; username: string; bio: string } | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
-  const [uploading, setUploading] = useState<UploadKind | null>(null);
-  const [preview, setPreview] = useState<Partial<Record<UploadKind, string>>>({});
+  const [uploading, setUploading] = useState<ProfileUploadKind | null>(null);
+  const [preview, setPreview] = useState<Partial<Record<ProfileUploadKind, string>>>({});
   const [imageError, setImageError] = useState<string | null>(null);
 
   if (!profile) return null;
@@ -67,7 +67,7 @@ export function ProfileEditor() {
   const toggleStreaming = (key: StreamingKey, on: boolean) =>
     update.mutate({ streamings: on ? [...profile.streamings, key] : profile.streamings.filter((item) => item !== key) });
 
-  const pickImage = (kind: UploadKind) => async (event: ChangeEvent<HTMLInputElement>) => {
+  const pickImage = (kind: ProfileUploadKind) => async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -206,7 +206,7 @@ export function ProfileEditor() {
   );
 }
 
-function ImagePicker({ kind, label, busy, onPick, iconOnly, className }: { kind: UploadKind; label: string; busy: boolean; onPick: (event: ChangeEvent<HTMLInputElement>) => void; iconOnly?: boolean; className?: string }) {
+function ImagePicker({ kind, label, busy, onPick, iconOnly, className }: { kind: ProfileUploadKind; label: string; busy: boolean; onPick: (event: ChangeEvent<HTMLInputElement>) => void; iconOnly?: boolean; className?: string }) {
   const id = useId();
   return (
     <span className={className}>

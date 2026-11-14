@@ -1,6 +1,13 @@
 "use client";
 
-import type { CreateProfileInput, MeResponse, OwnProfile, SignedUpload, UpdateProfileInput, UploadKind } from "@pap/shared";
+import type {
+  CreateProfileInput,
+  MeResponse,
+  OwnProfile,
+  ProfileUploadKind,
+  SignedUpload,
+  UpdateProfileInput,
+} from "@pap/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./api";
 import { useAuth } from "./auth";
@@ -61,7 +68,7 @@ export function checkUsername(username: string) {
 }
 
 /** Comprime, sobe direto para o Storage com URL assinada e devolve o caminho. */
-export async function uploadProfileImage(kind: UploadKind, file: Blob): Promise<string> {
+export async function uploadProfileImage(kind: ProfileUploadKind, file: Blob): Promise<string> {
   const blob = await compressImage(file, IMAGE_PRESETS[kind]);
   const signed = await api<SignedUpload>("/uploads/sign", { method: "POST", body: { kind } });
   const { error } = await getSupabase()

@@ -24,6 +24,9 @@ import { validate } from "../validate";
 const UPLOAD_FOLDERS: Record<UploadKind, string> = {
   avatar: "avatars",
   banner: "banners",
+  restaurant: "restaurants",
+  visit: "visits",
+  dish: "dishes",
 };
 
 function toPublicProfile(row: Profile, storage: MediaStorage): PublicProfile {
