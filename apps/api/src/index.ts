@@ -5,9 +5,15 @@ import { createApp } from "./app";
 import { createSupabaseVerifier } from "./auth";
 import { loadEnv } from "./env";
 import { startJobs } from "./jobs";
+import { describeDatabase, runMigrations } from "./run-migrations";
 import { createSupabaseStorage, ensureBuckets } from "./storage";
 
 const env = loadEnv();
+
+// Garante o banco atualizado antes de aceitar requisições, mesmo se o
+// pre-deploy da plataforma não rodar. Migrations já aplicadas são puladas.
+console.log(`Banco: ${describeDatabase(env.DATABASE_URL)}`);
+await runMigrations(env.DATABASE_URL);
 
 const { db, close } = createDb(env.DATABASE_URL);
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SECRET_KEY, {
