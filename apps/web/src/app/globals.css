@@ -482,6 +482,13 @@ html:active-view-transition-type(to-plates)::view-transition-new(root) {
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Pôster da grade ou do diário → pôster da página do título (corte seco de Plots). */
+::view-transition-group(plots-poster) {
+  z-index: 20;
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
 ::view-transition-group(.switch-thumb) {
   z-index: 31;
   animation-duration: 460ms;

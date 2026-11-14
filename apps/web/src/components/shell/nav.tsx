@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpenText, Bookmark, CircleUserRound, Clapperboard, type LucideIcon, Map as MapIcon } from "lucide-react";
+import { BookOpenText, Bookmark, CircleUserRound, Clapperboard, ListVideo, type LucideIcon, Map as MapIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense } from "react";
@@ -13,7 +13,7 @@ type NavItem = { href: string; label: string; icon: LucideIcon; /** Outras rotas
 
 /**
  * Destinos de cada mundo: dois de cada lado do alternador no celular.
- * Plates: Caderno, Mapa | Quero ir, Perfil. Plots ganha os dele na fase 3.
+ * Plates: Caderno, Mapa | Quero ir, Perfil. Plots: Diário, Quero ver | Listas, Perfil.
  */
 function navItems(section: Section): { start: NavItem[]; end: NavItem[] } {
   if (section === "plates") {
@@ -29,8 +29,14 @@ function navItems(section: Section): { start: NavItem[]; end: NavItem[] } {
     };
   }
   return {
-    start: [{ href: "/plots", label: "Diário", icon: Clapperboard }],
-    end: [{ href: "/plots/perfil", label: "Perfil", icon: CircleUserRound }],
+    start: [
+      { href: "/plots", label: "Diário", icon: Clapperboard, also: /^\/plots\/(t\/|buscar)/ },
+      { href: "/plots/quero-ver", label: "Quero ver", icon: Bookmark },
+    ],
+    end: [
+      { href: "/plots/listas", label: "Listas", icon: ListVideo, also: /^\/plots\/listas\// },
+      { href: "/plots/perfil", label: "Perfil", icon: CircleUserRound },
+    ],
   };
 }
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AddSeal } from "@/components/plots/add-seal";
 import { AuthGate } from "@/components/shell/auth-gate";
 
 /**
@@ -8,5 +9,10 @@ import { AuthGate } from "@/components/shell/auth-gate";
 export const instant = false;
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  return <AuthGate>{children}</AuthGate>;
+  return (
+    <AuthGate>
+      {children}
+      <AddSeal />
+    </AuthGate>
+  );
 }
