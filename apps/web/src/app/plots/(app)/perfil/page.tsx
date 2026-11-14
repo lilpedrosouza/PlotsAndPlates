@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FavoritesEditor } from "@/components/plots/favorites-editor";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 
 export const metadata: Metadata = { title: "Perfil" };
@@ -7,5 +8,10 @@ export const metadata: Metadata = { title: "Perfil" };
 export const instant = false;
 
 export default function PerfilPage() {
-  return <ProfileEditor />;
+  return (
+    <div className="flex flex-col gap-8 pt-2">
+      <FavoritesEditor />
+      <ProfileEditor />
+    </div>
+  );
 }
