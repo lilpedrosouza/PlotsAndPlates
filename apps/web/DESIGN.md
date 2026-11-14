@@ -410,6 +410,22 @@ Peças do rótulo aplicadas às telas de Plates. A direção e as decisões est�
 - **Mapa:** estilo claro do OpenFreeMap tingido com os tokens (fundo papel, água em rebaixo, rótulos em tinta café). "Fomos" é um círculo cheio na cor de destaque com a nota; "quero ir" é um anel de 3,5px na segunda tinta; grupos são um círculo de folha com contorno de destaque e a contagem. O pin do formulário é uma gota na cor de destaque com a sombra de peça solta. A atribuição fica recolhida no "i".
 - **Salto (`POP`):** estrela que carimba e "Fomos!" usam quadros-chave de ida e volta com a curva `POP[section]` de `src/lib/motion.ts` (molas do Motion não aceitam três quadros).
 
+## Plots: diário, título, quero ver e listas (fase 3)
+
+Peças do cartaz aplicadas às telas de Plots. A direção e as decisões estão em `.impeccable/surfaces/src-app-plots.md`.
+
+- **Pôster:** sempre 2:3, canto vivo, sobre `sunken`; imagem do TMDB direto do servidor deles no tamanho do lugar (`w92` em linhas, `w185` em listas e Top 4, `w342` em grades, `w1280` no fundo), sem passar pelo otimizador; sem imagem, a arte de cartaz geométrica do mundo, escolhida de forma estável pelo título.
+- **Diário:** o mês é um letreiro (Jost 800, caixa alta, na cor de destaque); cada sessão é uma linha com pôster pequeno, título em caixa alta (com "T2" em série na cor de destaque), a linha de créditos em letra miúda (dia · sessão nº 0087 · reassistido · curtido) e a nota no selo amarelo à direita.
+- **Página do título:** fundo a toda largura que se dissolve no preto por máscara; pôster sobreposto com a sombra de peça solta; título em caixa alta na cor de destaque. As duas ações com texto dividem a linha e os ícones (Top 4, lista) ficam no fim.
+- **Bloco de créditos:** direção/criação, elenco e duração em letra miúda, função em cinza e nomes em tinta clara, como o pé de um cartaz de cinema.
+- **Onde assistir:** logos quadrados de 48px; os dos streamings do perfil ganham contorno de 2px na cor de destaque e a legenda "No seu"; a atribuição à JustWatch fica logo abaixo.
+- **Faixa de streaming:** no "quero ver", quando o título está num serviço do perfil, uma faixa na cor de destaque no pé do pôster diz "No seu Netflix", como uma legenda.
+- **Selo "+":** bloco quadrado de 56px na cor de destaque com "+" e "BUSCAR", pousado acima da barra inferior, com a sombra de peça solta; some na própria busca.
+- **Curtida:** o coração salta com a curva `POP` ao marcar.
+- **Capa de lista:** até quatro pôsteres em leque (deslocados 44px, com a sombra de peça solta) sobre `sunken`.
+- **Top 4:** quatro molduras 2:3; as vazias com contorno tracejado de 2px; tocar num pôster abre a folha com mover e tirar (alvos de 48px).
+- **Atribuição do TMDB:** logo oficial (`public/brand/tmdb-logo.svg`) e o aviso em inglês exigido, no rodapé das telas com dados do TMDB.
+
 ## Do's and Don'ts
 
 ### Do:

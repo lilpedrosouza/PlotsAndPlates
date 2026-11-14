@@ -7,7 +7,7 @@ O diário a dois do que a gente come e do que a gente assiste.
 
 Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do casal. Uso pessoal, sem fins comerciais.
 
-> **Estado atual: fase 2.** Fase 1 (monorepo, autenticação, perfil, design system dos dois mundos e a transição entre eles) e fase 2 (Plates completo) prontas. Plots (fase 3) ainda não foi construído; a parte deste README sobre o TMDB já descreve como preparar a chave.
+> **Estado atual: fase 3.** Fases 1 (monorepo, autenticação, perfil, design system), 2 (Plates completo) e 3 (Plots completo) prontas. Vínculo de casal e comunidade chegam na fase 4.
 
 ### O que já dá para usar em Plates
 
@@ -17,7 +17,15 @@ Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do 
 - **Página do restaurante** (`/plates/r/:id`): notas por critério (a nota geral é a média, arredondada para meia estrela), review, pratos com nota e "pediria de novo?", visitas com fotos e valor, e o painel **Ver no Google** (dados ao vivo, nada salvo).
 - **Mapa** (`/plates/mapa`): pins de "fomos" e "quero ir", agrupados quando ficam próximos.
 
-O vínculo de casal (notas lado a lado, "juntos", quero ir compartilhado) e "O que o pessoal do PAP achou" chegam na fase 4.
+### O que já dá para usar em Plots
+
+- **Diário** (`/plots`): cada sessão de filme ou temporada de série, mês a mês, com nota, curtida e "reassistido".
+- **Buscar** (`/plots/buscar`): filmes e séries do TMDB; abrir um título guarda os dados dele no PAP (atualizados a cada 30 dias, nunca mais velhos que 6 meses).
+- **Página do título** (`/plots/t/:id`): sinopse, créditos, onde assistir no Brasil (com destaque para os streamings do seu perfil), temporadas com nota, nota da série com a média das temporadas como sugestão, seus registros, Top 4 e listas.
+- **Quero ver** (`/plots/quero-ver`): com o filtro "Nos meus streamings" e o botão **Assistimos!**.
+- **Listas** (`/plots/listas`) e **Top 4** (no perfil de Plots).
+
+O vínculo de casal (notas lado a lado, "juntos", listas de vontade compartilhadas) e "O que o pessoal do PAP achou" chegam na fase 4.
 
 ## Como está organizado
 
