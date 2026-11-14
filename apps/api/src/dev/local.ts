@@ -22,6 +22,7 @@ import { OFFLINE_ROUTES, fakeFetch } from "../places/fixtures";
 import { createOsm } from "../places/osm";
 import { createPlacesService } from "../places/service";
 import type { MediaStorage } from "../storage";
+import { seedPlatesDemo } from "./plates-demo";
 
 const PORT = Number(process.env.PORT ?? 8787);
 const ORIGIN = `http://localhost:${PORT}`;
@@ -217,8 +218,10 @@ const demo = [
   { email: "ana@pap.local", username: "ana", displayName: "Ana Souza", bio: "Sempre pede sobremesa.", accent: "oliva" },
   { email: "bia@pap.local", username: "bia", displayName: "Bia Lima", bio: "Chora em animação.", accent: "padrao" },
 ];
+const demoIds: Record<string, string> = {};
 for (const person of demo) {
   const account = await register(person.email, DEMO_PASSWORD);
+  demoIds[person.username] = account.id;
   await db.insert(profiles).values({
     id: account.id,
     username: person.username,
@@ -229,10 +232,17 @@ for (const person of demo) {
   });
 }
 
+await seedPlatesDemo(db, { ana: demoIds.ana!, bia: demoIds.bia! });
+
 serve({ fetch: server.fetch, port: PORT, hostname: "0.0.0.0" }, () => {
   console.log(`\nPAP em MODO LOCAL — ${ORIGIN}`);
   console.log("Banco em memória e Supabase de mentira: os dados somem ao encerrar.\n");
   console.log("Contas de exemplo (senha: papdemo):");
   for (const person of demo) console.log(`  ${person.email}  →  @${person.username}`);
-  console.log("\nOu crie uma conta nova pela tela de cadastro.\n");
+  console.log("\nOu crie uma conta nova pela tela de cadastro.");
+  console.log(
+    offline
+      ? "Busca de restaurantes: dados de exemplo (PAP_OFFLINE=1).\n"
+      : "Busca de restaurantes: OpenStreetMap de verdade (precisa de internet). Sem internet, use PAP_OFFLINE=1.\n",
+  );
 });

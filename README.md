@@ -38,7 +38,9 @@ pnpm dev:local
 
 Sobe o site em <http://localhost:3000> e a API em <http://localhost:8787>, com um Postgres em memória e uma imitação mínima do Supabase (login por e-mail e senha + Storage). Os dados somem ao encerrar.
 
-Contas de exemplo (senha `papdemo`): `ana@pap.local` e `bia@pap.local`. Também dá para criar uma conta nova pela tela de cadastro. O login com Google não existe neste modo.
+Contas de exemplo (senha `papdemo`): `ana@pap.local` e `bia@pap.local`, já com 6 restaurantes de exemplo no caderno da Ana (visitas, pratos, notas e 2 no "quero ir"). Também dá para criar uma conta nova pela tela de cadastro. O login com Google não existe neste modo.
+
+A busca de restaurantes no modo local não usa o Google: vai direto ao OpenStreetMap de verdade (precisa de internet). Sem internet, rode `PAP_OFFLINE=1 pnpm dev:local` para a busca responder com dados de exemplo.
 
 Não precisa de nenhum `.env`: o comando já aponta o site para a API local.
 
@@ -52,7 +54,7 @@ O guia de estilo dos dois mundos fica em `/plates/estilo` e `/plots/estilo` (nã
 
    ```bash
    DATABASE_URL="postgresql://..." pnpm db:migrate
-   SEED_PASSWORD="uma-senha-de-8+" pnpm db:seed   # opcional; cria ana@pap.exemplo e bia@pap.exemplo
+   SEED_PASSWORD="uma-senha-de-8+" pnpm db:seed   # opcional; cria ana@pap.exemplo, bia@pap.exemplo e restaurantes de exemplo
    ```
 
 4. `pnpm dev`

@@ -12,7 +12,7 @@ import {
 import { createGooglePlaces } from "./google";
 import { InvalidMapsUrl, expandMapsUrl, parseMapsUrl } from "./maps-url";
 import { nameSimilarity, pickMatch } from "./match";
-import { createOsm } from "./osm";
+import { createOsm, osmToFields } from "./osm";
 import { createPlacesService } from "./service";
 
 const SESSION = "6f1c1b7e-8a0f-4c51-9d55-3b0f0c3d2e11";
@@ -256,5 +256,51 @@ describe("Google", () => {
     await google.autocomplete("bar", SESSION);
     const body = JSON.parse(String(fake.calls[0]?.init?.body));
     expect(body).toMatchObject({ input: "bar", sessionToken: SESSION, includedRegionCodes: ["br"], languageCode: "pt-BR" });
+  });
+});
+
+describe("resiliência do OpenStreetMap", () => {
+  it("busca pela referência usa o lookup do Nominatim, com telefone e endereço", async () => {
+    const fake = fakeFetch([
+      {
+        match: "nominatim.openstreetmap.org/lookup",
+        respond: () =>
+          json([
+            {
+              osm_type: "node",
+              osm_id: 2015488627,
+              lat: "-22.9214",
+              lon: "-43.1758",
+              name: "Bar do Zé",
+              category: "amenity",
+              type: "bar",
+              address: { road: "Ladeira da Glória", house_number: "79", suburb: "Glória", city: "Rio de Janeiro" },
+              extratags: { phone: "+55 21 2222-3333", cuisine: "brazilian", opening_hours: "Mo-Su 11:00-23:00" },
+            },
+          ]),
+      },
+    ]);
+    const osm = createOsm({ fetch: fake.fetch, sleep: async () => {} });
+    const place = await osm.lookup("node/2015488627");
+    expect(fake.calls[0]?.url).toContain("osm_ids=N2015488627");
+    expect(place).toMatchObject({ osmRef: "node/2015488627", name: "Bar do Zé", lat: -22.9214 });
+    expect(osmToFields(place!)).toMatchObject({
+      phone: "+55 21 2222-3333",
+      address: "Ladeira da Glória, 79",
+      neighborhood: "Glória",
+      city: "Rio de Janeiro",
+      cuisines: ["brazilian"],
+      openingHours: "Mo-Su 11:00-23:00",
+    });
+  });
+
+  it("lugares próximos tentam outro servidor do Overpass quando o principal está lotado", async () => {
+    const fake = fakeFetch([
+      { match: "overpass-api.de", respond: () => new Response("at capacity", { status: 502 }) },
+      { match: "overpass.private.coffee", respond: () => json(OVERPASS_NEARBY) },
+    ]);
+    const osm = createOsm({ fetch: fake.fetch, sleep: async () => {} });
+    const places = await osm.nearby({ lat: -23.5617, lng: -46.6912 }, 80);
+    expect(places.map((place) => place.osmRef)).toContain("node/1001");
   });
 });

@@ -20,7 +20,12 @@ export type Osm = {
 export type OsmAddress = LatLng & { road: string; houseNumber: string; neighborhood: string; city: string };
 
 const NOMINATIM = "https://nominatim.openstreetmap.org";
-const OVERPASS = "https://overpass-api.de/api/interpreter";
+/** Servidor principal do Overpass e espelhos públicos, tentados em ordem quando um está lotado. */
+const OVERPASS_ENDPOINTS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+];
 const USER_AGENT = "PlotsAndPlates/1.0";
 const NOMINATIM_INTERVAL_MS = 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -54,6 +59,7 @@ type NominatimPlace = {
   name?: string;
   display_name: string;
   address?: NominatimAddress;
+  extratags?: Record<string, string>;
 };
 
 type OverpassElement = {
@@ -125,12 +131,20 @@ export function createOsm(
 
   function overpass(query: string): Promise<OsmPlace[]> {
     return cached(`overpass:${query}`, async () => {
-      const data = await getJson<{ elements?: OverpassElement[] }>(OVERPASS, {
-        method: "POST",
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ data: query }).toString(),
-      });
-      return (data.elements ?? []).map(toOsmPlace).filter((place) => place !== null);
+      let lastError: unknown;
+      for (const endpoint of OVERPASS_ENDPOINTS) {
+        try {
+          const data = await getJson<{ elements?: OverpassElement[] }>(endpoint, {
+            method: "POST",
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ data: query }).toString(),
+          });
+          return (data.elements ?? []).map(toOsmPlace).filter((place) => place !== null);
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw lastError;
     });
   }
 
@@ -166,8 +180,27 @@ export function createOsm(
     lookup: async (osmRef) => {
       const [type, id] = osmRef.split("/");
       if (!type || !id || !/^(node|way|relation)$/.test(type) || !/^\d+$/.test(id)) return null;
-      const places = await overpass(`[out:json][timeout:10];${type}(${id});out center tags;`);
-      return places[0] ?? null;
+      const places = await nominatim<NominatimPlace[]>("/lookup", {
+        osm_ids: `${type[0]!.toUpperCase()}${id}`,
+        addressdetails: "1",
+        extratags: "1",
+      });
+      const place = places[0];
+      if (!place) return null;
+      const address = place.address ?? {};
+      const tags: Record<string, string> = { ...place.extratags };
+      const street = address.road ?? address.pedestrian;
+      if (street) tags["addr:street"] = street;
+      if (address.house_number) tags["addr:housenumber"] = address.house_number;
+      if (neighborhoodOf(address)) tags["addr:suburb"] = neighborhoodOf(address);
+      if (cityOf(address)) tags["addr:city"] = cityOf(address);
+      return {
+        osmRef,
+        name: place.name || place.display_name.split(",")[0] || "",
+        lat: Number(place.lat),
+        lng: Number(place.lon),
+        tags,
+      };
     },
 
     reverse: async (point) => {

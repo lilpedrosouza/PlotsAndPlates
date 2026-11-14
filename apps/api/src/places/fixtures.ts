@@ -83,6 +83,13 @@ export const NOMINATIM_SEARCH = [
   },
 ];
 
+export const NOMINATIM_LOOKUP = [
+  {
+    ...NOMINATIM_SEARCH[0],
+    extratags: { cuisine: "brazilian;regional", phone: "+55 11 3333-4444", opening_hours: "Mo-Sa 12:00-23:00" },
+  },
+];
+
 export const NOMINATIM_REVERSE = {
   lat: "-23.56175",
   lon: "-46.69118",
@@ -119,5 +126,6 @@ export const OVERPASS_NEARBY = {
 export const OFFLINE_ROUTES: FakeRoute[] = [
   { match: "nominatim.openstreetmap.org/search", respond: () => json(NOMINATIM_SEARCH) },
   { match: "nominatim.openstreetmap.org/reverse", respond: () => json(NOMINATIM_REVERSE) },
+  { match: "nominatim.openstreetmap.org/lookup", respond: () => json(NOMINATIM_LOOKUP) },
   { match: "overpass-api.de", respond: () => json(OVERPASS_NEARBY) },
 ];

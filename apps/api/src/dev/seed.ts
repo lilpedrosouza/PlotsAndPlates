@@ -11,6 +11,7 @@
 import { createDb, profiles } from "@pap/db";
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "../env";
+import { seedPlatesDemo } from "./plates-demo";
 
 const DEMO = [
   { email: "ana@pap.exemplo", username: "ana", displayName: "Ana Souza", bio: "Sempre pede sobremesa.", accent: "oliva", streamings: ["netflix", "mubi"] },
@@ -33,6 +34,7 @@ try {
   const { data: existing, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
   if (listError) throw new Error(`Não foi possível listar as contas: ${listError.message}`);
 
+  const ids: Record<string, string> = {};
   for (const person of DEMO) {
     let userId = existing.users.find((user) => user.email === person.email)?.id;
     if (!userId) {
@@ -44,8 +46,11 @@ try {
       .insert(profiles)
       .values({ id: userId, username: person.username, displayName: person.displayName, bio: person.bio, accent: person.accent, streamings: person.streamings })
       .onConflictDoNothing();
+    ids[person.username] = userId;
     console.log(`ok  ${person.email}  →  @${person.username}`);
   }
+  await seedPlatesDemo(db, { ana: ids.ana!, bia: ids.bia! });
+  console.log("ok  restaurantes de exemplo de Plates");
   console.log("Seed concluído.");
 } catch (error) {
   console.error("Seed falhou:", error);
