@@ -15,6 +15,27 @@
       "when": 1794675887623,
       "tag": "0001_grants_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794679897775,
+      "tag": "0002_plates_helpers",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794679899169,
+      "tag": "0003_plates",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794679904112,
+      "tag": "0004_grants_plates",
+      "breakpoints": true
     }
   ]
 }
