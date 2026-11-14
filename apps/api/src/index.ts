@@ -5,6 +5,10 @@ import { createApp } from "./app";
 import { createSupabaseVerifier } from "./auth";
 import { loadEnv } from "./env";
 import { startJobs } from "./jobs";
+import { createFindExisting } from "./places/existing";
+import { createGooglePlaces } from "./places/google";
+import { createOsm } from "./places/osm";
+import { createPlacesService } from "./places/service";
 import { describeDatabase, runMigrations } from "./run-migrations";
 import { createSupabaseStorage, ensureBuckets } from "./storage";
 
@@ -24,6 +28,11 @@ const app = createApp({
   db,
   verifyToken: createSupabaseVerifier(env.SUPABASE_URL),
   storage: createSupabaseStorage(supabase, env.SUPABASE_URL, env.MEDIA_BUCKET),
+  places: createPlacesService({
+    google: env.GOOGLE_PLACES_API_KEY ? createGooglePlaces({ apiKey: env.GOOGLE_PLACES_API_KEY }) : null,
+    osm: createOsm(),
+    findExisting: createFindExisting(db),
+  }),
   webOrigins: env.WEB_ORIGINS,
   // A Railway preenche esta variável em deploys vindos do GitHub.
   commit: process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) ?? null,

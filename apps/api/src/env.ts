@@ -29,6 +29,13 @@ const envSchema = z.object({
         .filter(Boolean),
     ),
 
+  /** Places API (New). Opcional: sem ela a busca usa só o OpenStreetMap. */
+  GOOGLE_PLACES_API_KEY: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value || undefined),
+
   MEDIA_BUCKET: z.string().min(1).default("media"),
   BACKUP_BUCKET: z.string().min(1).default("backups"),
 

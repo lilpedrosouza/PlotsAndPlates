@@ -2,6 +2,10 @@ import { type TestDb, createTestDb } from "@pap/db/testing";
 import { type CryptoKey, SignJWT, createLocalJWKSet, exportJWK, generateKeyPair } from "jose";
 import { createApp } from "./app";
 import { createJwksVerifier } from "./auth";
+import { createFindExisting } from "./places/existing";
+import { OFFLINE_ROUTES, fakeFetch } from "./places/fixtures";
+import { createOsm } from "./places/osm";
+import { createPlacesService } from "./places/service";
 import type { MediaStorage } from "./storage";
 import type { AppDeps } from "./types";
 
@@ -65,7 +69,21 @@ export async function createTestHarness(overrides: Partial<AppDeps> = {}): Promi
       .setExpirationTime(options.expiresIn ?? "1h")
       .sign(key);
 
-  const app = createApp({ db: test.db, verifyToken, storage, webOrigins: ["http://localhost:3000"], ...overrides });
+  // Sem Google por padrão; o OpenStreetMap responde com as fixtures, sem rede.
+  const places = createPlacesService({
+    google: null,
+    osm: createOsm({ fetch: fakeFetch(OFFLINE_ROUTES).fetch, sleep: async () => {} }),
+    findExisting: createFindExisting(test.db),
+  });
+
+  const app = createApp({
+    db: test.db,
+    verifyToken,
+    storage,
+    places,
+    webOrigins: ["http://localhost:3000"],
+    ...overrides,
+  });
 
   return {
     app,

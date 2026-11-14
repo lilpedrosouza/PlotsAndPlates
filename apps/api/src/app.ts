@@ -6,6 +6,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { requireAuth } from "./auth";
 import { ApiFailure } from "./errors";
 import { clientIp, rateLimit } from "./rate-limit";
+import { placesRoutes } from "./routes/places";
 import { profileRoutes } from "./routes/profiles";
 import type { AppDeps, AppEnv } from "./types";
 
@@ -35,6 +36,7 @@ export function createApp(deps: AppDeps) {
   v1.use(requireAuth(deps.verifyToken));
   v1.use(rateLimit({ windowMs: 60_000, max: perMinute, key: (c) => `user:${c.get("user").id}` }));
   v1.route("/", profileRoutes(deps));
+  v1.route("/", placesRoutes(deps));
   app.route("/v1", v1);
 
   app.notFound((c) => c.json({ error: { code: "not_found", message: "Rota não encontrada." } }, 404));

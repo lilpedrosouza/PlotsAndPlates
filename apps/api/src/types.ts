@@ -1,5 +1,6 @@
 import type { Db } from "@pap/db";
 import type { AuthUser, TokenVerifier } from "./auth";
+import type { PlacesService } from "./places/service";
 import type { MediaStorage } from "./storage";
 
 export type AppEnv = {
@@ -14,6 +15,8 @@ export type AppDeps = {
   verifyToken: TokenVerifier;
   storage: MediaStorage;
   webOrigins: string[];
+  /** Busca de lugares (Google como localizador + OpenStreetMap). */
+  places: PlacesService;
   /** Requisições por minuto, por usuário. */
   rateLimitPerMinute?: number;
   /** Commit em execução (curto), mostrado no /health para conferir o deploy. */

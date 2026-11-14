@@ -97,15 +97,17 @@ O PAP usa o Google **só para localizar** o restaurante (autocomplete e busca); 
 1. Em <https://console.cloud.google.com>, crie um projeto e ative o faturamento (é exigido mesmo para ficar no gratuito).
 2. **APIs e serviços → Biblioteca**: ative **Places API (New)**. Não ative a Places API antiga.
 3. **APIs e serviços → Credenciais → Criar credenciais → Chave de API**. Em *Restrições de API*, restrinja a chave a **Places API (New)**. A chave vai só para a API do PAP (`GOOGLE_PLACES_API_KEY`), nunca para o site.
-4. **Cotas diárias, para o uso nunca passar do gratuito.** Em **APIs e serviços → Places API (New) → Cotas e limites do sistema**, edite as cotas **por dia** de cada método que o PAP usa. Desde março de 2025 cada SKU tem uma franquia mensal gratuita própria (na tabela de preços: 10.000 chamadas/mês nos SKUs *Essentials*, 5.000 nos *Pro*, 1.000 nos *Enterprise*). Dividindo por 31 dias, com folga:
+4. **Cotas diárias, para o uso nunca passar do gratuito.** Em **APIs e serviços → Places API (New) → Cotas e limites do sistema**, edite as cotas **por dia** de cada método que o PAP usa. Desde março de 2025 cada SKU tem uma franquia mensal gratuita própria (na tabela de preços: 10.000 chamadas/mês nos SKUs *Essentials*, 5.000 nos *Pro*, 1.000 nos *Enterprise*). O que o PAP pede, e quando:
 
-   | Método | Sugestão de cota por dia |
-   | --- | --- |
-   | Autocomplete (`AutocompletePlacesRequest`) | 300 |
-   | Place Details (`GetPlaceRequest`) | 150 |
-   | Text Search (`SearchTextRequest`) | 150 |
+   | Método | Quando o PAP chama | SKU (pelos campos pedidos) | Sugestão de cota por dia |
+   | --- | --- | --- | --- |
+   | Autocomplete (`AutocompletePlacesRequest`) | enquanto você digita o nome do restaurante (com *session token*) | Autocomplete | 300 |
+   | Place Details (`GetPlaceRequest`) | ao escolher uma sugestão: só `location,formattedAddress` | Essentials | 150 |
+   | Text Search (`SearchTextRequest`) | ao colar um link do Maps: só `places.id` | IDs Only | 100 |
+   | Place Details (`GetPlaceRequest`) | ao tocar em **"Ver no Google"** na página do restaurante: telefone, horário, site e fotos | Enterprise | (dentro dos 150 acima) |
+   | Place Photos (`GetPhotoMediaRequest`) | no mesmo painel, até 3 fotos | Place Photos | 30 |
 
-   Os nomes exatos das cotas podem variar no console; confira as franquias atuais em <https://mapsplatform.google.com/pricing/> antes de fixar os números. Com a cota diária atingida, o Google passa a recusar as chamadas — e o PAP cai no fallback (OpenStreetMap, depois cadastro manual).
+   Os dois *Place Details* dividem a mesma cota no console. O painel "Ver no Google" é o mais caro (1.000 grátis por mês), por isso só carrega quando alguém toca nele, e a API limita a 10 por minuto por pessoa. Os nomes exatos das cotas podem variar no console; confira as franquias atuais em <https://mapsplatform.google.com/pricing/> antes de fixar os números. Com a cota diária atingida, o Google passa a recusar as chamadas — e o PAP cai no fallback (OpenStreetMap, depois cadastro manual).
 5. **Faturamento → Orçamentos e alertas**: crie um orçamento de valor mínimo com alerta por e-mail, como rede de segurança.
 
 ### TMDB *(usado a partir da fase 3)*
@@ -133,6 +135,7 @@ A ordem que dá menos idas e vindas: Supabase → Railway (API) → Vercel (site
    | `SUPABASE_SECRET_KEY` | secret key |
    | `WEB_ORIGINS` | endereço do site na Vercel (sem barra no fim) |
    | `CRON_ENABLED` | `true` |
+   | `GOOGLE_PLACES_API_KEY` | chave da Places API (New) — opcional; sem ela a busca usa só o OpenStreetMap |
 
 4. **Settings → Networking → Generate Domain** para obter o endereço público da API.
 

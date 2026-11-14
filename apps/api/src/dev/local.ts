@@ -17,6 +17,10 @@ import { cors } from "hono/cors";
 import { SignJWT, createLocalJWKSet, exportJWK, generateKeyPair } from "jose";
 import { createApp } from "../app";
 import { createJwksVerifier } from "../auth";
+import { createFindExisting } from "../places/existing";
+import { OFFLINE_ROUTES, fakeFetch } from "../places/fixtures";
+import { createOsm } from "../places/osm";
+import { createPlacesService } from "../places/service";
 import type { MediaStorage } from "../storage";
 
 const PORT = Number(process.env.PORT ?? 8787);
@@ -195,7 +199,16 @@ server.get("/storage/v1/object/public/:bucket/*", (c) => {
 
 // --- API de verdade --------------------------------------------------------
 
-server.route("/", createApp({ db, verifyToken, storage, webOrigins: WEB_ORIGINS, rateLimitPerMinute: 600 }));
+// Sem chave do Google: a busca usa o OpenStreetMap de verdade (precisa de
+// internet). Com PAP_OFFLINE=1, responde com dados de exemplo.
+const offline = process.env.PAP_OFFLINE === "1";
+const places = createPlacesService({
+  google: null,
+  osm: createOsm(offline ? { fetch: fakeFetch(OFFLINE_ROUTES).fetch, sleep: async () => {} } : {}),
+  findExisting: createFindExisting(db),
+});
+
+server.route("/", createApp({ db, verifyToken, storage, places, webOrigins: WEB_ORIGINS, rateLimitPerMinute: 600 }));
 
 // --- Dados de exemplo ------------------------------------------------------
 
