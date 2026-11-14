@@ -135,3 +135,38 @@ describe("cliente", () => {
     expect((movie as { title: string }).title).toBe("Mar de Sal");
   });
 });
+
+describe("manutenção do catálogo", () => {
+  const ANA = "11111111-1111-4111-8111-111111111111";
+
+  it("atualiza só os títulos com mais de 150 dias", async () => {
+    const { catalog, calls } = setup();
+    const old = await catalog.ensure("movie", 9001);
+    clock = new Date(clock.getTime() + 100 * DAY);
+    const recent = await catalog.ensure("movie", 9002);
+    clock = new Date(clock.getTime() + 60 * DAY);
+    const before = calls.length;
+    expect(await catalog.refreshOlderThan(150, 10)).toBe(1);
+    expect(calls.length - before).toBe(1);
+    const [row] = await test.db.select().from(titles).where(eq(titles.id, old));
+    expect(row?.fetchedAt.getTime()).toBe(clock.getTime());
+    const [other] = await test.db.select().from(titles).where(eq(titles.id, recent));
+    expect(other?.fetchedAt.getTime()).toBeLessThan(clock.getTime());
+  });
+
+  it("apaga só o que ninguém usa", async () => {
+    const { watchLogs, plotsWatchlist } = await import("@pap/db");
+    await test.createAuthUser(ANA);
+    const { catalog } = setup();
+    const unused = await catalog.ensure("movie", 9001);
+    const inDiary = await catalog.ensure("movie", 9002);
+    const wanted = await catalog.ensure("movie", 9003);
+    await test.db.insert(watchLogs).values({ userId: ANA, titleId: inDiary, watchedOn: "2026-01-01" });
+    await test.db.insert(plotsWatchlist).values({ userId: ANA, titleId: wanted });
+    clock = new Date(clock.getTime() + 200 * DAY);
+    expect(await catalog.pruneUnused(150)).toBe(1);
+    const left = (await test.db.select({ id: titles.id }).from(titles)).map((row) => row.id);
+    expect(left).not.toContain(unused);
+    expect(left).toEqual(expect.arrayContaining([inDiary, wanted]));
+  });
+});

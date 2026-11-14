@@ -52,6 +52,8 @@ Contas de exemplo (senha `papdemo`): `ana@pap.local` e `bia@pap.local`, já com 
 
 A busca de restaurantes no modo local não usa o Google: vai direto ao OpenStreetMap de verdade (precisa de internet). Sem internet, rode `PAP_OFFLINE=1 pnpm dev:local` para a busca responder com dados de exemplo.
 
+Em Plots, sem `TMDB_ACCESS_TOKEN` no ambiente, a busca usa um catálogo de exemplo (títulos fictícios), e a Ana já tem registros, um quero ver, uma lista e o Top 4. Com o token (`TMDB_ACCESS_TOKEN=... pnpm dev:local`), a busca é a do TMDB de verdade.
+
 Não precisa de nenhum `.env`: o comando já aponta o site para a API local.
 
 O guia de estilo dos dois mundos fica em `/plates/estilo` e `/plots/estilo` (não precisa de login).
@@ -176,8 +178,9 @@ Ligadas com `CRON_ENABLED=true`, no fuso de São Paulo:
 | --- | --- | --- |
 | Ping | todo dia, 06:00 | Uma consulta no Postgres e uma chamada à API do Supabase, para o projeto Free não pausar |
 | Backup | domingo, 03:30 | `pg_dump` dos schemas `public` e `auth` enviado ao bucket `backups`, mantendo os 4 mais recentes |
+| TMDB | todo dia, 04:15 | Atualiza até 200 títulos de Plots guardados há mais de 150 dias e apaga os que ninguém usa (os dados do TMDB nunca passam de 6 meses) |
 
-As fotos do Storage não entram no dump. A atualização do cache do TMDB entra na fase 3.
+As fotos do Storage não entram no dump. Além da tarefa diária, um título de Plots aberto com mais de 30 dias é atualizado na hora.
 
 ## Regras de nota
 

@@ -51,7 +51,7 @@ ensureBuckets(supabase, env.MEDIA_BUCKET, env.BACKUP_BUCKET).catch((error: unkno
 });
 
 const stopJobs = env.CRON_ENABLED
-  ? startJobs({ db, supabase, databaseUrl: env.DATABASE_URL, backupBucket: env.BACKUP_BUCKET })
+  ? startJobs({ db, supabase, databaseUrl: env.DATABASE_URL, backupBucket: env.BACKUP_BUCKET, tmdb })
   : () => {};
 
 const server = serve({ fetch: app.fetch, port: env.PORT, hostname: "0.0.0.0" }, (info) => {

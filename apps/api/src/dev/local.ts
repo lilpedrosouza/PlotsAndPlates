@@ -23,6 +23,7 @@ import { createOsm } from "../places/osm";
 import { createPlacesService } from "../places/service";
 import type { MediaStorage } from "../storage";
 import { seedPlatesDemo } from "./plates-demo";
+import { seedPlotsDemo } from "./plots-demo";
 import { createCatalog } from "../tmdb/catalog";
 import { createTmdbClient } from "../tmdb/client";
 import { tmdbFakeFetch } from "../tmdb/fixtures";
@@ -243,6 +244,9 @@ for (const person of demo) {
 }
 
 await seedPlatesDemo(db, { ana: demoIds.ana!, bia: demoIds.bia! });
+await seedPlotsDemo(db, tmdb, { ana: demoIds.ana!, bia: demoIds.bia! }).catch((error: unknown) =>
+  console.error("Dados de exemplo de Plots não foram criados:", error),
+);
 
 serve({ fetch: server.fetch, port: PORT, hostname: "0.0.0.0" }, () => {
   console.log(`\nPAP em MODO LOCAL — ${ORIGIN}`);

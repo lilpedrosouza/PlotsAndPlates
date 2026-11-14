@@ -2,6 +2,7 @@ import type { Db } from "@pap/db";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sql } from "drizzle-orm";
 import cron from "node-cron";
+import type { Catalog } from "../tmdb/catalog";
 import { runBackup } from "./backup";
 
 const TIMEZONE = "America/Sao_Paulo";
@@ -11,7 +12,15 @@ type JobDeps = {
   supabase: SupabaseClient;
   databaseUrl: string;
   backupBucket: string;
+  tmdb: Catalog;
 };
+
+/** Dados do TMDB nunca passam de 6 meses: atualiza os de mais de 150 dias e limpa o que ninguém usa. */
+export async function maintainTmdb({ tmdb }: Pick<JobDeps, "tmdb">) {
+  const refreshed = await tmdb.refreshOlderThan(150, 200);
+  const pruned = await tmdb.pruneUnused(150);
+  return { refreshed, pruned };
+}
 
 /**
  * Mantém o projeto Free do Supabase ativo: uma consulta no Postgres e uma
@@ -52,8 +61,14 @@ export function startJobs(deps: JobDeps): () => void {
       ),
       { name: "backup", timezone: TIMEZONE, noOverlap: true },
     ),
+    // Todo dia às 04:15.
+    cron.schedule(
+      "15 4 * * *",
+      guarded("tmdb", () => maintainTmdb(deps)),
+      { name: "tmdb", timezone: TIMEZONE, noOverlap: true },
+    ),
   ];
-  console.log("[cron] tarefas agendadas: ping (diário 06:00), backup (domingo 03:30)");
+  console.log("[cron] tarefas agendadas: ping (diário 06:00), backup (domingo 03:30), tmdb (diário 04:15)");
   return () => {
     for (const task of tasks) void task.destroy();
   };
