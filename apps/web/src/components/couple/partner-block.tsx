@@ -1,13 +1,15 @@
 "use client";
 
 import { inviteInputSchema } from "@pap/shared";
+import { Users } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent, useState } from "react";
 import { useSection } from "@/components/shell/section-context";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
 import { useAnswerInvite, useCouple, useSendInvite, useUnlinkCouple } from "@/lib/couple/queries";
 import { useMe } from "@/lib/queries";
+import { cn } from "@/lib/utils";
 import { CoupleBilling } from "./couple-billing";
 
 const sinceLabel = (iso: string) =>
@@ -114,9 +116,15 @@ export function PartnerBlock() {
 
   return (
     <section aria-labelledby="par-titulo" className="flex flex-col gap-4 border-t border-rule-strong pt-5">
-      <h2 id="par-titulo" className="font-display text-2xl leading-[1.14]">
-        Par
-      </h2>
+      <header className="flex items-center justify-between gap-3">
+        <h2 id="par-titulo" className="font-display text-2xl leading-[1.14]">
+          Par
+        </h2>
+        <Link href={`${base}/pessoas`} className={cn(buttonVariants({ variant: "quiet", size: "sm" }), "-mr-3")}>
+          <Users aria-hidden />
+          Pessoas
+        </Link>
+      </header>
       {body}
       {error ? (
         <p role="alert" className="font-medium text-danger">
