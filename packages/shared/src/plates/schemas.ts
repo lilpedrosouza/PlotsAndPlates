@@ -136,6 +136,17 @@ export const wishlistInputSchema = z.object({
 });
 export type WishlistInput = z.input<typeof wishlistInputSchema>;
 
+/** Cadastro: o restaurante e para onde ele vai (visita de hoje ou "quero ir"). */
+export const createRestaurantSchema = restaurantInputSchema.extend({
+  destination: z.enum(["fomos", "quero-ir"]),
+  wishlist: wishlistInputSchema.optional(),
+  visit: visitInputSchema.partial({ visitedOn: true }).optional(),
+});
+export type CreateRestaurantInput = z.input<typeof createRestaurantSchema>;
+
+export const addPhotoSchema = z.object({ path: mediaPathSchema });
+export type AddPhotoInput = z.input<typeof addPhotoSchema>;
+
 export const fomosInputSchema = z.object({
   visitedOn: visitDateSchema.optional(),
 });

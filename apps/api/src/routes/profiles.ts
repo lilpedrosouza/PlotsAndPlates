@@ -8,9 +8,11 @@ import {
   type SignedUpload,
   type StreamingKey,
   type UploadKind,
+  PHOTO_UPLOAD_KINDS,
   createProfileSchema,
   searchProfilesSchema,
   signUploadSchema,
+  thumbPathOf,
   updateProfileSchema,
   usernameSchema,
 } from "@pap/shared";
@@ -161,6 +163,11 @@ export function profileRoutes({ db, storage }: Pick<AppDeps, "db" | "storage">) 
     const path = `${UPLOAD_FOLDERS[kind]}/${user.id}/${randomUUID()}.webp`;
     const { token } = await storage.createSignedUpload(path);
     const body: SignedUpload = { bucket: storage.bucket, path, token };
+    // Fotos de Plates sobem também uma miniatura, para listas e grades.
+    if ((PHOTO_UPLOAD_KINDS as readonly string[]).includes(kind)) {
+      body.thumbPath = thumbPathOf(path);
+      body.thumbToken = (await storage.createSignedUpload(body.thumbPath)).token;
+    }
     return c.json(body, 201);
   });
 
