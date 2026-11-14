@@ -36,6 +36,13 @@ const envSchema = z.object({
     .optional()
     .transform((value) => value || undefined),
 
+  /** TMDB, "API Read Access Token" (v4). Opcional: sem ele a busca de Plots fica indisponível. */
+  TMDB_ACCESS_TOKEN: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value || undefined),
+
   MEDIA_BUCKET: z.string().min(1).default("media"),
   BACKUP_BUCKET: z.string().min(1).default("backups"),
 

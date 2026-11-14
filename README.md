@@ -122,7 +122,7 @@ O PAP usa o Google **só para localizar** o restaurante (autocomplete e busca); 
    Os dois *Place Details* dividem a mesma cota no console. O painel "Ver no Google" é o mais caro (1.000 grátis por mês), por isso só carrega quando alguém toca nele, e a API limita a 10 por minuto por pessoa. Os nomes exatos das cotas podem variar no console; confira as franquias atuais em <https://mapsplatform.google.com/pricing/> antes de fixar os números. Com a cota diária atingida, o Google passa a recusar as chamadas — e o PAP cai no fallback (OpenStreetMap, depois cadastro manual).
 5. **Faturamento → Orçamentos e alertas**: crie um orçamento de valor mínimo com alerta por e-mail, como rede de segurança.
 
-### TMDB *(usado a partir da fase 3)*
+### TMDB
 
 1. Crie uma conta em <https://www.themoviedb.org> e peça uma chave em **Configurações → API** (uso pessoal).
 2. Copie o **API Read Access Token** (v4) → `TMDB_ACCESS_TOKEN` na API.
@@ -148,6 +148,7 @@ A ordem que dá menos idas e vindas: Supabase → Railway (API) → Vercel (site
    | `WEB_ORIGINS` | endereço do site na Vercel (sem barra no fim) |
    | `CRON_ENABLED` | `true` |
    | `GOOGLE_PLACES_API_KEY` | chave da Places API (New) — opcional; sem ela a busca usa só o OpenStreetMap |
+   | `TMDB_ACCESS_TOKEN` | "API Read Access Token" do TMDB — opcional; sem ele a busca de Plots fica indisponível |
 
 4. **Settings → Networking → Generate Domain** para obter o endereço público da API.
 

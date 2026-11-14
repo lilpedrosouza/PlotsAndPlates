@@ -23,6 +23,9 @@ import { createOsm } from "../places/osm";
 import { createPlacesService } from "../places/service";
 import type { MediaStorage } from "../storage";
 import { seedPlatesDemo } from "./plates-demo";
+import { createCatalog } from "../tmdb/catalog";
+import { createTmdbClient } from "../tmdb/client";
+import { tmdbFakeFetch } from "../tmdb/fixtures";
 
 const PORT = Number(process.env.PORT ?? 8787);
 const ORIGIN = `http://localhost:${PORT}`;
@@ -209,7 +212,14 @@ const places = createPlacesService({
   findExisting: createFindExisting(db),
 });
 
-server.route("/", createApp({ db, verifyToken, storage, places, webOrigins: WEB_ORIGINS, rateLimitPerMinute: 600 }));
+// TMDB: com TMDB_ACCESS_TOKEN no ambiente, o de verdade; sem ele, títulos de exemplo.
+const tmdbToken = process.env.TMDB_ACCESS_TOKEN;
+const tmdb = createCatalog({
+  db,
+  client: createTmdbClient(tmdbToken ? { token: tmdbToken } : { token: "local", fetch: tmdbFakeFetch().fetch }),
+});
+
+server.route("/", createApp({ db, verifyToken, storage, places, tmdb, webOrigins: WEB_ORIGINS, rateLimitPerMinute: 600 }));
 
 // --- Dados de exemplo ------------------------------------------------------
 

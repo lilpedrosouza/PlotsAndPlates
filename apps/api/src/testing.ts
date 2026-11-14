@@ -6,6 +6,9 @@ import { createFindExisting } from "./places/existing";
 import { OFFLINE_ROUTES, fakeFetch } from "./places/fixtures";
 import { createOsm } from "./places/osm";
 import { createPlacesService } from "./places/service";
+import { createCatalog } from "./tmdb/catalog";
+import { createTmdbClient } from "./tmdb/client";
+import { tmdbFakeFetch } from "./tmdb/fixtures";
 import type { MediaStorage } from "./storage";
 import type { AppDeps } from "./types";
 
@@ -76,8 +79,12 @@ export async function createTestHarness(overrides: Partial<AppDeps> = {}): Promi
     findExisting: createFindExisting(test.db),
   });
 
+  // TMDB falso (respostas de exemplo), sem rede.
+  const tmdb = createCatalog({ db: test.db, client: createTmdbClient({ token: "test", fetch: tmdbFakeFetch().fetch }) });
+
   const app = createApp({
     db: test.db,
+    tmdb,
     verifyToken,
     storage,
     places,

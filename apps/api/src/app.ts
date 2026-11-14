@@ -11,6 +11,7 @@ import { placesRoutes } from "./routes/places";
 import { profileRoutes } from "./routes/profiles";
 import { ratingRoutes } from "./routes/ratings";
 import { restaurantRoutes } from "./routes/restaurants";
+import { titleRoutes } from "./routes/titles";
 import { visitRoutes } from "./routes/visits";
 import { wishlistRoutes } from "./routes/wishlist";
 import type { AppDeps, AppEnv } from "./types";
@@ -47,6 +48,7 @@ export function createApp(deps: AppDeps) {
   v1.route("/", visitRoutes(deps));
   v1.route("/", ratingRoutes(deps));
   v1.route("/", wishlistRoutes(deps));
+  v1.route("/", titleRoutes(deps));
   app.route("/v1", v1);
 
   app.notFound((c) => c.json({ error: { code: "not_found", message: "Rota não encontrada." } }, 404));

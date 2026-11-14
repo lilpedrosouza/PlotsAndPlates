@@ -1,7 +1,8 @@
 import { type TestDb, createTestDb } from "@pap/db/testing";
 import { seasons, titles } from "@pap/db";
 import { eq } from "drizzle-orm";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { sql } from "drizzle-orm";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { fakeFetch, json } from "../places/fixtures";
 import { createCatalog } from "./catalog";
 import { TmdbUnavailable, createTmdbClient } from "./client";
@@ -12,12 +13,17 @@ let clock: Date;
 const now = () => clock;
 const DAY = 24 * 60 * 60 * 1000;
 
-beforeEach(async () => {
+// Um banco para o arquivo todo; o catálogo é esvaziado antes de cada teste.
+beforeAll(async () => {
   test = await createTestDb();
+});
+
+beforeEach(async () => {
+  await test.db.execute(sql`truncate table titles cascade`);
   clock = new Date("2026-11-14T12:00:00Z");
 });
 
-afterEach(async () => {
+afterAll(async () => {
   await test.close();
 });
 

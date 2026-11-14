@@ -11,6 +11,8 @@ import { createOsm } from "./places/osm";
 import { createPlacesService } from "./places/service";
 import { describeDatabase, runMigrations } from "./run-migrations";
 import { createSupabaseStorage, ensureBuckets } from "./storage";
+import { createCatalog } from "./tmdb/catalog";
+import { createTmdbClient } from "./tmdb/client";
 
 const env = loadEnv();
 
@@ -24,6 +26,11 @@ const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SECRET_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+const tmdb = createCatalog({
+  db,
+  client: env.TMDB_ACCESS_TOKEN ? createTmdbClient({ token: env.TMDB_ACCESS_TOKEN }) : null,
+});
+
 const app = createApp({
   db,
   verifyToken: createSupabaseVerifier(env.SUPABASE_URL),
@@ -33,6 +40,7 @@ const app = createApp({
     osm: createOsm(),
     findExisting: createFindExisting(db),
   }),
+  tmdb,
   webOrigins: env.WEB_ORIGINS,
   // A Railway preenche esta variável em deploys vindos do GitHub.
   commit: process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
