@@ -13,7 +13,8 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
 
   /** URL do projeto Supabase, ex.: https://abcd.supabase.co */
-  SUPABASE_URL: z.url().transform((value) => value.replace(/\/+$/, "")),
+  // Só a origem: aceita também a URL colada com caminho (ex.: .../rest/v1/).
+  SUPABASE_URL: z.url().transform((value) => new URL(value).origin),
   /** Chave secreta (sb_secret_... ou a antiga service_role). Nunca vai para o cliente. */
   SUPABASE_SECRET_KEY: z.string().min(1),
 
