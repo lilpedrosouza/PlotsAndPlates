@@ -1,6 +1,7 @@
 import { dishes, visitDishes, visitPhotos, visits } from "@pap/db";
 import { todayIso } from "@pap/shared";
 import { and, eq, inArray } from "drizzle-orm";
+import { partnerOf } from "../couples/partner";
 import { badRequest } from "../errors";
 import { assertOwnPhoto } from "./paths";
 import type { PlatesContext } from "./queries";
@@ -11,6 +12,8 @@ export type NewVisit = {
   amountCents?: number | null;
   dishIds?: string[];
   photoPaths?: string[];
+  /** "Fomos juntos". Ausente: juntos se houver par. */
+  together?: boolean;
 };
 
 /** Confere que os pratos são deste restaurante. */
@@ -31,6 +34,7 @@ export async function insertVisit(ctx: PlatesContext, restaurantId: string, inpu
   const photoPaths = input.photoPaths ?? [];
   for (const path of photoPaths) assertOwnPhoto(path, "visit", ctx.userId);
   await assertDishesOf(ctx, restaurantId, dishIds);
+  const together = input.together ?? Boolean(await partnerOf(ctx.tx, ctx.userId));
 
   const [visit] = await ctx.tx
     .insert(visits)
@@ -40,6 +44,7 @@ export async function insertVisit(ctx: PlatesContext, restaurantId: string, inpu
       visitedOn: input.visitedOn ?? todayIso(),
       occasion: input.occasion ?? "",
       amountCents: input.amountCents ?? null,
+      together,
     })
     .returning({ id: visits.id });
   if (!visit) throw new Error("A visita não foi criada.");

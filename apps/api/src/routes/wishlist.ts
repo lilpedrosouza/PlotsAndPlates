@@ -42,11 +42,8 @@ export function wishlistRoutes(deps: Pick<AppDeps, "db" | "storage">) {
   app.delete("/restaurants/:id/wishlist", async (c) => {
     const user = c.get("user");
     const restaurantId = routeId(c.req.param("id"));
-    await withUser(db, { sub: user.id }, (tx) =>
-      tx
-        .delete(restaurantWishlist)
-        .where(and(eq(restaurantWishlist.restaurantId, restaurantId), eq(restaurantWishlist.userId, user.id))),
-    );
+    // Lista do casal: tira as linhas dos dois (o RLS limita a quem vê e ao par).
+    await withUser(db, { sub: user.id }, (tx) => tx.delete(restaurantWishlist).where(eq(restaurantWishlist.restaurantId, restaurantId)));
     return c.body(null, 204);
   });
 
@@ -56,9 +53,10 @@ export function wishlistRoutes(deps: Pick<AppDeps, "db" | "storage">) {
     const restaurantId = routeId(c.req.param("id"));
     const { visitedOn } = c.req.valid("json");
     const visit = await withRestaurant(deps, user, restaurantId, { edit: false }, async (ctx) => {
+      // Tira do quero ir do casal (as linhas dos dois).
       const removed = await ctx.tx
         .delete(restaurantWishlist)
-        .where(and(eq(restaurantWishlist.restaurantId, restaurantId), eq(restaurantWishlist.userId, user.id)))
+        .where(eq(restaurantWishlist.restaurantId, restaurantId))
         .returning({ id: restaurantWishlist.id });
       if (removed.length === 0) throw conflict("not_in_wishlist", "Esse restaurante não está no seu quero ir.");
       const id = await insertVisit(ctx, restaurantId, { visitedOn });

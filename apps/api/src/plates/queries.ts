@@ -4,7 +4,7 @@ import {
   type Restaurant,
   type RestaurantRatingRow,
   type Tx,
-  type WishlistRow,
+  profiles,
   dishRatings,
   dishes,
   restaurantPhotos,
@@ -27,6 +27,7 @@ import {
   type RestaurantListFilters,
   type RestaurantRating,
   type RestaurantSummary,
+  type PersonRef,
   type Visit,
   type WishlistPriority,
   mean,
@@ -34,6 +35,7 @@ import {
   thumbPathOf,
 } from "@pap/shared";
 import { type SQL, and, asc, desc, eq, ilike, inArray, isNotNull, or, sql } from "drizzle-orm";
+import { partnerOf, peopleById, personRef } from "../couples/partner";
 import type { MediaStorage } from "../storage";
 import { decodeCursor, encodeCursor } from "./cursor";
 
@@ -46,13 +48,12 @@ export function photoOf(storage: MediaStorage, id: string, path: string): Photo 
   return { id, path, url: storage.publicUrl(path), thumbUrl: storage.publicUrl(thumbPathOf(path)) };
 }
 
-/**
- * De quem são as notas que entram no "score" dos pratos. Na fase 2, só as de
- * quem está vendo; na fase 4 entra o par (e a comunidade tem a seção dela).
- */
-function ratersFor(ctx: PlatesContext): string[] {
-  return [ctx.userId];
+/** De quem são as notas que entram no "score" dos pratos: quem está vendo e o par. */
+function ratersFor(ctx: PlatesContext, partnerId: string | null): string[] {
+  return partnerId ? [ctx.userId, partnerId] : [ctx.userId];
 }
+
+const PRIORITY_BY_RANK: WishlistPriority[] = ["alta", "media", "baixa"];
 
 function baseQuery(ctx: PlatesContext) {
   const { tx, userId } = ctx;
@@ -63,9 +64,26 @@ function baseQuery(ctx: PlatesContext) {
       lastVisitOn: sql<string | null>`max(${visits.visitedOn})::text`.as("last_visit_on"),
     })
     .from(visits)
-    .where(eq(visits.userId, userId))
+    // O RLS já limita às visitas de quem vê e às "juntos" do par.
     .groupBy(visits.restaurantId)
     .as("my_visits");
+
+  // Quero ir do casal: as linhas dos dois (o RLS limita), uma por restaurante.
+  const wished = tx
+    .select({
+      restaurantId: restaurantWishlist.restaurantId,
+      priorityRank: sql<number>`min(case ${restaurantWishlist.priority} when 'alta' then 0 when 'media' then 1 else 2 end)::int`.as(
+        "priority_rank",
+      ),
+      reason: sql<string | null>`string_agg(nullif(${restaurantWishlist.reason}, ''), ' · ' order by ${restaurantWishlist.createdAt})`.as(
+        "wished_reason",
+      ),
+      createdAt: sql<string>`min(${restaurantWishlist.createdAt})::text`.as("wished_at"),
+      users: sql<string[]>`array_agg(${restaurantWishlist.userId}::text order by ${restaurantWishlist.createdAt})`.as("wished_by"),
+    })
+    .from(restaurantWishlist)
+    .groupBy(restaurantWishlist.restaurantId)
+    .as("wished");
 
   const coverPath = sql<string | null>`coalesce(${restaurants.coverPath}, (
     select p.path from public.restaurant_photos p
@@ -79,7 +97,13 @@ function baseQuery(ctx: PlatesContext) {
       lastVisitOn: myVisits.lastVisitOn,
       visited: myVisits.restaurantId,
       rating: restaurantRatings,
-      wishlist: restaurantWishlist,
+      wished: {
+        restaurantId: wished.restaurantId,
+        priorityRank: wished.priorityRank,
+        reason: wished.reason,
+        createdAt: wished.createdAt,
+        users: wished.users,
+      },
       coverPath,
     })
     .from(restaurants)
@@ -88,12 +112,9 @@ function baseQuery(ctx: PlatesContext) {
       restaurantRatings,
       and(eq(restaurantRatings.restaurantId, restaurants.id), eq(restaurantRatings.userId, userId)),
     )
-    .leftJoin(
-      restaurantWishlist,
-      and(eq(restaurantWishlist.restaurantId, restaurants.id), eq(restaurantWishlist.userId, userId)),
-    );
+    .leftJoin(wished, eq(wished.restaurantId, restaurants.id));
 
-  return { query, myVisits };
+  return { query, myVisits, wished };
 }
 
 type BaseRow = {
@@ -101,11 +122,16 @@ type BaseRow = {
   visitCount: number | null;
   lastVisitOn: string | null;
   rating: RestaurantRatingRow | null;
-  wishlist: WishlistRow | null;
+  wished: { restaurantId: string | null; priorityRank: number | null; reason: string | null; createdAt: string | null; users: string[] | null } | null;
   coverPath: string | null;
 };
 
-function toSummary(row: BaseRow, storage: MediaStorage): RestaurantSummary {
+/** Perfis de quem pôs cada restaurante no quero ir (para "adicionado por"). */
+async function wishers(ctx: PlatesContext, rows: BaseRow[]): Promise<Map<string, PersonRef>> {
+  return peopleById(ctx.tx, rows.flatMap((row) => row.wished?.users ?? []), ctx.storage);
+}
+
+function toSummary(row: BaseRow, storage: MediaStorage, people: Map<string, PersonRef> = new Map()): RestaurantSummary {
   const { restaurant } = row;
   return {
     id: restaurant.id,
@@ -121,14 +147,15 @@ function toSummary(row: BaseRow, storage: MediaStorage): RestaurantSummary {
     myOverall: toNumber(row.rating?.overall),
     visitCount: row.visitCount ?? 0,
     lastVisitOn: row.lastVisitOn,
-    wishlist: row.wishlist
-      ? {
-          priority: row.wishlist.priority as WishlistPriority,
-          reason: row.wishlist.reason,
-          createdAt: row.wishlist.createdAt.toISOString(),
-          addedBy: [],
-        }
-      : null,
+    wishlist:
+      row.wished?.restaurantId
+        ? {
+            priority: PRIORITY_BY_RANK[row.wished.priorityRank ?? 1] ?? "media",
+            reason: row.wished.reason ?? "",
+            createdAt: new Date(row.wished.createdAt ?? Date.now()).toISOString(),
+            addedBy: (row.wished.users ?? []).map((id) => people.get(id)).filter((person) => person !== undefined),
+          }
+        : null,
   };
 }
 
@@ -168,18 +195,17 @@ export function toDish(row: DishRow, storage: MediaStorage, canEdit: boolean): D
   };
 }
 
-const PRIORITY_ORDER = sql`case ${restaurantWishlist.priority} when 'alta' then 0 when 'media' then 1 when 'baixa' then 2 else 3 end`;
 
 /** Caderno: restaurantes com visita ou "quero ir" de quem está vendo, com filtros. */
 export async function listSummaries(
   ctx: PlatesContext,
   filters: RestaurantListFilters,
 ): Promise<Page<RestaurantSummary>> {
-  const { query, myVisits } = baseQuery(ctx);
+  const { query, myVisits, wished } = baseQuery(ctx);
   const conditions: SQL[] = [];
 
   const visited = isNotNull(myVisits.restaurantId);
-  const wanted = isNotNull(restaurantWishlist.id);
+  const wanted = isNotNull(wished.restaurantId);
   if (filters.status === "fomos") conditions.push(visited);
   else if (filters.status === "quero-ir") conditions.push(wanted);
   else conditions.push(or(visited, wanted)!);
@@ -194,12 +220,12 @@ export async function listSummaries(
 
   const order: SQL[] = {
     recentes: [
-      sql`coalesce(${myVisits.lastVisitOn}, (${restaurantWishlist.createdAt})::date::text) desc nulls last`,
+      sql`coalesce(${myVisits.lastVisitOn}, left(${wished.createdAt}, 10)) desc nulls last`,
       desc(restaurants.createdAt),
     ],
     nota: [sql`${restaurantRatings.overall} desc nulls last`, sql`lower(${restaurants.name})`],
     nome: [sql`lower(${restaurants.name})`],
-    prioridade: [PRIORITY_ORDER, desc(restaurantWishlist.createdAt)],
+    prioridade: [sql`${wished.priorityRank} asc nulls last`, sql`${wished.createdAt} desc`],
   }[filters.sort];
 
   const offset = decodeCursor(filters.cursor);
@@ -210,19 +236,21 @@ export async function listSummaries(
     .offset(offset);
 
   const hasMore = rows.length > filters.limit;
+  const page = rows.slice(0, filters.limit);
+  const people = await wishers(ctx, page);
   return {
-    items: rows.slice(0, filters.limit).map((row) => toSummary(row, ctx.storage)),
+    items: page.map((row) => toSummary(row, ctx.storage, people)),
     nextCursor: hasMore ? encodeCursor(offset + filters.limit) : null,
   };
 }
 
 /** Pins do mapa: os mesmos restaurantes do caderno, só os que têm posição. */
 export async function listPins(ctx: PlatesContext): Promise<MapPin[]> {
-  const { query, myVisits } = baseQuery(ctx);
+  const { query, myVisits, wished } = baseQuery(ctx);
   const rows = await query
     .where(
       and(
-        or(isNotNull(myVisits.restaurantId), isNotNull(restaurantWishlist.id)),
+        or(isNotNull(myVisits.restaurantId), isNotNull(wished.restaurantId)),
         isNotNull(restaurants.lat),
         isNotNull(restaurants.lng),
       ),
@@ -252,13 +280,18 @@ export async function restaurantExists(tx: Tx, restaurantId: string): Promise<bo
 }
 
 /** Pratos do restaurante com a nota de quem está vendo (e, na fase 4, do par). */
-export async function loadDishes(ctx: PlatesContext, restaurantId: string, canEdit: boolean): Promise<DishWithScore[]> {
+export async function loadDishes(
+  ctx: PlatesContext,
+  restaurantId: string,
+  canEdit: boolean,
+  partnerId: string | null = null,
+): Promise<DishWithScore[]> {
   const rows = await ctx.tx.select().from(dishes).where(eq(dishes.restaurantId, restaurantId));
   if (rows.length === 0) return [];
   const ratings = await ctx.tx
     .select()
     .from(dishRatings)
-    .where(and(inArray(dishRatings.dishId, rows.map((row) => row.id)), inArray(dishRatings.userId, ratersFor(ctx))));
+    .where(and(inArray(dishRatings.dishId, rows.map((row) => row.id)), inArray(dishRatings.userId, ratersFor(ctx, partnerId))));
 
   const byDish = new Map<string, DishRatingRow[]>();
   for (const rating of ratings) byDish.set(rating.dishId, [...(byDish.get(rating.dishId) ?? []), rating]);
@@ -267,6 +300,7 @@ export async function loadDishes(ctx: PlatesContext, restaurantId: string, canEd
       const mine = byDish.get(row.id) ?? [];
       const answered = mine.filter((rating) => rating.wouldOrderAgain !== null);
       const own = mine.find((rating) => rating.userId === ctx.userId);
+      const partners = partnerId ? mine.find((rating) => rating.userId === partnerId) : undefined;
       return {
         ...toDish(row, ctx.storage, canEdit),
         score: mean(mine.map((rating) => Number(rating.rating))),
@@ -274,7 +308,7 @@ export async function loadDishes(ctx: PlatesContext, restaurantId: string, canEd
         wouldOrderAgainShare:
           answered.length > 0 ? answered.filter((rating) => rating.wouldOrderAgain).length / answered.length : null,
         myRating: own ? toDishRating(own) : null,
-        partnerRating: null,
+        partnerRating: partners ? Number(partners.rating) : null,
       };
     }),
   );
@@ -282,7 +316,8 @@ export async function loadDishes(ctx: PlatesContext, restaurantId: string, canEd
 
 /** Visitas de quem está vendo neste restaurante, mais recentes primeiro. */
 export async function loadVisits(ctx: PlatesContext, restaurantId: string, visitIds?: string[]): Promise<Visit[]> {
-  const conditions = [eq(visits.restaurantId, restaurantId), eq(visits.userId, ctx.userId)];
+  // O RLS limita às visitas de quem vê e às "juntos" do par.
+  const conditions = [eq(visits.restaurantId, restaurantId)];
   if (visitIds) conditions.push(inArray(visits.id, visitIds));
   const rows = await ctx.tx
     .select()
@@ -291,6 +326,11 @@ export async function loadVisits(ctx: PlatesContext, restaurantId: string, visit
     .orderBy(desc(visits.visitedOn), desc(visits.createdAt));
   if (rows.length === 0) return [];
   const ids = rows.map((row) => row.id);
+  const people = await peopleById(
+    ctx.tx,
+    rows.filter((row) => row.userId !== ctx.userId).map((row) => row.userId),
+    ctx.storage,
+  );
   const [photos, links] = await Promise.all([
     ctx.tx.select().from(visitPhotos).where(inArray(visitPhotos.visitId, ids)).orderBy(asc(visitPhotos.createdAt)),
     ctx.tx.select().from(visitDishes).where(inArray(visitDishes.visitId, ids)),
@@ -304,7 +344,7 @@ export async function loadVisits(ctx: PlatesContext, restaurantId: string, visit
     together: row.together,
     photos: photos.filter((photo) => photo.visitId === row.id).map((photo) => photoOf(ctx.storage, photo.id, photo.path)),
     dishIds: links.filter((link) => link.visitId === row.id).map((link) => link.dishId),
-    registeredBy: null,
+    registeredBy: row.userId === ctx.userId ? null : (people.get(row.userId) ?? null),
   }));
 }
 
@@ -315,19 +355,28 @@ export async function loadDetail(ctx: PlatesContext, restaurantId: string): Prom
   if (!row) return null;
 
   const canEdit = await canEditRestaurant(ctx.tx, restaurantId);
+  const partnerId = await partnerOf(ctx.tx, ctx.userId);
+  const [partnerRow] = partnerId ? await ctx.tx.select().from(profiles).where(eq(profiles.id, partnerId)) : [];
+  const [partnerRating] = partnerId
+    ? await ctx.tx
+        .select()
+        .from(restaurantRatings)
+        .where(and(eq(restaurantRatings.restaurantId, restaurantId), eq(restaurantRatings.userId, partnerId)))
+    : [];
+  const people = await wishers(ctx, [row]);
   const [photos, dishList, visitList] = await Promise.all([
     ctx.tx
       .select()
       .from(restaurantPhotos)
       .where(eq(restaurantPhotos.restaurantId, restaurantId))
       .orderBy(asc(restaurantPhotos.position), asc(restaurantPhotos.createdAt)),
-    loadDishes(ctx, restaurantId, canEdit),
+    loadDishes(ctx, restaurantId, canEdit, partnerId),
     loadVisits(ctx, restaurantId),
   ]);
 
   const { restaurant } = row;
   return {
-    ...toSummary(row, ctx.storage),
+    ...toSummary(row, ctx.storage, people),
     address: restaurant.address,
     phone: restaurant.phone,
     website: restaurant.website,
@@ -339,8 +388,8 @@ export async function loadDetail(ctx: PlatesContext, restaurantId: string): Prom
     canEdit,
     photos: photos.map((photo) => photoOf(ctx.storage, photo.id, photo.path)),
     myRating: row.rating ? toRating(row.rating) : null,
-    partnerRating: null,
-    partner: null,
+    partnerRating: partnerRating ? toRating(partnerRating) : null,
+    partner: partnerRow ? personRef(partnerRow, ctx.storage) : null,
     dishes: dishList,
     visits: visitList,
   };

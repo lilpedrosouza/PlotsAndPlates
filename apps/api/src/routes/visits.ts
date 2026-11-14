@@ -79,17 +79,26 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
   app.delete("/visits/:id", async (c) => {
     const user = c.get("user");
     const visitId = routeId(c.req.param("id"));
-    const paths = await withUser(db, { sub: user.id }, async (tx) => {
+    const outcome = await withUser(db, { sub: user.id }, async (tx) => {
       const [current] = await tx.select().from(visits).where(eq(visits.id, visitId));
       if (!current) throw notFound("Visita não encontrada.");
+      // Visita "juntos" registrada pelo par: só sai do caderno de quem pediu.
+      if (current.userId !== user.id) return { untag: current.id, photos: [] as OwnedPhoto[] };
       const photos = await tx
         .select({ path: visitPhotos.path, ownerId: visitPhotos.ownerId })
         .from(visitPhotos)
         .where(eq(visitPhotos.visitId, visitId));
       await tx.delete(visits).where(eq(visits.id, visitId));
-      return photos;
+      return { untag: null, photos };
     });
-    await removePhotos(storage, paths);
+    if (outcome.untag) {
+      // Pela conexão dona das tabelas: depois de desmarcar, a visita deixa de ser visível ao par (o RLS recusaria).
+      await db
+        .update(visits)
+        .set({ together: false, updatedAt: new Date() })
+        .where(and(eq(visits.id, outcome.untag), eq(visits.together, true)));
+    }
+    await removePhotos(storage, outcome.photos);
     return c.body(null, 204);
   });
 
