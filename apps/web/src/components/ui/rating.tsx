@@ -4,7 +4,7 @@ import { RATING_MAX, RATING_MIN, RATING_STEP, formatRating } from "@pap/shared";
 import * as m from "motion/react-m";
 import { useId, useRef, useState } from "react";
 import { useSection } from "@/components/shell/section-context";
-import { SPRING } from "@/lib/motion";
+import { POP } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const STAR_PATH = "M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.9z";
@@ -120,7 +120,7 @@ export function RatingInput({ value, onChange, label, size = 36, className }: Ra
           key={index}
           className="block"
           animate={popped === index ? { scale: [1, 1.32, 1], rotate: [0, -8, 0] } : { scale: 1, rotate: 0 }}
-          transition={SPRING[section].pop}
+          transition={POP[section]}
           onAnimationComplete={() => popped === index && setPopped(null)}
         >
           <Star fill={fillFor(shown, index)} size={size} />

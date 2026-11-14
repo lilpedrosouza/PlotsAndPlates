@@ -339,8 +339,6 @@
 /* --------------------------------------------------------------------------
    Folha inferior (Plates: avaliação, visita, prato, filtros)
    -------------------------------------------------------------------------- */
-@keyframes pap-fade-in { from { opacity: 0; } }
-@keyframes pap-fade-out { to { opacity: 0; } }
 @keyframes pap-sheet-up { from { transform: translateY(100%); } }
 @keyframes pap-sheet-down { to { transform: translateY(100%); } }
 @keyframes pap-sheet-rise { from { opacity: 0; transform: translateY(1.5rem) scale(0.98); } }
@@ -474,6 +472,14 @@ html:active-view-transition-type(to-plates)::view-transition-new(root) {
 ::view-transition-old(.chrome),
 ::view-transition-new(.chrome) {
   animation-duration: 260ms;
+}
+
+/* Rótulo do caderno → página do restaurante: o arco da foto viaja até o topo. */
+::view-transition-group(plates-hero) {
+  z-index: 20;
+  /* Os tokens moram no [data-theme]; aqui (no html) vão os valores de Plates. */
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 ::view-transition-group(.switch-thumb) {

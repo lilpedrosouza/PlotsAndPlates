@@ -5,7 +5,7 @@ import * as m from "motion/react-m";
 import { useState } from "react";
 import { useSection } from "@/components/shell/section-context";
 import { Button } from "@/components/ui/button";
-import { SPRING } from "@/lib/motion";
+import { POP } from "@/lib/motion";
 import { useFomos } from "@/lib/plates/mutations";
 import { useTransitionNavigate } from "@/lib/transition-router";
 
@@ -38,7 +38,7 @@ export function FomosButton({ restaurantId, size = "md", block }: { restaurantId
     <div className={block ? "w-full" : undefined}>
       <m.div
         animate={stamped ? { scale: [1, 1.12, 1], rotate: [0, -5, -2] } : { scale: 1, rotate: 0 }}
-        transition={SPRING[section].pop}
+        transition={POP[section]}
         className={block ? "w-full" : "inline-block"}
       >
         <Button size={size} block={block} busy={fomos.isPending} onClick={onClick} disabled={stamped}>

@@ -17,3 +17,13 @@ export const SPRING: Record<Section, { press: Transition; pop: Transition; settl
     settle: { type: "spring", stiffness: 420, damping: 36 },
   },
 };
+
+/**
+ * Salto de ida e volta (estrela que carimba, "Fomos!"). Usa quadros-chave
+ * (1 → maior → 1), que as molas do Motion não aceitam (só dois quadros):
+ * por isso é uma curva com sobra em Plates e um corte seco em Plots.
+ */
+export const POP: Record<Section, Transition> = {
+  plates: { duration: 0.46, ease: [0.34, 1.56, 0.64, 1] },
+  plots: { duration: 0.3, ease: [0.2, 0, 0, 1] },
+};
