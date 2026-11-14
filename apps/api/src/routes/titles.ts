@@ -23,8 +23,8 @@ export function tmdbError(error: unknown): never {
 }
 
 /** Busca no TMDB e catálogo de títulos (os dados do TMDB guardados no PAP). */
-export function titleRoutes(deps: Pick<AppDeps, "db" | "tmdb">) {
-  const { db, tmdb } = deps;
+export function titleRoutes(deps: Pick<AppDeps, "db" | "tmdb" | "storage">) {
+  const { db, tmdb, storage } = deps;
   const app = new Hono<AppEnv>();
 
   app.use("/tmdb/*", rateLimit({ windowMs: 60_000, max: SEARCH_PER_MINUTE, key: (c) => `tmdb:${c.get("user").id}` }));
@@ -57,7 +57,7 @@ export function titleRoutes(deps: Pick<AppDeps, "db" | "tmdb">) {
     const id = routeId(c.req.param("id"));
     // Atualiza com o TMDB se o que está guardado tiver mais de 30 dias.
     await tmdb.refreshIfStale(id);
-    const detail = await withUser(db, { sub: user.id }, (tx) => loadTitleDetail({ tx, userId: user.id }, id));
+    const detail = await withUser(db, { sub: user.id }, (tx) => loadTitleDetail({ tx, userId: user.id, storage }, id));
     if (!detail) throw notFound("Título não encontrado.");
     return c.json(detail);
   });

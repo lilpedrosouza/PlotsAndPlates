@@ -1,10 +1,12 @@
-import { type Title, seasonRatings, titleRatings, titles, watchLogs, withUser } from "@pap/db";
+import { randomUUID } from "node:crypto";
+import { type Db, type Title, seasonRatings, titleRatings, titles, watchLogs, withUser } from "@pap/db";
 import {
   type DiaryEntry,
   type LogInput,
   type Page,
   type TitleKind,
   type TmdbType,
+  type WatchLog,
   diaryQuerySchema,
   isRewatch,
   logInputSchema,
@@ -14,6 +16,7 @@ import {
 } from "@pap/shared";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { partnerOf } from "../couples/partner";
 import { badRequest, notFound } from "../errors";
 import { decodeCursor, encodeCursor } from "../plates/cursor";
 import { type PlotsContext, findTitle, toLog } from "../plots/queries";
@@ -24,10 +27,24 @@ import { routeId } from "./restaurants";
 
 const numeric = (value: number | null | undefined) => (value == null ? null : String(value));
 
-/** Cria um registro no diário (usado também pelo "Assistimos!"). */
-export async function insertLog(ctx: PlotsContext, title: Title, input: Required<Pick<LogInput, "watchedOn">> & LogInput) {
+/** Registro do par a criar depois da transação (sessão "juntos"). */
+export type PartnerMirror = { partnerId: string; titleId: string; seasonNumber: number | null; watchedOn: string; groupId: string };
+
+/**
+ * Cria um registro no diário (usado também pelo "Assistimos!"). Em "juntos"
+ * com par, devolve o espelho a gravar para o par (fora da transação: o RLS não
+ * deixa ninguém gravar registro em nome de outra pessoa).
+ */
+export async function insertLog(
+  ctx: PlotsContext,
+  title: Title,
+  input: Required<Pick<LogInput, "watchedOn">> & LogInput,
+): Promise<{ log: WatchLog; mirror: PartnerMirror | null }> {
   const seasonNumber = input.seasonNumber ?? null;
   await assertSeasonFor(ctx, title, seasonNumber);
+  const partnerId = await partnerOf(ctx.tx, ctx.userId);
+  const together = input.together ?? Boolean(partnerId);
+  const groupId = together && partnerId ? randomUUID() : null;
   const previous = await ctx.tx
     .select({ seasonNumber: watchLogs.seasonNumber })
     .from(watchLogs)
@@ -44,12 +61,35 @@ export async function insertLog(ctx: PlotsContext, title: Title, input: Required
       liked: input.liked ?? false,
       rewatch: input.rewatch ?? isRewatch(previous, seasonNumber),
       isPrivate: input.isPrivate ?? false,
+      together,
+      groupId,
     })
     .returning();
   if (!row) throw new Error("O registro não foi criado.");
   if (row.rating !== null) await syncCurrentRating(ctx, title, seasonNumber);
   if (row.liked) await markLiked(ctx, title);
-  return toLog(row);
+  return {
+    log: toLog(row),
+    mirror: groupId && partnerId ? { partnerId, titleId: title.id, seasonNumber, watchedOn: input.watchedOn, groupId } : null,
+  };
+}
+
+/** Grava o registro do par (sem nota) com a conexão dona das tabelas. */
+export async function writeMirror(db: Db, mirror: PartnerMirror | null) {
+  if (!mirror) return;
+  const previous = await db
+    .select({ seasonNumber: watchLogs.seasonNumber })
+    .from(watchLogs)
+    .where(and(eq(watchLogs.userId, mirror.partnerId), eq(watchLogs.titleId, mirror.titleId)));
+  await db.insert(watchLogs).values({
+    userId: mirror.partnerId,
+    titleId: mirror.titleId,
+    seasonNumber: mirror.seasonNumber,
+    watchedOn: mirror.watchedOn,
+    together: true,
+    groupId: mirror.groupId,
+    rewatch: isRewatch(previous, mirror.seasonNumber),
+  });
 }
 
 /** Diário, registros e notas de Plots. */
@@ -67,7 +107,8 @@ export function logRoutes(deps: Pick<AppDeps, "db">) {
   app.post("/titles/:id/logs", validate("json", logInputSchema), async (c) => {
     const user = c.get("user");
     const input = c.req.valid("json");
-    const log = await inTitle(user, routeId(c.req.param("id")), (ctx, title) => insertLog(ctx, title, input));
+    const { log, mirror } = await inTitle(user, routeId(c.req.param("id")), (ctx, title) => insertLog(ctx, title, input));
+    await writeMirror(db, mirror);
     return c.json(log, 201);
   });
 

@@ -10,10 +10,11 @@ import {
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { badRequest, conflict, notFound } from "../errors";
+import { peopleById } from "../couples/partner";
 import { findTitle, summaryOf } from "../plots/queries";
 import type { AppDeps, AppEnv } from "../types";
 import { validate } from "../validate";
-import { insertLog } from "./logs";
+import { insertLog, writeMirror } from "./logs";
 import { routeId } from "./restaurants";
 
 /** Ids de serviço do TMDB dos streamings marcados no perfil. */
@@ -24,8 +25,8 @@ async function myProviderIds(tx: Parameters<Parameters<typeof withUser>[2]>[0], 
 }
 
 /** "Quero ver", "Assistimos!" e o Top 4. */
-export function plotsWatchlistRoutes(deps: Pick<AppDeps, "db">) {
-  const { db } = deps;
+export function plotsWatchlistRoutes(deps: Pick<AppDeps, "db" | "storage">) {
+  const { db, storage } = deps;
   const app = new Hono<AppEnv>();
 
   app.put("/titles/:id/watchlist", validate("json", plotsWatchlistInputSchema), async (c) => {
@@ -45,9 +46,8 @@ export function plotsWatchlistRoutes(deps: Pick<AppDeps, "db">) {
   app.delete("/titles/:id/watchlist", async (c) => {
     const user = c.get("user");
     const titleId = routeId(c.req.param("id"));
-    await withUser(db, { sub: user.id }, (tx) =>
-      tx.delete(plotsWatchlist).where(and(eq(plotsWatchlist.userId, user.id), eq(plotsWatchlist.titleId, titleId))),
-    );
+    // Quero ver do casal: tira as linhas dos dois (o RLS limita a quem vê e ao par).
+    await withUser(db, { sub: user.id }, (tx) => tx.delete(plotsWatchlist).where(eq(plotsWatchlist.titleId, titleId)));
     return c.body(null, 204);
   });
 
@@ -56,18 +56,32 @@ export function plotsWatchlistRoutes(deps: Pick<AppDeps, "db">) {
     const { onlyMine, kind, sort } = c.req.valid("query");
     const items = await withUser(db, { sub: user.id }, async (tx) => {
       const providers = await myProviderIds(tx, user.id);
+      // As linhas dos dois (o RLS limita a quem vê e ao par), uma por título.
       const rows = await tx
         .select({ item: plotsWatchlist, title: titles })
         .from(plotsWatchlist)
         .innerJoin(titles, eq(titles.id, plotsWatchlist.titleId))
-        .where(and(eq(plotsWatchlist.userId, user.id), kind ? eq(titles.kind, kind) : undefined));
-      const mapped: WatchlistItem[] = rows.map(({ item, title }) => ({
-        title: summaryOf(title),
-        note: item.note,
-        addedAt: item.createdAt.toISOString(),
-        onMyStreamings: (title.providers?.flatrate ?? []).filter((provider) => providers.has(provider.id)),
-        addedBy: [],
-      }));
+        .where(kind ? eq(titles.kind, kind) : undefined)
+        .orderBy(asc(plotsWatchlist.createdAt));
+      const people = await peopleById(tx, rows.map(({ item }) => item.userId), storage);
+      const byTitle = new Map<string, WatchlistItem>();
+      for (const { item, title } of rows) {
+        const person = people.get(item.userId);
+        const existing = byTitle.get(title.id);
+        if (existing) {
+          if (person) existing.addedBy.push(person);
+          if (item.note) existing.note = existing.note ? `${existing.note} · ${item.note}` : item.note;
+          continue;
+        }
+        byTitle.set(title.id, {
+          title: summaryOf(title),
+          note: item.note,
+          addedAt: item.createdAt.toISOString(),
+          onMyStreamings: (title.providers?.flatrate ?? []).filter((provider) => providers.has(provider.id)),
+          addedBy: person ? [person] : [],
+        });
+      }
+      const mapped = [...byTitle.values()];
       const filtered = onlyMine ? mapped.filter((item) => item.onMyStreamings.length > 0) : mapped;
       return filtered.sort((a, b) =>
         sort === "titulo" ? a.title.title.localeCompare(b.title.title, "pt-BR") : b.addedAt.localeCompare(a.addedAt),
@@ -85,14 +99,16 @@ export function plotsWatchlistRoutes(deps: Pick<AppDeps, "db">) {
       const ctx = { tx, userId: user.id };
       const title = await findTitle(tx, titleId);
       if (!title) throw notFound("Título não encontrado.");
+      // Tira do quero ver do casal (as linhas dos dois).
       const removed = await tx
         .delete(plotsWatchlist)
-        .where(and(eq(plotsWatchlist.userId, user.id), eq(plotsWatchlist.titleId, titleId)))
+        .where(eq(plotsWatchlist.titleId, titleId))
         .returning({ id: plotsWatchlist.id });
       if (removed.length === 0) throw conflict("not_in_watchlist", "Esse título não está no seu quero ver.");
       return insertLog(ctx, title, input);
     });
-    return c.json({ log }, 201);
+    await writeMirror(db, log.mirror);
+    return c.json({ log: log.log }, 201);
   });
 
   const loadFavorites = (tx: Parameters<Parameters<typeof withUser>[2]>[0], userId: string) =>

@@ -6,6 +6,7 @@ import {
   favoriteTitles,
   listItems,
   plotsWatchlist,
+  profiles,
   seasonRatings,
   seasons,
   titleRatings,
@@ -21,9 +22,11 @@ import {
   suggestSeriesRating,
 } from "@pap/shared";
 import { and, asc, desc, eq } from "drizzle-orm";
+import { partnerOf, personRef } from "../couples/partner";
+import type { MediaStorage } from "../storage";
 
 /** Quem está vendo e a transação com a identidade dela (RLS valendo). */
-export type PlotsContext = { tx: Tx; userId: string };
+export type PlotsContext = { tx: Tx; userId: string; storage?: MediaStorage };
 
 const toNumber = (value: string | null | undefined) => (value === null || value === undefined ? null : Number(value));
 
@@ -63,9 +66,19 @@ export async function findTitle(tx: Tx, titleId: string): Promise<Title | null> 
 /** Página do título com tudo o que é de quem está vendo. `null` se não existir. */
 export async function loadTitleDetail(ctx: PlotsContext, titleId: string): Promise<TitleDetail | null> {
   const { tx, userId } = ctx;
+  const storage = ctx.storage;
   const row = await findTitle(tx, titleId);
   if (!row) return null;
 
+  const partnerId = await partnerOf(tx, userId);
+  const [partnerRow] = partnerId ? await tx.select().from(profiles).where(eq(profiles.id, partnerId)) : [];
+  const partnerRatings = partnerId
+    ? await Promise.all([
+        tx.select().from(titleRatings).where(and(eq(titleRatings.titleId, titleId), eq(titleRatings.userId, partnerId))),
+        tx.select().from(seasonRatings).where(and(eq(seasonRatings.titleId, titleId), eq(seasonRatings.userId, partnerId))),
+      ])
+    : null;
+  const partnerSeason = new Map((partnerRatings?.[1] ?? []).map((item) => [item.seasonNumber, Number(item.rating)]));
   const [seasonRows, mySeasonRatings, [rating], logs, [watch], [favorite], lists] = await Promise.all([
     tx.select().from(seasons).where(eq(seasons.titleId, titleId)).orderBy(asc(seasons.number)),
     tx
@@ -81,10 +94,8 @@ export async function loadTitleDetail(ctx: PlotsContext, titleId: string): Promi
       .from(watchLogs)
       .where(and(eq(watchLogs.titleId, titleId), eq(watchLogs.userId, userId)))
       .orderBy(desc(watchLogs.watchedOn), desc(watchLogs.createdAt)),
-    tx
-      .select({ id: plotsWatchlist.id })
-      .from(plotsWatchlist)
-      .where(and(eq(plotsWatchlist.titleId, titleId), eq(plotsWatchlist.userId, userId))),
+    // Quero ver do casal: a linha de quem vê ou do par (o RLS limita).
+    tx.select({ id: plotsWatchlist.id }).from(plotsWatchlist).where(eq(plotsWatchlist.titleId, titleId)).limit(1),
     tx
       .select({ position: favoriteTitles.position })
       .from(favoriteTitles)
@@ -116,11 +127,11 @@ export async function loadTitleDetail(ctx: PlotsContext, titleId: string): Promi
       year: season.year,
       posterPath: season.posterPath,
       myRating: seasonRating.get(season.number) ?? null,
-      partnerRating: null,
+      partnerRating: partnerSeason.get(season.number) ?? null,
     })),
     myRating: rating ? { rating: toNumber(rating.rating), liked: rating.liked, isPrivate: rating.isPrivate } : null,
-    partnerRating: null,
-    partner: null,
+    partnerRating: toNumber(partnerRatings?.[0][0]?.rating),
+    partner: partnerRow && storage ? personRef(partnerRow, storage) : null,
     seasonSuggestion: suggestSeriesRating([...seasonRating.values()]),
     logs: logs.map(toLog),
     inWatchlist: Boolean(watch),
