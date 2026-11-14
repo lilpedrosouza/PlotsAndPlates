@@ -87,7 +87,7 @@ describe("convites", () => {
 
   it("aceitar quando a outra pessoa já virou par de alguém é recusado", async () => {
     const invite = await ok(await request("POST", "/v1/couple/invites", tokens.caio!, { username: "duda" }), 201);
-    const pending = await ok(await request("POST", "/v1/couple/invites", tokens.duda!, { username: "caio" }).then((r) => r), 409);
+    const pending = await ok(await request("POST", "/v1/couple/invites", tokens.duda!, { username: "caio" }), 409);
     expect(pending.error.code).toBe("invite_exists");
     await ok(await request("POST", `/v1/couple/invites/${invite.id}/accept`, tokens.duda!));
     expect((await state("duda")).partner).toMatchObject({ username: "caio" });
