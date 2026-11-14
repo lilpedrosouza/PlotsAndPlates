@@ -72,7 +72,7 @@ function ReviewRow({ item }: { item: CommunityReview }) {
   return (
     <article className="flex gap-3 border-b border-rule py-4">
       <Link href={href} className="shrink-0 self-start" aria-hidden tabIndex={-1}>
-        <Avatar name={item.person.displayName} src={item.person.avatarUrl} size={32} />
+        <Avatar name={item.person.displayName} src={item.person.avatarUrl} size={32} accent={item.person.accent} world={section} />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <p className="flex flex-wrap items-baseline gap-x-2 leading-tight">
@@ -90,7 +90,7 @@ function ReviewRow({ item }: { item: CommunityReview }) {
           </p>
         ) : null}
       </div>
-      {item.rating !== null ? <Stamp value={item.rating} size="sm" className="self-start" tilt={section === "plates" ? -4 : undefined} /> : null}
+      {item.rating !== null ? <Stamp value={item.rating} size="sm" className="self-start" tilt={section === "plates" ? -4 : undefined} accent={item.person.accent} /> : null}
     </article>
   );
 }

@@ -7,7 +7,7 @@ O diário a dois do que a gente come e do que a gente assiste.
 
 Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do casal. Uso pessoal, sem fins comerciais.
 
-> **Estado atual: fase 3.** Fases 1 (monorepo, autenticação, perfil, design system), 2 (Plates completo) e 3 (Plots completo) prontas. Vínculo de casal e comunidade chegam na fase 4.
+> **Estado atual: fase 4.** Fases 1 (monorepo, autenticação, perfil, design system), 2 (Plates completo), 3 (Plots completo) e 4 (casal, perfis e comunidade) prontas. Wrapped, sorteio e conquistas chegam na fase 5.
 
 ### O que já dá para usar em Plates
 
@@ -25,7 +25,14 @@ Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do 
 - **Quero ver** (`/plots/quero-ver`): com o filtro "Nos meus streamings" e o botão **Assistimos!**.
 - **Listas** (`/plots/listas`) e **Top 4** (no perfil de Plots).
 
-O vínculo de casal (notas lado a lado, "juntos", listas de vontade compartilhadas) e "O que o pessoal do PAP achou" chegam na fase 4.
+### A dois e com o pessoal do PAP
+
+- **Par** (no perfil de Plates ou de Plots): convite pelo @username; o vínculo só existe depois do aceite, e o convite recebido aparece também no topo do caderno e do diário. Dá para desfazer sem ninguém perder nada.
+- **Juntos:** "Fomos juntos" numa visita faz ela aparecer no caderno dos dois (os dois editam; quem não registrou só tira do próprio caderno). "Vimos juntos" numa sessão cria o registro do par, sem nota, para ele avaliar.
+- **Notas lado a lado:** você · par · casal na tabela de notas do restaurante, nos pratos, no título e nas temporadas. Avaliação privada é vista só por você e pelo par.
+- **Listas do casal:** um quero ir e um quero ver para os dois, com quem adicionou cada item; Fomos!/Assistimos! tira para os dois.
+- **Pessoas** (`/plates/pessoas`, `/plots/pessoas`) e **perfil público** (`/plates/u/:username`, `/plots/u/:username`): estatísticas, favoritos (restaurantes de maior nota pública ou o Top 4) e avaliações recentes, só o que é público.
+- **O que o pessoal do PAP achou:** no fim da página do restaurante e do título, a média e as avaliações públicas de quem não é você nem seu par.
 
 ## Como está organizado
 

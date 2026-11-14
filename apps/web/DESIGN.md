@@ -426,6 +426,16 @@ Peças do cartaz aplicadas às telas de Plots. A direção e as decisões estão
 - **Top 4:** quatro molduras 2:3; as vazias com contorno tracejado de 2px; tocar num pôster abre a folha com mover e tirar (alvos de 48px).
 - **Atribuição do TMDB:** logo oficial (`public/brand/tmdb-logo.svg`) e o aviso em inglês exigido, no rodapé das telas com dados do TMDB.
 
+## Casal, pessoas e comunidade (fase 4)
+O par e as outras pessoas aplicados aos dois mundos. A direção e as decisões estão em `.impeccable/surfaces/src-app-casal.md`.
+- **Letreiro do casal:** em Plates, os dois nomes em Besley de 1,625rem ligados por um "&" itálico de 2,125rem na cor de destaque, com os avatares redondos de 56px sobrepostos (o segundo com anel `background` de 4px); em Plots, "Estrelando" em letra miúda e os nomes em Jost caixa alta de 1,25rem, avatares quadrados de 48px encostados. Convite pendente: segundo nome e avatar em tinta suave.
+- **Cor do outro:** tudo que é de outra pessoa (avatar, carimbo, nome no letreiro de Plots) sai na cor de destaque dela, aplicando `data-theme` + `data-accent` no próprio elemento (`accent`/`world` em `Avatar`, `accent` em `Stamp`). A média do casal usa `Stamp tone="ink"`: tinta em Plates, `sunken` com fio forte em Plots.
+- **Tabela você · par · casal:** a tabela de informação do rótulo ganha três colunas de números tabulares alinhados à direita (cabeçalho em letra miúda); a nota geral mostra três carimbos (você e par pequenos, casal médio).
+- **Juntos:** etiqueta de marcar "Fomos juntos"/"Vimos juntos" com o avatar do par de 20px; na visita, "juntos" como etiqueta de contorno e "registrada por" com mini-avatar de 16px; no diário, "Juntos" na linha de créditos e, sem nota, um quadrado tracejado "Dar nota" no lugar do selo.
+- **Adicionado por:** mini-avatares de 16px e "por Bia"/"por você"/"pelos dois" em letra miúda, só quando há par.
+- **Comunidade:** bloco de tela com a média em número de 2rem e "de N avaliações"; cada avaliação com avatar de 32px, nome, data em letra miúda, review (itálico em Plates) e carimbo pequeno.
+- **Perfil público:** capa e avatar como no próprio perfil; três números de 1,75rem numa faixa entre fios (cardápio em Plates, créditos em Plots); favoritos em rótulos pequenos 2×2 (4 colunas no computador) ou Top 4 em linha; recentes em linhas.
+
 ## Do's and Don'ts
 
 ### Do:

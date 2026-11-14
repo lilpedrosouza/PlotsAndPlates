@@ -442,13 +442,13 @@ function Visits({ restaurant, onAdd, onEdit }: { restaurant: RestaurantDetail; o
                   {visit.registeredBy ? (
                     <span className="inline-flex items-center gap-1">
                       <span aria-hidden className="flex">
-                        <Avatar name={visit.registeredBy.displayName} src={visit.registeredBy.avatarUrl} size={16} />
+                        <Avatar name={visit.registeredBy.displayName} src={visit.registeredBy.avatarUrl} size={16} accent={visit.registeredBy.accent} world="plates" />
                       </span>
                       registrada por {firstName(visit.registeredBy.displayName)}
                     </span>
                   ) : null}
                 </p>
-                <span className="flex gap-4">
+                <span className="flex shrink-0 gap-4 whitespace-nowrap">
                 <button
                   type="button"
                   onClick={() => onEdit(visit)}
@@ -466,7 +466,7 @@ function Visits({ restaurant, onAdd, onEdit }: { restaurant: RestaurantDetail; o
                   }}
                   className="text-sm text-soft underline-offset-3 hover:text-danger hover:underline"
                 >
-                  {visit.registeredBy ? "Tirar do meu caderno" : "Apagar"}
+                  {visit.registeredBy ? "Tirar do caderno" : "Apagar"}
                 </button>
                 </span>
               </div>
