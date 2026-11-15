@@ -1,0 +1,231 @@
+{
+  "_meta": {
+    "commit": "55b251c",
+    "date": "2026-11-15",
+    "lighthouse": "12.8.2",
+    "preset": "mobile padrão",
+    "runs": 3
+  },
+  "porta-entrar": {
+    "path": "/entrar",
+    "finalUrl": "/entrar",
+    "score": 95,
+    "lcp": 2700,
+    "tbt": 105,
+    "cls": 0,
+    "note": "CLI sem sessão, 2 rodadas (95, 96)"
+  },
+  "raiz": {
+    "path": "/",
+    "finalUrl": "/entrar",
+    "score": 84,
+    "lcp": 3600,
+    "tbt": 300,
+    "cls": 0,
+    "note": "CLI sem sessão, 1 rodada"
+  },
+  "plates-caderno": {
+    "path": "/plates",
+    "finalUrl": "/plates",
+    "score": 73,
+    "lcp": 3935,
+    "fcp": 1085,
+    "tbt": 568,
+    "cls": 0,
+    "si": 3157,
+    "a11y": 98,
+    "bp": 100,
+    "scores": [
+      66,
+      73,
+      73
+    ]
+  },
+  "plates-quero-ir": {
+    "path": "/plates/quero-ir",
+    "finalUrl": "/plates/quero-ir",
+    "score": 74,
+    "lcp": 3931,
+    "fcp": 1080,
+    "tbt": 528,
+    "cls": 0,
+    "si": 2594,
+    "a11y": 98,
+    "bp": 100,
+    "scores": [
+      72,
+      74,
+      74
+    ]
+  },
+  "plates-restaurante": {
+    "path": "/plates/r/[id]",
+    "finalUrl": "/plates/r/[id]",
+    "score": 69,
+    "lcp": 4381,
+    "fcp": 1083,
+    "tbt": 596,
+    "cls": 0,
+    "si": 2889,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      69,
+      71,
+      69
+    ]
+  },
+  "plates-perfil": {
+    "path": "/plates/perfil",
+    "finalUrl": "/plates/perfil",
+    "score": 69,
+    "lcp": 4235,
+    "fcp": 1082,
+    "tbt": 439,
+    "cls": 0.145,
+    "si": 2779,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      63,
+      69,
+      69
+    ]
+  },
+  "plates-pessoas": {
+    "path": "/plates/pessoas",
+    "finalUrl": "/plates/pessoas",
+    "score": 78,
+    "lcp": 3934,
+    "fcp": 1084,
+    "tbt": 367,
+    "cls": 0,
+    "si": 3225,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      78,
+      79,
+      76
+    ]
+  },
+  "plates-mapa": {
+    "path": "/plates/mapa",
+    "finalUrl": "/plates/mapa",
+    "score": 53,
+    "lcp": 4234,
+    "fcp": 1084,
+    "tbt": 2836,
+    "cls": 0.016,
+    "si": 4769,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      53,
+      55,
+      47
+    ]
+  },
+  "plots-diario": {
+    "path": "/plots",
+    "finalUrl": "/plots",
+    "score": 61,
+    "lcp": 4389,
+    "fcp": 1083,
+    "tbt": 548,
+    "cls": 0.189,
+    "si": 3543,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      56,
+      61,
+      69
+    ]
+  },
+  "plots-quero-ver": {
+    "path": "/plots/quero-ver",
+    "finalUrl": "/plots/quero-ver",
+    "score": 67,
+    "lcp": 5132,
+    "fcp": 1082,
+    "tbt": 531,
+    "cls": 0.011,
+    "si": 3347,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      69,
+      66,
+      67
+    ]
+  },
+  "plots-titulo": {
+    "path": "/plots/t/[id]",
+    "finalUrl": "/plots/t/[id]",
+    "score": 51,
+    "lcp": 5663,
+    "fcp": 1084,
+    "tbt": 780,
+    "cls": 0.189,
+    "si": 3215,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      49,
+      51,
+      51
+    ]
+  },
+  "plots-perfil": {
+    "path": "/plots/perfil",
+    "finalUrl": "/plots/perfil",
+    "score": 72,
+    "lcp": 4082,
+    "fcp": 1082,
+    "tbt": 335,
+    "cls": 0.144,
+    "si": 3101,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      77,
+      72,
+      70
+    ]
+  },
+  "plots-buscar": {
+    "path": "/plots/buscar",
+    "finalUrl": "/plots/buscar",
+    "score": 76,
+    "lcp": 4384,
+    "fcp": 1087,
+    "tbt": 346,
+    "cls": 0,
+    "si": 3139,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      75,
+      76,
+      78
+    ]
+  },
+  "wrapped": {
+    "path": "/plots/wrapped/2026",
+    "finalUrl": "/plots/wrapped/2026",
+    "score": 75,
+    "lcp": 4303,
+    "fcp": 1081,
+    "tbt": 418,
+    "cls": 0,
+    "si": 2578,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      75,
+      75,
+      76
+    ]
+  }
+}

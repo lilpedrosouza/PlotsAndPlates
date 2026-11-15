@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "dev:local": "node scripts/copy-map-worker.mjs && NEXT_PUBLIC_API_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=pap-local next dev"
+    "dev:local": "node scripts/copy-map-worker.mjs && NEXT_PUBLIC_API_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=pap-local next dev",
+    "start:perf": "node scripts/copy-map-worker.mjs && NEXT_PUBLIC_API_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_URL=http://localhost:8787 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=pap-local next build && next start -p 3100"
   },
   "dependencies": {
     "@pap/shared": "workspace:*",

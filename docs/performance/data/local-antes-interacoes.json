@@ -1,0 +1,134 @@
+{
+  "trocar-mundo": {
+    "inp": 80,
+    "interactions": 1,
+    "frames": {
+      "count": 72,
+      "median": 16.7,
+      "p95": 83.3,
+      "max": 116.7,
+      "over50": 4
+    }
+  },
+  "abrir-ficha": {
+    "inp": 72,
+    "interactions": 1,
+    "frames": {
+      "count": 74,
+      "median": 16.7,
+      "p95": 33.4,
+      "max": 199.9,
+      "over50": 3
+    }
+  },
+  "registrar-visita": {
+    "inp": 184,
+    "interactions": 1,
+    "frames": {
+      "count": 97,
+      "median": 16.7,
+      "p95": 16.8,
+      "max": 100,
+      "over50": 1
+    }
+  },
+  "avaliar": {
+    "inp": 48,
+    "interactions": 1,
+    "frames": {
+      "count": 96,
+      "median": 16.7,
+      "p95": 16.7,
+      "max": 16.8,
+      "over50": 0
+    }
+  },
+  "carimbo-fomos": {
+    "inp": 184,
+    "interactions": 1,
+    "frames": {
+      "count": 73,
+      "median": 16.7,
+      "p95": 50.1,
+      "max": 183.3,
+      "over50": 4
+    }
+  },
+  "registrar-sessao": {
+    "inp": 184,
+    "interactions": 1,
+    "frames": {
+      "count": 97,
+      "median": 16.7,
+      "p95": 16.8,
+      "max": 100,
+      "over50": 1
+    }
+  },
+  "reordenar-lista": {
+    "inp": 64,
+    "interactions": 1,
+    "frames": {
+      "count": 97,
+      "median": 16.7,
+      "p95": 16.8,
+      "max": 16.8,
+      "over50": 0
+    }
+  },
+  "sorteio": {
+    "inp": 88,
+    "interactions": 1,
+    "frames": {
+      "count": 96,
+      "median": 16.7,
+      "p95": 16.8,
+      "max": 33.4,
+      "over50": 0
+    }
+  },
+  "stories-avancar": {
+    "inp": 104,
+    "interactions": 1,
+    "frames": {
+      "count": 93,
+      "median": 16.7,
+      "p95": 16.7,
+      "max": 50.1,
+      "over50": 1
+    }
+  },
+  "stories-segurar": {
+    "inp": 24,
+    "interactions": 1,
+    "frames": {
+      "count": 122,
+      "median": 16.7,
+      "p95": 16.7,
+      "max": 16.8,
+      "over50": 0
+    }
+  },
+  "busca-tmdb": {
+    "inp": 56,
+    "interactions": 8,
+    "frames": {
+      "count": 109,
+      "median": 16.7,
+      "p95": 16.7,
+      "max": 350,
+      "over50": 1
+    }
+  },
+  "aviso-conquista": {
+    "inp": 0,
+    "interactions": 0,
+    "frames": {
+      "count": 108,
+      "median": 16.7,
+      "p95": 16.7,
+      "max": 16.8,
+      "over50": 0
+    }
+  }
+}

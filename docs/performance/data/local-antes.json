@@ -1,0 +1,240 @@
+{
+  "porta-entrar": {
+    "path": "/entrar",
+    "finalUrl": "/entrar",
+    "score": 96,
+    "lcp": 2753,
+    "fcp": 912,
+    "tbt": 53,
+    "cls": 0,
+    "si": 912,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      92,
+      96,
+      96
+    ]
+  },
+  "raiz": {
+    "path": "/",
+    "finalUrl": "/entrar",
+    "score": 84,
+    "lcp": 4169,
+    "fcp": 762,
+    "tbt": 130,
+    "cls": 0,
+    "si": 1454,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      84,
+      85,
+      84
+    ]
+  },
+  "plates-caderno": {
+    "path": "/plates",
+    "finalUrl": "/plates",
+    "score": 71,
+    "lcp": 5354,
+    "fcp": 913,
+    "tbt": 391,
+    "cls": 0,
+    "si": 1137,
+    "a11y": 98,
+    "bp": 100,
+    "scores": [
+      71,
+      74,
+      70
+    ]
+  },
+  "plates-quero-ir": {
+    "path": "/plates/quero-ir",
+    "finalUrl": "/plates/quero-ir",
+    "score": 71,
+    "lcp": 5240,
+    "fcp": 912,
+    "tbt": 407,
+    "cls": 0,
+    "si": 1137,
+    "a11y": 98,
+    "bp": 100,
+    "scores": [
+      71,
+      70,
+      71
+    ]
+  },
+  "plates-restaurante": {
+    "path": "/plates/r/109f5ee1-c847-4a43-8782-e42b2dc9a58e",
+    "finalUrl": "/plates/r/109f5ee1-c847-4a43-8782-e42b2dc9a58e",
+    "score": 69,
+    "lcp": 5755,
+    "fcp": 912,
+    "tbt": 412,
+    "cls": 0,
+    "si": 1483,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      68,
+      69,
+      69
+    ]
+  },
+  "plates-perfil": {
+    "path": "/plates/perfil",
+    "finalUrl": "/plates/perfil",
+    "score": 51,
+    "lcp": 5606,
+    "fcp": 913,
+    "tbt": 345,
+    "cls": 0.48,
+    "si": 1052,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      50,
+      51,
+      67
+    ]
+  },
+  "plates-pessoas": {
+    "path": "/plates/pessoas",
+    "finalUrl": "/plates/pessoas",
+    "score": 77,
+    "lcp": 5101,
+    "fcp": 913,
+    "tbt": 249,
+    "cls": 0,
+    "si": 913,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      78,
+      77,
+      75
+    ]
+  },
+  "plates-mapa": {
+    "path": "/plates/mapa",
+    "finalUrl": "/plates/mapa",
+    "score": 49,
+    "lcp": 5230,
+    "fcp": 914,
+    "tbt": 2694,
+    "cls": 0.016,
+    "si": 4849,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      48,
+      49,
+      50
+    ]
+  },
+  "plots-diario": {
+    "path": "/plots",
+    "finalUrl": "/plots",
+    "score": 72,
+    "lcp": 5236,
+    "fcp": 915,
+    "tbt": 329,
+    "cls": 0.073,
+    "si": 990,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      72,
+      74,
+      71
+    ]
+  },
+  "plots-quero-ver": {
+    "path": "/plots/quero-ver",
+    "finalUrl": "/plots/quero-ver",
+    "score": 72,
+    "lcp": 5226,
+    "fcp": 913,
+    "tbt": 361,
+    "cls": 0.007,
+    "si": 1079,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      71,
+      72,
+      73
+    ]
+  },
+  "plots-titulo": {
+    "path": "/plots/t/ab935ba8-6501-4c08-b0bb-189c59ea7abd",
+    "finalUrl": "/plots/t/ab935ba8-6501-4c08-b0bb-189c59ea7abd",
+    "score": 67,
+    "lcp": 6012,
+    "fcp": 913,
+    "tbt": 446,
+    "cls": 0,
+    "si": 1952,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      67,
+      66,
+      68
+    ]
+  },
+  "plots-perfil": {
+    "path": "/plots/perfil",
+    "finalUrl": "/plots/perfil",
+    "score": 71,
+    "lcp": 5244,
+    "fcp": 910,
+    "tbt": 390,
+    "cls": 0.013,
+    "si": 1114,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      71,
+      70,
+      71
+    ]
+  },
+  "plots-buscar": {
+    "path": "/plots/buscar",
+    "finalUrl": "/plots/buscar",
+    "score": 77,
+    "lcp": 5119,
+    "fcp": 914,
+    "tbt": 237,
+    "cls": 0,
+    "si": 914,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      78,
+      76,
+      77
+    ]
+  },
+  "wrapped": {
+    "path": "/plots/wrapped/2026",
+    "finalUrl": "/plots/wrapped/2026",
+    "score": 74,
+    "lcp": 5602,
+    "fcp": 912,
+    "tbt": 273,
+    "cls": 0,
+    "si": 1079,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      74,
+      73,
+      74
+    ]
+  }
+}

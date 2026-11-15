@@ -15,9 +15,13 @@
     "db:generate": "pnpm --filter @pap/db generate",
     "db:migrate": "pnpm --filter @pap/db migrate",
     "db:seed": "pnpm --filter @pap/api seed",
-    "dev:local": "turbo run dev:local"
+    "dev:local": "turbo run dev:local",
+    "perf:lighthouse": "node scripts/perf/lighthouse.mjs",
+    "perf:interactions": "node scripts/perf/interactions.mjs"
   },
   "devDependencies": {
+    "lighthouse": "12.8.2",
+    "puppeteer-core": "^24.43.1",
     "turbo": "^2.11.11",
     "typescript": "^5.9.3"
   }

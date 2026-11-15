@@ -31,7 +31,7 @@ import { tmdbFakeFetch } from "../tmdb/fixtures";
 const PORT = Number(process.env.PORT ?? 8787);
 const ORIGIN = `http://localhost:${PORT}`;
 const ISSUER = `${ORIGIN}/auth/v1`;
-const WEB_ORIGINS = (process.env.WEB_ORIGINS ?? "http://localhost:3000").split(",");
+const WEB_ORIGINS = (process.env.WEB_ORIGINS ?? "http://localhost:3000,http://localhost:3100").split(",");
 const BUCKET = "media";
 const TOKEN_TTL_SECONDS = 3600;
 
