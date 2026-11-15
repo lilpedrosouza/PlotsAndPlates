@@ -1,14 +1,15 @@
 "use client";
 
-import { TITLE_KINDS, TITLE_KIND_LABELS, type TitleKind, type WatchlistItem } from "@pap/shared";
+import { TITLE_KINDS, TITLE_KIND_LABELS, type TitleKind, type WatchlistItem, tmdbImage } from "@pap/shared";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddedBy } from "@/components/couple/added-by";
 import { PlotsDraw } from "@/components/draw/draw-buttons";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ChipToggle } from "@/components/ui/chip";
 import { Skeleton } from "@/components/ui/skeleton";
+import { rememberLcpImages } from "@/lib/lcp-hints";
 import { creditLine } from "@/lib/plots/format";
 import { useTitle, useWatchlist } from "@/lib/plots/queries";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,14 @@ export function Watchlist() {
   const items = query.data ?? [];
   const [watching, setWatching] = useState<string | null>(null);
   const [launchKey, setLaunchKey] = useState(0);
+
+  // Na visão padrão, os 3 primeiros pôsteres viram a dica da próxima abertura (lib/lcp-hints).
+  const firstPosters = !onlyMine && !kind && sort === "recentes" && query.isSuccess
+    ? items.slice(0, 3).map((item) => tmdbImage(item.title.posterPath, "w342") ?? "").join("|")
+    : null;
+  useEffect(() => {
+    if (firstPosters !== null) rememberLcpImages("/plots/quero-ver", firstPosters.split("|"));
+  }, [firstPosters]);
 
   return (
     <div className="flex flex-col gap-6 pt-2 pb-20 md:pb-8">
@@ -84,10 +93,11 @@ export function Watchlist() {
         </section>
       ) : (
         <ul className={cn("grid grid-cols-3 gap-x-3 gap-y-6 sm:grid-cols-4 md:grid-cols-5", query.isPlaceholderData && "opacity-60")}>
-          {items.map((item) => (
+          {items.map((item, index) => (
             <li key={item.title.id}>
               <WatchlistCard
                 item={item}
+                priority={index < 3}
                 onWatched={() => {
                   setLaunchKey((key) => key + 1);
                   setWatching(item.title.id);
@@ -105,7 +115,7 @@ export function Watchlist() {
   );
 }
 
-function WatchlistCard({ item, onWatched }: { item: WatchlistItem; onWatched: () => void }) {
+function WatchlistCard({ item, priority, onWatched }: { item: WatchlistItem; priority?: boolean; onWatched: () => void }) {
   const open = useOpenTitle();
   const href = `/plots/t/${item.title.id}`;
   const streaming = item.onMyStreamings[0];
@@ -113,7 +123,7 @@ function WatchlistCard({ item, onWatched }: { item: WatchlistItem; onWatched: ()
     <div className="flex h-full flex-col gap-2">
       <Link href={href} onClick={(event) => open(event, href)} className="flex flex-col gap-2">
         <div data-poster className="relative">
-          <Poster path={item.title.posterPath} title={item.title.title} size="w342" seed={`${item.title.tmdbType}:${item.title.id}`} />
+          <Poster path={item.title.posterPath} title={item.title.title} size="w342" seed={`${item.title.tmdbType}:${item.title.id}`} priority={priority} />
           {streaming ? (
             <span className="font-micro absolute inset-x-0 bottom-0 truncate bg-brand px-1.5 py-1 text-center text-[0.625rem] text-on-brand">
               No seu {streaming.name}

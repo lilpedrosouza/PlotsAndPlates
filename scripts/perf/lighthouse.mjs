@@ -1,5 +1,6 @@
 // Lighthouse mobile nas telas do PAP, logado e deslogado. Mediana de N rodadas, cache limpo a cada uma.
-//   node scripts/perf/lighthouse.mjs --base http://localhost:3100 --label local-antes [--runs 3] [--only plates]
+//   node scripts/perf/lighthouse.mjs --base http://localhost:3100 --label local-antes [--runs 3] [--only plates] [--cold]
+// Telas logadas: uma visita antes das rodadas (quem volta ao app); --cold mede sem ela.
 import fs from "node:fs";
 import path from "node:path";
 import lighthouse from "lighthouse";
@@ -63,6 +64,14 @@ const summaryFile = /antes|depois/.test(opts.label) ? path.join(ROOT, "docs/perf
 const summary = fs.existsSync(summaryFile) && opts.only ? JSON.parse(fs.readFileSync(summaryFile, "utf8")) : {};
 for (const [name, route, loggedIn] of ROUTES) {
   const runs = [];
+  if (loggedIn && !opts.cold) {
+    // Visita de quem volta ao app: uma passada antes deixa a última versão da tela
+    // guardada no aparelho (o cache HTTP continua sendo limpo a cada rodada).
+    const warm = await browser.newPage();
+    await warm.goto(`${BASE}${route}`, { waitUntil: "networkidle2" }).catch(() => {});
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await warm.close();
+  }
   for (let i = 0; i < RUNS; i++) {
     const { lhr, report } = await runOnce(`${BASE}${route}`, loggedIn);
     const a = lhr.audits;

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
 import { env } from "@/lib/env";
+import { LCP_HINT_SCRIPT } from "@/lib/lcp-hints";
 import { sofiaCondensed } from "@/styles/fonts-micro";
 import "./globals.css";
 
@@ -27,6 +28,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* A API e as imagens do TMDB são as primeiras conexões de toda tela logada. */}
         <link rel="preconnect" href={env.apiUrl} crossOrigin="anonymous" />
         <link rel="preconnect" href="https://image.tmdb.org" />
+        {/* Quem volta: as primeiras imagens da tela começam a baixar antes do app (lib/lcp-hints). */}
+        <script dangerouslySetInnerHTML={{ __html: LCP_HINT_SCRIPT }} />
       </head>
       <body>
         <Providers>{children}</Providers>

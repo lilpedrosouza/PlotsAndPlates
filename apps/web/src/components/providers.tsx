@@ -7,6 +7,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { refreshAchievements } from "@/lib/achievements/queries";
 import { ApiRequestError } from "@/lib/api";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { clearLcpHints } from "@/lib/lcp-hints";
 import { CACHE_MAX_AGE, clearPersistedCache, persistOptions } from "@/lib/persist";
 import { TransitionRouterProvider } from "@/lib/transition-router";
 
@@ -65,6 +66,7 @@ function CacheGuard() {
     if (auth.status !== "out") return;
     queryClient.clear();
     clearPersistedCache();
+    clearLcpHints();
   }, [auth.status, queryClient]);
   return null;
 }
