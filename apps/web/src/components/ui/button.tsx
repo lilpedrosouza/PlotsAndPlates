@@ -3,8 +3,6 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import * as m from "motion/react-m";
 import type { ComponentProps } from "react";
-import { useSection } from "@/components/shell/section-context";
-import { SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,7 +13,10 @@ import { cn } from "@/lib/utils";
 export const buttonVariants = cva(
   [
     "relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap select-none",
-    "rounded-md font-semibold outline-none transition-colors duration-fast",
+    "rounded-md font-semibold outline-none duration-fast",
+    // Encolhe ao apertar com CSS (compositor). O whileTap do Motion atrasava a apresentação
+    // do quadro do toque em até ~180 ms com a CPU lenta (Fomos!, Nova visita).
+    "transition-[color,background-color,border-color,transform] active:scale-[0.96]",
     "disabled:pointer-events-none disabled:opacity-45 aria-busy:pointer-events-none",
     "[&_svg]:pointer-events-none [&_svg]:size-[1.15em] [&_svg]:shrink-0",
     "plots:uppercase plots:tracking-[0.08em] plots:font-bold",
@@ -51,24 +52,15 @@ type ButtonProps = Omit<ComponentProps<typeof m.button>, "children"> &
     children?: React.ReactNode;
     /** Mostra o estado de envio e bloqueia novos cliques. */
     busy?: boolean;
-    /**
-     * Encolhe de leve ao apertar (padrão). Desligue em botões que já respondem
-     * com animação própria: no "Fomos!" dentro do cartão, o encolher atrasava a
-     * apresentação do quadro do toque em ~180 ms com a CPU lenta.
-     */
-    pressScale?: boolean;
   };
 
-export function Button({ className, variant, size, block, busy, pressScale = true, children, disabled, ...props }: ButtonProps) {
-  const section = useSection();
+export function Button({ className, variant, size, block, busy, children, disabled, ...props }: ButtonProps) {
   return (
     <m.button
       type="button"
       data-slot="button"
       aria-busy={busy || undefined}
       disabled={disabled || busy}
-      whileTap={pressScale ? { scale: 0.96 } : undefined}
-      transition={SPRING[section].press}
       className={cn(buttonVariants({ variant, size, block }), className)}
       {...props}
     >

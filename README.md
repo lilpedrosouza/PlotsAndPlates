@@ -7,7 +7,7 @@ O diário a dois do que a gente come e do que a gente assiste.
 
 Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do casal. Uso pessoal, sem fins comerciais.
 
-> **Estado atual: fase 5.** Fases 1 (monorepo, autenticação, perfil, design system), 2 (Plates completo), 3 (Plots completo), 4 (casal, perfis e comunidade) e 5 (Wrapped, sorteio e conquistas) prontas. A passada final de performance e o relatório Lighthouse chegam na fase 6.
+> **Estado atual: fase 6.** As seis fases estão prontas: 1 (monorepo, autenticação, perfil, design system), 2 (Plates completo), 3 (Plots completo), 4 (casal, perfis e comunidade), 5 (Wrapped, sorteio e conquistas) e 6 (passada final de performance e animação). O relatório Lighthouse está em [`docs/performance/fase-6.md`](docs/performance/fase-6.md) e os roteiros de medição em [`scripts/perf/`](scripts/perf/README.md).
 
 ### O que já dá para usar em Plates
 

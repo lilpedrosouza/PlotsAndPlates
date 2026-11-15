@@ -49,7 +49,7 @@ export function FomosButton({ restaurantId, size = "md", block }: { restaurantId
         transition={POP[section]}
         className={block ? "w-full" : "inline-block"}
       >
-        <Button size={size} block={block} busy={starting || fomos.isPending} onClick={onClick} disabled={stamped} pressScale={false}>
+        <Button size={size} block={block} busy={starting || fomos.isPending} onClick={onClick} disabled={stamped}>
           {stamped ? <Check aria-hidden /> : null}
           Fomos!
         </Button>

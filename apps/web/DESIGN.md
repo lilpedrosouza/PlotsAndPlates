@@ -358,7 +358,7 @@ Cada componente existe uma vez e muda de forma com o mundo. Toque e soltura usam
 Etiqueta impressa em Plates, bloco de cartaz em Plots.
 - **Shape:** raio de controle do mundo (4px em Plates, 2px em Plots); 48px de altura com 1,25rem de respiro lateral; `sm` com 40px; só ícone com 44px.
 - **Primary:** fundo na cor de destaque, texto em `on-brand`. Em Plates leva o fio interno; em Plots é caixa alta, peso 700, tracking 0,08em.
-- **Hover / Focus:** o principal clareia (brilho 110%) e escurece ao apertar (95%); todos encolhem a 0,96 no toque com a mola `press`; foco pelo contorno padrão do mundo.
+- **Hover / Focus:** o principal clareia (brilho 110%) e escurece ao apertar (95%); todos encolhem a 0,96 no toque, em CSS na duração rápida do mundo (a mola `press` do Motion atrasava o quadro do toque com a CPU lenta); foco pelo contorno padrão do mundo.
 - **Secondary / Quiet / Danger:** secundário é transparente com contorno no fio forte e hover em rebaixo; discreto não tem contorno; destrutivo tem texto e contorno na cor de erro, com hover a 10% dela.
 - **Busy / Disabled:** ocupado mostra um anel girando antes do rótulo e bloqueia cliques; desabilitado fica a 45% de opacidade.
 
@@ -383,7 +383,7 @@ Etiqueta impressa em Plates, bloco de cartaz em Plots.
 - **Alternador Plates ↔ Plots:** trilho de 44px com contorno no fio forte e 3px de respiro; o lado ativo é um bloco na cor de destaque com o nome em `on-brand`, o inativo em tinta suave. Na troca, o bloco desliza de um lado para o outro (460ms).
 
 ### Nota: estrelas, carimbo e selo
-- **Estrelas:** cinco estrelas de contorno no fio forte, preenchidas na cor `star` em meias unidades; 36px para dar a nota, 18px para ler. Ao confirmar, a estrela tocada salta (escala 1,32 e giro de -8°) com a mola `pop`. No teclado é um controle deslizante; tocar na nota atual limpa.
+- **Estrelas:** cinco estrelas de contorno no fio forte, preenchidas na cor `star` em meias unidades; 36px para dar a nota, 18px para ler. Ao confirmar, a estrela tocada salta (escala 1,32 e giro de -8°) com a mola `pop`. No teclado é um controle deslizante; tocar na nota atual limpa. A nota sai da estrela tocada (metade esquerda = meia) e o controle tem a largura das estrelas, mesmo dentro de colunas que esticam.
 - **Carimbo (Plates):** círculo torto a -6°, borda de 2px e um anel interno de 1px na cor de destaque, número em letra de título e legenda em letra miúda ("você", "par", "casal"). Três tamanhos: 56, 72 e 96px.
 - **Selo (Plots):** o mesmo dado como bloco reto, preenchido com a cor de destaque, sem giro.
 - **Número que gira:** todo número que muda troca dígito por dígito, cada algarismo uma coluna que desliza até o valor com a mola `settle`.
@@ -395,6 +395,7 @@ A marca é a palavra da seção em letra de título. "Plates" e "Plots" dividem 
 - **Avatar:** redondo em Plates, quadrado em Plots; sem foto, as iniciais em letra de título sobre a cor de destaque.
 - **Ilustração:** SVG autoral desenhado só com tokens do mundo (prato em duas tintas no arco; cartaz geométrico com uma forma no destaque). Ocupa o lugar da foto enquanto ela não existe e é sempre apresentada como exemplo.
 - **Esqueleto:** bloco em `sunken` na forma do que vai chegar (arco em Plates, 2:3 em Plots), com um brilho que atravessa em 1,4s; parado com movimento reduzido.
+- **Casca primeiro (fase 6):** toda tela logada chega com o título, as abas e o cabeçalho já no HTML; só o que depende de dados mostra esqueleto, no mesmo tamanho do que vai chegar (bilhete do Wrapped, grade das 16 conquistas, capa e nome do perfil). Nada pula quando os dados chegam, e o rodapé do TMDB começa abaixo da dobra.
 
 ## Plates: caderno, restaurante e mapa (fase 2)
 

@@ -1,10 +1,7 @@
 "use client";
 
-import * as m from "motion/react-m";
 import { Check } from "lucide-react";
 import type { ReactNode } from "react";
-import { useSection } from "@/components/shell/section-context";
-import { SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type ChipToggleProps = {
@@ -16,17 +13,16 @@ type ChipToggleProps = {
 
 /** Etiqueta de marcar/desmarcar (filtros, streamings). */
 export function ChipToggle({ pressed, onPressedChange, children, disabled }: ChipToggleProps) {
-  const section = useSection();
   return (
-    <m.button
+    <button
       type="button"
       aria-pressed={pressed}
       disabled={disabled}
-      whileTap={{ scale: 0.94 }}
-      transition={SPRING[section].press}
       onClick={() => onPressedChange(!pressed)}
       className={cn(
-        "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md border px-3.5 text-sm font-semibold whitespace-nowrap transition-colors duration-fast",
+        "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md border px-3.5 text-sm font-semibold whitespace-nowrap duration-fast",
+        // Encolhe ao apertar em CSS, como o Button (o whileTap do Motion atrasava o quadro do toque).
+        "transition-[color,background-color,border-color,transform] active:scale-[0.94]",
         "plots:text-xs plots:font-bold plots:uppercase plots:tracking-[0.08em]",
         pressed
           ? "border-foreground bg-foreground text-background"
@@ -36,6 +32,6 @@ export function ChipToggle({ pressed, onPressedChange, children, disabled }: Chi
     >
       {pressed ? <Check aria-hidden className="size-4" strokeWidth={2.5} /> : null}
       {children}
-    </m.button>
+    </button>
   );
 }
