@@ -11,7 +11,8 @@ import type {
   RestaurantListQuery,
   RestaurantSummary,
 } from "@pap/shared";
-import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@/lib/query-hooks";
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { useAuth } from "../auth";
@@ -19,7 +20,7 @@ import { platesKeys } from "./keys";
 
 const queryString = (query: Record<string, unknown>) => {
   const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) if (value !== undefined && value !== "") params.set(key, String(value));
+  for (const [key, value] of Object.entries(query)) if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
   return params.toString();
 };
 

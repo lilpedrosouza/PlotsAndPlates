@@ -12,7 +12,8 @@ import type {
   WatchlistItem,
   WatchlistQuery,
 } from "@pap/shared";
-import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@/lib/query-hooks";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { useDebounced } from "../plates/queries";
@@ -20,7 +21,7 @@ import { plotsKeys } from "./keys";
 
 const qs = (query: Record<string, unknown>) => {
   const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) if (value !== undefined && value !== "" && value !== false) params.set(key, String(value));
+  for (const [key, value] of Object.entries(query)) if (value !== undefined && value !== null && value !== "" && value !== false) params.set(key, String(value));
   return params.toString();
 };
 

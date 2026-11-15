@@ -1,7 +1,7 @@
 "use client";
 
 import type { DrawItem, Page, RestaurantSummary, WatchlistItem } from "@pap/shared";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@/lib/query-hooks";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { platesKeys } from "../plates/keys";

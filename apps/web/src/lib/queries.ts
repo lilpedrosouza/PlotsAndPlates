@@ -8,7 +8,8 @@ import type {
   SignedUpload,
   UpdateProfileInput,
 } from "@pap/shared";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@/lib/query-hooks";
 import { api } from "./api";
 import { useAuth } from "./auth";
 import { IMAGE_PRESETS, compressImage } from "./image";

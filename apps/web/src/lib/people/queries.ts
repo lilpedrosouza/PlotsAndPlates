@@ -1,7 +1,8 @@
 "use client";
 
 import type { CommunityPage, PublicPlatesProfile, PublicPlotsProfile, PublicProfile } from "@pap/shared";
-import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@/lib/query-hooks";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { useDebounced } from "../plates/queries";

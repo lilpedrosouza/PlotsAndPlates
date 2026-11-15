@@ -1,7 +1,8 @@
 "use client";
 
 import type { CoupleState, Invite } from "@pap/shared";
-import { type QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@/lib/query-hooks";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { platesKeys } from "../plates/keys";

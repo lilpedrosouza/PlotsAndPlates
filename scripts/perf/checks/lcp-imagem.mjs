@@ -37,7 +37,11 @@ const cdp = await page.createCDPSession();
 await cdp.send("Network.clearBrowserCache");
 await page.goto(`${base}/plots/quero-ver`, { waitUntil: "networkidle2" });
 const firstImage = order.findIndex((entry) => entry.type === "image" && !entry.url.includes("/brand/"));
-const firstScript = order.findIndex((entry) => entry.type === "script");
+// Scripts do app = os <script async> do HTML (o Next também põe um <link rel=preload as=script
+// fetchpriority=low> antes de tudo no <head>; esse sai junto e não conta).
+const html = await (await fetch(`${base}/plots/quero-ver`)).text();
+const lowPreloads = new Set([...html.matchAll(/<link rel="preload" as="script" fetchPriority="low" href="([^"]+)"/g)].map((m) => new URL(m[1], base).href));
+const firstScript = order.findIndex((entry) => entry.type === "script" && !lowPreloads.has(entry.url));
 const lazy = await page.$$eval('main img[alt^="Pôster de"], img[alt^="Pôster de"]', (imgs) => imgs.slice(0, 3).map((img) => img.getAttribute("loading")));
 await browser.close();
 
