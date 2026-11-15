@@ -85,6 +85,20 @@
       "when": 1794704242065,
       "tag": "0011_visits_together_with",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794709384226,
+      "tag": "0012_user_achievements",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794709390527,
+      "tag": "0013_grants_achievements",
+      "breakpoints": true
     }
   ]
 }
