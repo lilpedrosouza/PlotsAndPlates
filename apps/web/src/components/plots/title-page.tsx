@@ -49,6 +49,9 @@ function Block({ title, children, action }: { title: string; children: React.Rea
   );
 }
 
+/** O TMDB só tem alguns tamanhos de fundo; escolhe o menor que cobre a largura pedida. */
+const backdropLoader = ({ src, width }: { src: string; width: number }) => src.replace("/w780/", width <= 780 ? "/w780/" : "/w1280/");
+
 export function TitlePage() {
   const { id } = useParams<{ id: string }>();
   const query = useTitle(id);
@@ -102,7 +105,7 @@ export function TitlePage() {
 }
 
 function Hero({ title, onLog, onLists }: { title: TitleDetail; onLog: () => void; onLists: () => void }) {
-  const backdrop = tmdbImage(title.backdropPath, "w1280");
+  const backdrop = tmdbImage(title.backdropPath, "w780");
   const watchlist = useSetWatchlist(title.id);
   const favorites = useFavorites();
   const setFavorites = useSetFavorites();
@@ -127,9 +130,11 @@ function Hero({ title, onLog, onLists }: { title: TitleDetail; onLog: () => void
         {backdrop ? (
           <Image
             src={backdrop}
+            // Direto do TMDB no tamanho que a tela pede: w780 no celular, w1280 em telas largas.
+            loader={backdropLoader}
+            sizes="100vw"
             alt=""
             fill
-            unoptimized
             priority
             className="object-cover [mask-image:linear-gradient(to_bottom,black_45%,transparent)]"
           />

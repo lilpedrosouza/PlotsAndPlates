@@ -1,6 +1,6 @@
 "use client";
 
-import { type AchievementState, achievementByKey } from "@pap/shared";
+import { ACHIEVEMENTS, type AchievementState, achievementByKey } from "@pap/shared";
 import { useState } from "react";
 import { Sheet } from "@/components/plates/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,7 +32,16 @@ export function AchievementsBlock() {
         {query.data ? <span className="font-micro text-[0.75rem] text-soft">{`${won} de ${items.length}`}</span> : null}
       </header>
       {query.isPending ? (
-        <Skeleton className="h-28 w-full" />
+        // Mesma grade do catálogo (16 selos), para o resto do perfil não pular quando ele chegar.
+        <ul aria-busy className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4">
+          {Array.from({ length: ACHIEVEMENTS.length }, (_, index) => (
+            <li key={index} className="flex flex-col items-center gap-2">
+              <Skeleton className="size-16 rounded-full" />
+              <Skeleton className="h-[1.0625rem] w-20" />
+              <Skeleton className="-mt-1 h-[1.03rem] w-12" />
+            </li>
+          ))}
+        </ul>
       ) : query.isError ? (
         <p role="alert" className="text-soft">
           Não deu para carregar as conquistas agora.

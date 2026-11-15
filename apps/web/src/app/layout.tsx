@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
+import { env } from "@/lib/env";
 import { sofiaCondensed } from "@/styles/fonts-micro";
 import "./globals.css";
 
@@ -22,6 +23,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR" className={sofiaCondensed.variable}>
+      <head>
+        {/* A API e as imagens do TMDB são as primeiras conexões de toda tela logada. */}
+        <link rel="preconnect" href={env.apiUrl} crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://image.tmdb.org" />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>

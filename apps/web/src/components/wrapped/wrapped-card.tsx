@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { useSection } from "@/components/shell/section-context";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useWrappedYears } from "@/lib/wrapped/queries";
 
@@ -11,6 +12,17 @@ export function WrappedCard() {
   const section = useSection();
   const years = useWrappedYears();
   const list = years.data ?? [];
+  if (years.isPending) {
+    // Mesmo tamanho do bilhete pronto: o par e as conquistas logo abaixo não pulam.
+    return (
+      <section aria-busy className="flex flex-col gap-4 border-t border-rule-strong pt-5">
+        <h2 className="font-display text-2xl leading-[1.14]">Seu ano no PAP</h2>
+        <div className="flex gap-3 pb-1">
+          <Skeleton className="h-28 w-24" />
+        </div>
+      </section>
+    );
+  }
   if (!years.isSuccess || list.length === 0) return null;
   const current = new Date().getFullYear();
 
