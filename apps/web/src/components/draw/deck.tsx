@@ -68,7 +68,10 @@ export function Deck({
             key={top ? `top-${round}` : index}
             className="absolute inset-0"
             style={{ transformStyle: "preserve-3d", zIndex: index }}
-            initial={false}
+            // A carta de cima monta de novo a cada sorteio (key por rodada, para começar de
+            // costas). Com initial={false} o Motion já a colocaria no destino, sem animar,
+            // e o embaralhar nunca terminaria (onShuffled não vinha). Ela nasce em repouso.
+            initial={top ? { x: 0, y: 0, rotate: TILTS[index] ?? 0, rotateY: 0, opacity: 1 } : false}
             animate={
               shuffling
                 ? {
