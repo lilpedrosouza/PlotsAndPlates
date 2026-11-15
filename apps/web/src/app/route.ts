@@ -14,6 +14,11 @@ const HTML = `<!doctype html>
 <script>
 (function () {
   var target = "/entrar";
+  // Volta de login que caiu na raiz (?code=, ?error= ou #access_token): quem troca é o callback.
+  if (/[?&](code|error)=/.test(location.search) || /access_token=/.test(location.hash)) {
+    location.replace("/auth/callback" + location.search + location.hash);
+    return;
+  }
   try {
     for (var i = 0; i < localStorage.length; i++) {
       var key = localStorage.key(i);

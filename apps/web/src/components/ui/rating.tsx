@@ -79,14 +79,20 @@ export function RatingInput({ value, onChange, label, size = 36, className }: Ra
   // flexível a caixa estica até a linha toda e as estrelas ficam só no começo dela
   // (tocar na 4ª estrela dava 2, e era preciso tocar no branco à direita).
   const valueFromPointer = (clientX: number): number => {
-    const stars = track.current ? [...track.current.querySelectorAll<HTMLElement>("[data-star]")] : [];
-    if (stars.length === 0) return RATING_MIN;
+    const node = track.current;
+    const stars = node ? [...node.querySelectorAll<HTMLElement>("[data-star]")] : [];
+    if (!node || stars.length === 0) return RATING_MIN;
+    // Posições sem transformação (offset*): a estrela que acabou de saltar (escala 1,32)
+    // não pode roubar o toque da vizinha. `x` é relativo ao controle, que não se transforma.
+    const x = clientX - node.getBoundingClientRect().left;
+    const leftOf = (star: HTMLElement) => (star.offsetParent === node ? star.offsetLeft : star.offsetLeft - node.offsetLeft);
     for (const [index, star] of stars.entries()) {
-      const rect = star.getBoundingClientRect();
+      const left = leftOf(star);
       // O vão entre as estrelas conta para a estrela da esquerda.
-      const right = stars[index + 1]?.getBoundingClientRect().left ?? rect.right;
-      if (clientX < right) {
-        const half = clientX < rect.left + rect.width / 2 ? 0.5 : 1;
+      const next = stars[index + 1];
+      const right = next ? leftOf(next) : left + star.offsetWidth;
+      if (x < right) {
+        const half = x < left + star.offsetWidth / 2 ? 0.5 : 1;
         return Math.min(RATING_MAX, Math.max(RATING_MIN, index + half));
       }
     }

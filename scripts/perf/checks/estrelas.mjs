@@ -41,5 +41,22 @@ for (const [index, fraction, expected] of [
   results.push(ok);
   console.log(`${ok ? "ok  " : "FAIL"} toque na estrela ${index + 1} (${Math.round(fraction * 100)}% dela) → ${value} (esperado ${expected})`);
 }
+// Toque rápido logo depois de outro: a estrela anterior ainda está no salto (escala 1,32)
+// e não pode "roubar" o toque da vizinha.
+{
+  await slider.focus();
+  await page.keyboard.press("Delete");
+  const third = geometry.stars[2];
+  const second = geometry.stars[1];
+  await page.touchscreen.tap(third.left + third.width * 0.75, third.top + third.height / 2);
+  await new Promise((r) => setTimeout(r, 60));
+  await page.touchscreen.tap(second.left + second.width * 0.95, second.top + second.height / 2);
+  await new Promise((r) => setTimeout(r, 150));
+  const value = Number(await slider.evaluate((node) => node.getAttribute("aria-valuenow")));
+  const ok = value === 2;
+  results.push(ok);
+  console.log(`${ok ? "ok  " : "FAIL"} toque rápido na borda direita da 2ª estrela logo depois da 3ª → ${value} (esperado 2)`);
+}
+
 await browser.close();
 process.exit(results.every(Boolean) ? 0 : 1);

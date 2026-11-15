@@ -43,6 +43,17 @@ const browser = await launch();
   await context.close();
 }
 
+// Volta de login que caiu na raiz: o código vai junto para o callback.
+{
+  const context = await browser.createBrowserContext();
+  const page = await context.newPage();
+  await page.goto(`${base}/?code=abc123`, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => location.pathname !== "/", { timeout: 10000 }).catch(() => {});
+  const url = await page.evaluate(() => location.pathname + location.search);
+  check("?code= na raiz vai para o callback com o código", url.startsWith("/auth/callback?code=abc123"), url);
+  await context.close();
+}
+
 // localStorage bloqueado: o componente de fallback leva para /entrar.
 {
   const context = await browser.createBrowserContext();

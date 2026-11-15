@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
 import { ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { lastSection } from "@/lib/section";
 import { checkUsername, useCreateProfile, useMe } from "@/lib/queries";
 import { loadSupabase } from "@/lib/supabase";
 
@@ -39,7 +40,7 @@ export function Onboarding() {
 
   useEffect(() => {
     if (auth.status === "out") router.replace("/entrar");
-    else if (me.data?.profile) router.replace("/");
+    else if (me.data?.profile) router.replace(`/${lastSection()}`);
   }, [auth.status, me.data?.profile, router]);
 
   const effectiveUsername = usernameTouched ? username : suggestUsername(displayName);
@@ -81,7 +82,7 @@ export function Onboarding() {
     setFieldErrors({});
     try {
       await createProfile.mutateAsync(parsed.data);
-      router.replace("/");
+      router.replace(`/${lastSection()}`);
     } catch (error) {
       if (error instanceof ApiRequestError) setFieldErrors(Object.keys(error.fields).length ? error.fields : { _: error.message });
       else setFieldErrors({ _: "Não deu certo agora. Tenta de novo?" });

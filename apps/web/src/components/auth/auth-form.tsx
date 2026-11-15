@@ -6,6 +6,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
 import { authMessage, useAuth } from "@/lib/auth";
+import { lastSection } from "@/lib/section";
 import { isConfigured } from "@/lib/env";
 import { loadSupabase } from "@/lib/supabase";
 
@@ -40,7 +41,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   // Quem já está logado não precisa ver a porta.
   useEffect(() => {
-    if (auth.status === "in") router.replace("/");
+    if (auth.status === "in") router.replace(`/${lastSection()}`);
   }, [auth.status, router]);
 
   if (!isConfigured) {
@@ -88,7 +89,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       setNotice("Quase lá: mandamos um link de confirmação para o seu e-mail.");
       return;
     }
-    router.replace("/");
+    router.replace(`/${lastSection()}`);
   };
 
   const google = async () => {

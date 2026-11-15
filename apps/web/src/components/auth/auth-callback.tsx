@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { lastSection } from "@/lib/section";
 
 /**
  * Volta do Google ou do link de confirmação. O cliente do Supabase troca o
@@ -16,7 +17,7 @@ export function AuthCallback() {
 
   useEffect(() => {
     if (auth.status === "in") {
-      router.replace("/");
+      router.replace(`/${lastSection()}`);
       return;
     }
     const timer = setTimeout(() => setFailed(true), 6000);
