@@ -6,6 +6,8 @@ import { secureHeaders } from "hono/secure-headers";
 import { requireAuth } from "./auth";
 import { ApiFailure } from "./errors";
 import { clientIp, rateLimit } from "./rate-limit";
+import { achievementsAfterAction } from "./achievements/check";
+import { achievementRoutes } from "./routes/achievements";
 import { communityRoutes } from "./routes/community";
 import { coupleRoutes } from "./routes/couple";
 import { dishRoutes } from "./routes/dishes";
@@ -47,6 +49,7 @@ export function createApp(deps: AppDeps) {
   v1.use(rateLimit({ windowMs: 60_000, max: perMinute * 3, key: (c) => `ip:${clientIp(c)}` }));
   v1.use(requireAuth(deps.verifyToken));
   v1.use(rateLimit({ windowMs: 60_000, max: perMinute, key: (c) => `user:${c.get("user").id}` }));
+  v1.use(achievementsAfterAction(deps.db));
   v1.route("/", profileRoutes(deps));
   v1.route("/", placesRoutes(deps));
   v1.route("/", restaurantRoutes(deps));
@@ -61,6 +64,7 @@ export function createApp(deps: AppDeps) {
   v1.route("/", coupleRoutes(deps));
   v1.route("/", communityRoutes(deps));
   v1.route("/", publicProfileRoutes(deps));
+  v1.route("/", achievementRoutes(deps));
   app.route("/v1", v1);
 
   app.notFound((c) => c.json({ error: { code: "not_found", message: "Rota não encontrada." } }, 404));
