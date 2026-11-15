@@ -37,5 +37,14 @@ export function closestAndFarthest<T extends { mine: number; partner: number }>(
     if (!agreed || gap(pair) < gap(agreed)) agreed = pair;
     if (gap(pair) > 0 && (!disagreed || gap(pair) > gap(disagreed))) disagreed = pair;
   }
+  // Um item só com diferença é discordância: não aparece também como "concordaram".
+  if (agreed && agreed === disagreed) agreed = null;
   return { equal, agreed, disagreed };
+}
+
+const SAO_PAULO_YEAR = new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", year: "numeric" });
+
+/** Ano no horário de Brasília (o casal vive aqui; o servidor, não necessariamente). */
+export function saoPauloYear(date: Date): number {
+  return Number(SAO_PAULO_YEAR.format(date));
 }

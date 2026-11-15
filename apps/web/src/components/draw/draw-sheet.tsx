@@ -33,6 +33,7 @@ export function DrawSheet({ world, open, onOpenChange, cards, loading }: DrawShe
   const [phase, setPhase] = useState<DeckPhase>("idle");
   const [picked, setPicked] = useState<string | null>(null);
   const [recent, setRecent] = useState<string[]>([]);
+  const [round, setRound] = useState(0);
 
   const pool = filterPool(
     cards.map((card) => card.item),
@@ -56,6 +57,7 @@ export function DrawSheet({ world, open, onOpenChange, cards, loading }: DrawShe
     );
     setRecent(next.recent);
     setPicked(next.id);
+    setRound((value) => value + 1);
     // Um item só, ou movimento reduzido: revela direto.
     setPhase(reduced || pool.length === 1 ? "revealed" : "shuffling");
   };
@@ -123,7 +125,7 @@ export function DrawSheet({ world, open, onOpenChange, cards, loading }: DrawShe
             <p aria-live="polite" className="font-micro text-[0.75rem] text-soft">
               {phase === "revealed" && chosen ? "Saiu!" : pool.length === 1 ? "1 opção" : `${pool.length} opções no baralho`}
             </p>
-            <Deck phase={phase} count={pool.length} front={chosen?.face ?? null} onShuffled={() => setPhase("revealed")} />
+            <Deck phase={phase} count={pool.length} front={chosen?.face ?? null} round={round} onShuffled={() => setPhase("revealed")} />
             {phase === "revealed" && chosen ? (
               <div className="flex w-full flex-col gap-2">
                 <Link href={chosen.href} className={buttonVariants({ block: true })} onClick={() => onOpenChange(false)}>

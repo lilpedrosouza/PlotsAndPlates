@@ -39,7 +39,20 @@ function CardBack() {
  * O baralho: até cinco cartas desalinhadas. Ao sortear, abrem em leque e se
  * recolhem duas vezes; a de cima sobe e vira, mostrando o sorteado.
  */
-export function Deck({ phase, count, front, onShuffled }: { phase: DeckPhase; count: number; front: ReactNode; onShuffled: () => void }) {
+export function Deck({
+  phase,
+  count,
+  front,
+  round,
+  onShuffled,
+}: {
+  phase: DeckPhase;
+  count: number;
+  front: ReactNode;
+  /** Cada sorteio é uma carta de cima nova: ela começa de costas e vira de novo. */
+  round: number;
+  onShuffled: () => void;
+}) {
   const section = useSection();
   const reduced = useReducedMotion();
   const visible = Math.max(1, Math.min(STACK, count));
@@ -52,7 +65,7 @@ export function Deck({ phase, count, front, onShuffled }: { phase: DeckPhase; co
         const side = index % 2 === 0 ? -1 : 1;
         return (
           <m.div
-            key={index}
+            key={top ? `top-${round}` : index}
             className="absolute inset-0"
             style={{ transformStyle: "preserve-3d", zIndex: index }}
             initial={false}

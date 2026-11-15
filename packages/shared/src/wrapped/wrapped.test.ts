@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { closestAndFarthest, sessionMinutes, topBy } from "./index";
+import { closestAndFarthest, saoPauloYear, sessionMinutes, topBy } from "./index";
 
 describe("sessionMinutes", () => {
   it("filme soma a duração; temporada, episódios × duração", () => {
@@ -39,7 +39,20 @@ describe("closestAndFarthest", () => {
     expect(closestAndFarthest([{ mine: 3, partner: 3 }]).disagreed).toBeNull();
   });
 
+  it("um item só, com diferença: é discordância, não concordância", () => {
+    const result = closestAndFarthest([{ id: "x", mine: 3, partner: 5 }]);
+    expect(result.disagreed?.id).toBe("x");
+    expect(result.agreed).toBeNull();
+  });
+
   it("sem pares", () => {
     expect(closestAndFarthest([])).toEqual({ equal: 0, agreed: null, disagreed: null });
+  });
+});
+
+describe("saoPauloYear", () => {
+  it("o ano vira à meia-noite de Brasília, não à de Greenwich", () => {
+    expect(saoPauloYear(new Date("2027-01-01T02:00:00Z"))).toBe(2026);
+    expect(saoPauloYear(new Date("2027-01-01T03:30:00Z"))).toBe(2027);
   });
 });

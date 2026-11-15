@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { type TestHarness, createTestHarness } from "../testing";
 import { type Json, client, setupCouple } from "../testing-couple";
@@ -93,6 +94,26 @@ describe("Wrapped do casal", () => {
     expect(w.couple).toBeNull();
     expect(w.plates.visits).toBe(0);
     expect((await api.ok(await api.request("GET", "/v1/wrapped", t.caio!))).years).toEqual([]);
+  });
+
+  it("campeão empatado: mais visitas primeiro, depois o nome (sempre o mesmo)", async () => {
+    const post = async (path: string, body: unknown) => api.ok(await api.request("POST", path, t.ana!, body), 201);
+    const zeta = (await post("/v1/restaurants", { name: "Zeta", destination: "quero-ir" })).id;
+    const alfa = (await post("/v1/restaurants", { name: "Alfa", destination: "quero-ir" })).id;
+    for (const place of [zeta, alfa]) {
+      await post(`/v1/restaurants/${place}/visits`, { visitedOn: "2024-04-01" });
+      for (const who of ["ana", "bia"]) await api.ok(await api.request("PUT", `/v1/restaurants/${place}/rating`, t[who]!, { food: 5 }));
+    }
+    expect((await wrapped("ana", 2024)).plates.champion.name).toBe("Alfa");
+    await post(`/v1/restaurants/${zeta}/visits`, { visitedOn: "2024-05-01" });
+    expect((await wrapped("ana", 2024)).plates.champion.name).toBe("Zeta");
+  });
+
+  it("conquista ganha na noite de 31/12 (Brasília) entra no ano que acabou", async () => {
+    const anaId = "11111111-1111-4111-8111-111111111111";
+    await h.test.db.execute(sql`insert into user_achievements (user_id, key, unlocked_at) values (${anaId}, 'fregues', '2025-01-01T01:00:00Z')`);
+    const keys = (await wrapped("ana", 2024)).achievements.map((a: Json) => a.key);
+    expect(keys).toContain("fregues");
   });
 
   it("conquistas do ano de quem pede", async () => {

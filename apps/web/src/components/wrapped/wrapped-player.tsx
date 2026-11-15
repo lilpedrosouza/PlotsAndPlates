@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SPRING } from "@/lib/motion";
 import { useWrapped } from "@/lib/wrapped/queries";
-import { shareStory } from "./share";
+import { deliverStory, renderStory } from "./share";
 import { buildStories } from "./stories";
 
 const STORY_SECONDS = 6;
@@ -26,13 +26,16 @@ export function WrappedPlayer() {
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [sharing, setSharing] = useState<"idle" | "busy" | "done" | "error">("idle");
+  const [sharing, setSharing] = useState<"idle" | "busy" | "done" | "error" | "tap">("idle");
+  // Imagem pronta esperando um toque novo para abrir o compartilhamento.
+  const [ready, setReady] = useState<File | null>(null);
   // O story que sai ainda está na árvore durante a troca: acha o atual pelo id.
   const stageRef = useRef<HTMLDivElement>(null);
   const press = useRef<{ at: number; held: boolean; timer: number | null }>({ at: 0, held: false, timer: null });
   const [direction, setDirection] = useState(1);
 
-  const stories = query.data ? buildStories(query.data) : [];
+  const empty = query.data ? query.data.plates.visits === 0 && query.data.plots.sessions === 0 : false;
+  const stories = query.data && !empty ? buildStories(query.data) : [];
   const count = stories.length;
   const story = stories[Math.min(index, Math.max(0, count - 1))];
 
@@ -43,6 +46,7 @@ export function WrappedPlayer() {
   const go = (step: number) => {
     setDirection(step);
     setSharing("idle");
+    setReady(null);
     setIndex((current) => {
       const next = current + step;
       if (next < 0) return 0;
@@ -95,18 +99,31 @@ export function WrappedPlayer() {
   };
 
   const share = async () => {
+    if (ready) {
+      const file = ready;
+      setReady(null);
+      const result = await deliverStory(file);
+      setSharing(result === "cancelled" ? "idle" : "done");
+      setPaused(false);
+      return;
+    }
     const node = stageRef.current?.querySelector<HTMLElement>(`[data-story="${story?.id}"]`);
     if (!node) return;
     setSharing("busy");
     setPaused(true);
     try {
-      await shareStory(node, `pap-wrapped-${year}-${story?.id ?? "story"}.png`);
-      setSharing("done");
+      const file = await renderStory(node, `pap-wrapped-${year}-${story?.id ?? "story"}.png`);
+      const result = await deliverStory(file);
+      if (result === "needs-tap") {
+        setReady(file);
+        setSharing("tap");
+        return;
+      }
+      setSharing(result === "cancelled" ? "idle" : "done");
     } catch {
       setSharing("error");
-    } finally {
-      setPaused(false);
     }
+    setPaused(false);
   };
 
   // Nos stories divididos, o topo é creme (Plates) e o pé é preto (Plots).
@@ -118,6 +135,14 @@ export function WrappedPlayer() {
       <div ref={stageRef} className="relative mx-auto h-full w-full max-w-[min(100vw,calc(100dvh*9/16))] overflow-hidden">
         {query.isPending ? (
           <Skeleton className="absolute inset-0 rounded-none" />
+        ) : empty ? (
+          <div data-theme={section} className="absolute inset-0 flex flex-col items-start justify-center gap-4 bg-background px-8 text-foreground">
+            <h1 className="font-display text-3xl leading-tight">Nada registrado em {year} ainda</h1>
+            <p className="text-soft">O Wrapped aparece quando vocês registram visitas ou sessões no ano.</p>
+            <Button variant="secondary" onClick={close}>
+              Voltar
+            </Button>
+          </div>
         ) : query.isError || !story ? (
           <div data-theme={section} className="absolute inset-0 flex flex-col items-start justify-center gap-4 bg-background px-8 text-foreground">
             <h1 className="font-display text-3xl leading-tight">Não deu para abrir o Wrapped de {Number.isFinite(year) ? year : "esse ano"}</h1>
@@ -205,7 +230,15 @@ export function WrappedPlayer() {
                 className="font-micro flex h-11 items-center gap-2 px-2 text-[0.75rem] tracking-[0.12em] text-foreground uppercase disabled:opacity-60"
               >
                 <Share2 aria-hidden className="size-4" />
-                {sharing === "busy" ? "Gerando…" : sharing === "done" ? "Pronto" : sharing === "error" ? "Tentar de novo" : "Compartilhar"}
+                {sharing === "busy"
+                  ? "Gerando…"
+                  : sharing === "tap"
+                    ? "Imagem pronta: compartilhar"
+                    : sharing === "done"
+                      ? "Pronto"
+                      : sharing === "error"
+                        ? "Tentar de novo"
+                        : "Compartilhar"}
               </button>
             </div>
           </>

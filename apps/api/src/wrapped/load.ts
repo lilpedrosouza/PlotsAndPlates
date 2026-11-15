@@ -16,6 +16,7 @@ import {
   type WrappedComparison,
   closestAndFarthest,
   isAchievementKey,
+  saoPauloYear,
   sessionMinutes,
   sideBySide,
   thumbPathOf,
@@ -42,12 +43,26 @@ function ratingPairs<K>(rows: { id: K; userId: string; value: string | null }[],
   return pairs;
 }
 
-/** O item de maior média do casal (ou da pessoa, sem par). */
-function champion<K>(pairs: Map<K, { mine: number | null; partner: number | null }>) {
+/**
+ * O item de maior média do casal (ou da pessoa, sem par). Empate: o que mais
+ * apareceu no ano, depois o nome — sempre o mesmo campeão a cada abertura.
+ */
+function champion<K>(
+  pairs: Map<K, { mine: number | null; partner: number | null }>,
+  frequency: (id: K) => number,
+  nameOf: (id: K) => string,
+) {
   let best: { id: K; score: number } | null = null;
   for (const [id, pair] of pairs) {
     const score = sideBySide(pair.mine, pair.partner).couple;
-    if (score !== null && (!best || score > best.score)) best = { id, score };
+    if (score === null) continue;
+    const better =
+      !best ||
+      score > best.score ||
+      (score === best.score &&
+        (frequency(id) > frequency(best.id) ||
+          (frequency(id) === frequency(best.id) && nameOf(id).localeCompare(nameOf(best.id), "pt-BR") < 0)));
+    if (better) best = { id, score };
   }
   return best;
 }
@@ -99,7 +114,8 @@ export async function loadWrapped(db: Db, viewerId: string, year: number, storag
   };
   const favoriteCuisine = topBy(visitRows.flatMap((row) => row.cuisines), (cuisine) => cuisine, cuisineScore);
   const mostVisited = topBy(visitRows, (row) => row.restaurantId, coupleScore);
-  const bestPlace = champion(placeRatings);
+  const visitsAt = (restaurantId: string) => visitRows.filter((row) => row.restaurantId === restaurantId).length;
+  const bestPlace = champion(placeRatings, visitsAt, (id) => place.get(id)?.name ?? "");
 
   // Plots: sessões dos dois no ano; a "juntos" espelhada conta uma vez.
   const logRows = await db
@@ -134,7 +150,8 @@ export async function loadWrapped(db: Db, viewerId: string, year: number, storag
     : new Map<string, { mine: number | null; partner: number | null }>();
   const favoriteGenre = topBy(sessions.flatMap((row) => row.genres), (genre) => genre);
   const mostWatched = topBy(sessions, (row) => row.titleId);
-  const bestTitle = champion(titlePairs);
+  const sessionsOf = (titleId: string) => sessions.filter((row) => row.titleId === titleId).length;
+  const bestTitle = champion(titlePairs, sessionsOf, (id) => titleOf.get(id)?.title ?? "");
 
   // O casal: notas dos dois nos restaurantes e títulos do ano.
   let couple: Wrapped["couple"] = null;
@@ -156,11 +173,11 @@ export async function loadWrapped(db: Db, viewerId: string, year: number, storag
   const unlocked = await db
     .select({ key: userAchievements.key, unlockedAt: userAchievements.unlockedAt })
     .from(userAchievements)
+    // O ano da conquista é o de Brasília: a da noite de 31/12 fica no ano que acabou.
     .where(
       and(
         eq(userAchievements.userId, viewerId),
-        gte(userAchievements.unlockedAt, new Date(`${from}T00:00:00Z`)),
-        lte(userAchievements.unlockedAt, new Date(`${to}T23:59:59.999Z`)),
+        sql`extract(year from ${userAchievements.unlockedAt} at time zone 'America/Sao_Paulo')::int = ${year}`,
       ),
     )
     .orderBy(asc(userAchievements.unlockedAt));
@@ -172,7 +189,7 @@ export async function loadWrapped(db: Db, viewerId: string, year: number, storag
 
   return {
     year,
-    partial: year === new Date().getFullYear(),
+    partial: year === saoPauloYear(new Date()),
     people: ids.map((id) => people.get(id)).filter((person) => person !== undefined),
     plates: {
       restaurants: placeIds.length,
