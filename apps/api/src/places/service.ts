@@ -20,6 +20,8 @@ export type FindExisting = (by: { googlePlaceId?: string; osmRef?: string }) => 
 
 /** Raio da busca do mesmo lugar no OSM ao redor do ponto do Google. */
 const MATCH_RADIUS_M = 80;
+/** Plano B pelo nome (Nominatim): o lugar precisa estar até aqui do ponto do Google. */
+const NAME_RADIUS_M = 150;
 /** Sem nome (link só com coordenadas): aceita o lugar mais próximo até aqui. */
 const COORDS_ONLY_RADIUS_M = 25;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -37,8 +39,11 @@ export function createPlacesService(deps: {
   osm: Osm;
   findExisting: FindExisting;
   fetch?: typeof fetch;
+  /** Overpass sem resposta em tanto tempo: o nome é procurado também no Nominatim. */
+  nominatimFallbackAfterMs?: number;
 }): PlacesService {
   const fetcher = deps.fetch ?? fetch;
+  const fallbackAfterMs = deps.nominatimFallbackAfterMs ?? 1200;
   const linkToPlaceId = createTtlCache<string | null>({ ttlMs: DAY_MS, max: 500 });
 
   const existing = (id: string): RestaurantDraft => ({
@@ -85,9 +90,40 @@ export function createPlacesService(deps: {
     return { source: "manual", fields, osmAttribution: address !== null };
   }
 
+  /**
+   * Acha o mesmo lugar no OpenStreetMap ao redor do ponto. O Overpass (todos os
+   * lugares de comer num raio de 80 m) é o caminho principal; se ele falhar ou
+   * passar de `nominatimFallbackAfterMs` sem responder, o nome é procurado também
+   * no Nominatim, e vale o que chegar primeiro com um lugar parecido.
+   */
   async function resolveAt(point: LatLng, name: string, extra: Partial<RestaurantInput>, source: RestaurantDraft["source"]) {
-    const candidates = await swallow(deps.osm.nearby(point, MATCH_RADIUS_M), []);
-    const match = name.trim() ? pickMatch(name, candidates, point) : nearest(candidates, point, COORDS_ONLY_RADIUS_M);
+    const nearbyP = deps.osm.nearby(point, MATCH_RADIUS_M).then(
+      (candidates) => candidates,
+      () => null,
+    );
+    let match: OsmPlace | null = null;
+    if (name.trim()) {
+      const byName = new Promise<OsmPlace[] | null>((resolve) => {
+        const search = () => resolve(swallow(deps.osm.searchNear(name, point, NAME_RADIUS_M), []));
+        const timer = setTimeout(search, fallbackAfterMs);
+        void nearbyP.then((candidates) => {
+          clearTimeout(timer);
+          if (candidates) resolve(null);
+          else search();
+        });
+      });
+      const candidates = await nearbyP;
+      if (candidates) {
+        match = pickMatch(name, candidates, point);
+      } else {
+        const found = await byName;
+        const hit = found ? pickMatch(name, found, point) : null;
+        // A busca por nome não traz as tags (cozinha, telefone, horário): completa pelo lookup.
+        if (hit) match = (await swallow(deps.osm.lookup(hit.osmRef), null)) ?? hit;
+      }
+    } else {
+      match = nearest((await nearbyP) ?? [], point, COORDS_ONLY_RADIUS_M);
+    }
     if (match) return fromOsmPlace(match, extra, source);
     return manualDraft(name, point, extra);
   }

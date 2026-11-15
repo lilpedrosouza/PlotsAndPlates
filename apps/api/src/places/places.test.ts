@@ -3,6 +3,7 @@ import {
   GOOGLE_AUTOCOMPLETE,
   GOOGLE_LOCATION,
   GOOGLE_SEARCH_TEXT,
+  NOMINATIM_LOOKUP,
   NOMINATIM_REVERSE,
   NOMINATIM_SEARCH,
   OVERPASS_NEARBY,
@@ -302,5 +303,71 @@ describe("resiliência do OpenStreetMap", () => {
     const osm = createOsm({ fetch: fake.fetch, sleep: async () => {} });
     const places = await osm.nearby({ lat: -23.5617, lng: -46.6912 }, 80);
     expect(places.map((place) => place.osmRef)).toContain("node/1001");
+  });
+});
+
+describe("Overpass lento ou fora do ar", () => {
+  /** Servidor que nunca responde: só termina quando a requisição é cancelada. */
+  const hang = (call: { init?: RequestInit }) =>
+    new Promise<Response>((_, reject) => {
+      call.init?.signal?.addEventListener("abort", () => reject(new DOMException("cancelada", "AbortError")));
+    });
+  const FAST = { sleep: async () => {}, overpassHedgeMs: 20, overpassBudgetMs: 300 };
+
+  it("se o servidor principal demora, o seguinte entra antes do fim do prazo e vale o primeiro que responder", async () => {
+    const fake = fakeFetch([
+      { match: "overpass-api.de", respond: hang },
+      { match: "overpass.private.coffee", respond: () => json(OVERPASS_NEARBY) },
+    ]);
+    const osm = createOsm({ fetch: fake.fetch, ...FAST });
+    const started = Date.now();
+    const places = await osm.nearby({ lat: -23.5617, lng: -46.6912 }, 80);
+    expect(places.map((place) => place.osmRef)).toContain("node/1001");
+    expect(Date.now() - started).toBeLessThan(250);
+  });
+
+  it("com todos os servidores parados, desiste no prazo total em vez de esperar cada um", async () => {
+    const fake = fakeFetch([{ match: "overpass", respond: hang }, { match: "maps.mail.ru", respond: hang }]);
+    const osm = createOsm({ fetch: fake.fetch, ...FAST });
+    const started = Date.now();
+    await expect(osm.nearby({ lat: -23.5617, lng: -46.6912 }, 80)).rejects.toThrow();
+    expect(Date.now() - started).toBeLessThan(600);
+  });
+
+  it("escolher um lugar do Google sem Overpass ainda acha o restaurante pelo Nominatim, rápido", async () => {
+    const fake = fakeFetch([
+      { match: "places.googleapis.com/v1/places/", respond: () => json(GOOGLE_LOCATION) },
+      { match: "overpass", respond: hang },
+      { match: "maps.mail.ru", respond: hang },
+      { match: "nominatim.openstreetmap.org/search", respond: () => json(NOMINATIM_SEARCH) },
+      { match: "nominatim.openstreetmap.org/lookup", respond: () => json(NOMINATIM_LOOKUP) },
+      { match: "nominatim.openstreetmap.org/reverse", respond: () => json(NOMINATIM_REVERSE) },
+    ]);
+    const service = createPlacesService({
+      google: createGooglePlaces({ apiKey: "test-key", fetch: fake.fetch }),
+      osm: createOsm({ fetch: fake.fetch, ...FAST }),
+      fetch: fake.fetch,
+      findExisting: async () => null,
+    });
+    const started = Date.now();
+    const draft = await service.resolve({ googlePlaceId: "ChIJ-bar-do-ze", query: "Bar do Ze", session: SESSION });
+    expect(Date.now() - started).toBeLessThan(800);
+    expect(draft.source).toBe("google+osm");
+    expect(draft.fields).toMatchObject({ name: "Bar do Zé", osmRef: "node/1001", phone: "+55 11 3333-4444" });
+  });
+
+  it("depois de uma falha, o Overpass fica de lado por um minuto (a próxima escolha não espera o prazo de novo)", async () => {
+    const fake = fakeFetch([{ match: "overpass", respond: hang }, { match: "maps.mail.ru", respond: hang }]);
+    let clock = 1_000_000;
+    const osm = createOsm({ fetch: fake.fetch, ...FAST, now: () => clock });
+    await expect(osm.nearby({ lat: -23.5617, lng: -46.6912 }, 80)).rejects.toThrow();
+    const calls = fake.calls.length;
+    const started = Date.now();
+    await expect(osm.nearby({ lat: -23.56, lng: -46.69 }, 80)).rejects.toThrow();
+    expect(Date.now() - started).toBeLessThan(50);
+    expect(fake.calls.length).toBe(calls);
+    clock += 61_000;
+    await expect(osm.nearby({ lat: -23.55, lng: -46.68 }, 80)).rejects.toThrow();
+    expect(fake.calls.length).toBeGreaterThan(calls);
   });
 });
