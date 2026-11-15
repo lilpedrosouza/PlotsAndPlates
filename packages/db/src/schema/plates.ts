@@ -143,6 +143,8 @@ export const visits = pgTable(
   (table) => [
     index("visits_user_date_idx").on(table.userId, table.visitedOn.desc()),
     index("visits_restaurant_idx").on(table.restaurantId),
+    // Visitas "juntos" achadas pelo par: conquistas, Wrapped e as policies de leitura.
+    index("visits_together_with_idx").on(table.togetherWith),
     check("visits_amount", sql`${table.amountCents} >= 0`),
     // "Juntos": o par vê e edita a visita (inclusive para desmarcar o "juntos").
     pgPolicy("visits_select_own", {

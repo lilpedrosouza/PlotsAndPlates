@@ -58,7 +58,8 @@ async function runOnce(url, loggedIn) {
   }
 }
 
-const summaryFile = path.join(ROOT, "docs/performance/data", `${opts.label}.json`);
+// Só as medições de referência (antes/depois) vão para o repositório; as de trabalho ficam em .perf/.
+const summaryFile = /antes|depois/.test(opts.label) ? path.join(ROOT, "docs/performance/data", `${opts.label}.json`) : path.join(outDir, "summary.json");
 const summary = fs.existsSync(summaryFile) && opts.only ? JSON.parse(fs.readFileSync(summaryFile, "utf8")) : {};
 for (const [name, route, loggedIn] of ROUTES) {
   const runs = [];

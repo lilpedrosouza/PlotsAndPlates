@@ -1,0 +1,1 @@
+CREATE INDEX "visits_together_with_idx" ON "visits" USING btree ("together_with");

@@ -13,8 +13,7 @@ export function achievementRoutes({ db }: Pick<AppDeps, "db">) {
   /** Catálogo com progresso e as desbloqueadas. Confere antes: quem já tinha dados destrava aqui. */
   app.get("/me/achievements", async (c) => {
     const user = c.get("user");
-    const { counts } = await evaluateAchievements(db, user.id);
-    const rows = await db.select().from(userAchievements).where(eq(userAchievements.userId, user.id));
+    const { counts, rows } = await evaluateAchievements(db, user.id);
     const byKey = new Map(rows.map((row) => [row.key, row]));
     const body: MyAchievements = {
       items: ACHIEVEMENTS.map((achievement) => {

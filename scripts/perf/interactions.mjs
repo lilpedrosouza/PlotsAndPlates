@@ -239,5 +239,5 @@ if (!opts.only || "aviso-conquista".includes(opts.only)) {
   }
 }
 
-writeJson(path.join(ROOT, "docs/performance/data", `${opts.label}-interacoes.json`), results);
+writeJson(/antes|depois/.test(opts.label) ? path.join(ROOT, "docs/performance/data", `${opts.label}-interacoes.json`) : path.join(ROOT, ".perf", opts.label, "interacoes.json"), results);
 await browser.close();

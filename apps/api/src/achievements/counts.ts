@@ -8,8 +8,9 @@ import { partnerOf } from "../couples/partner";
  * escalares sobre a linha do perfil). Roda com a conexão dona das tabelas: o
  * que conta é tudo o que a pessoa registrou, inclusive o privado.
  */
-export async function achievementCounts(db: Db, userId: string): Promise<AchievementCounts> {
-  const partner = await partnerOf(db, userId);
+export async function achievementCounts(db: Db, userId: string, knownPartner?: string | null): Promise<AchievementCounts> {
+  // Quem chama e já sabe o par (inclusive "nenhum") evita procurar de novo.
+  const partner = knownPartner === undefined ? await partnerOf(db, userId) : knownPartner;
   const u = sql`${userId}::uuid`;
   const p = partner ? sql`${partner}::uuid` : sql`null::uuid`;
   // Visita no caderno da pessoa: dela ou "juntos" com ela.
