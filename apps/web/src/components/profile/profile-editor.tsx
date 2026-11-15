@@ -17,6 +17,7 @@ import { ApiRequestError } from "@/lib/api";
 import { IMAGE_ACCEPT, skipsOptimizer } from "@/lib/image";
 import { uploadProfileImage, useMe, useUpdateProfile } from "@/lib/queries";
 import { getSupabase } from "@/lib/supabase";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 const BIO_MAX = 280;
@@ -34,7 +35,7 @@ export function ProfileEditor() {
   const [preview, setPreview] = useState<Partial<Record<ProfileUploadKind, string>>>({});
   const [imageError, setImageError] = useState<string | null>(null);
 
-  if (!profile) return null;
+  if (!profile) return <ProfileSkeleton />;
 
   const values = draft ?? { displayName: profile.displayName, username: profile.username, bio: profile.bio };
   const dirty =
@@ -278,6 +279,26 @@ function AccentPicker({ value, onChange }: { value: AccentKey; onChange: (value:
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/** Capa, foto e nome no mesmo lugar do perfil pronto, enquanto o /me não chega. */
+function ProfileSkeleton() {
+  const section = useSection();
+  return (
+    <div aria-busy className="mx-auto flex max-w-2xl flex-col gap-10 pt-2">
+      <h1 className="sr-only">Meu perfil</h1>
+      <section aria-label="Fotos do perfil">
+        <div className={cn("relative aspect-[16/6] overflow-hidden bg-sunken", section === "plates" ? "frame-label" : "border border-rule")} />
+        <div className="-mt-9 flex items-end gap-4 px-4">
+          <Skeleton className="size-[88px] rounded-full ring-4 ring-background" />
+          <div className="min-w-0 flex-1 pb-1">
+            <Skeleton className="h-8 w-40" />
+            <Skeleton className="mt-1.5 h-4 w-24" />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

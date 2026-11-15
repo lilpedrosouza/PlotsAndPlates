@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { InviteBanner } from "@/components/couple/invite-banner";
-import { Notebook, NotebookSkeleton } from "@/components/plates/notebook";
+import { Notebook, NotebookFallback } from "@/components/plates/notebook";
 import { WrappedBanner } from "@/components/wrapped/wrapped-card";
 
 /** Casca estática preenchida no navegador depois do login: não há o que validar no servidor. */
@@ -11,7 +11,7 @@ export default function PlatesPage() {
     <>
       <InviteBanner />
       <WrappedBanner />
-      <Suspense fallback={<NotebookSkeleton />}>
+      <Suspense fallback={<NotebookFallback status="fomos" />}>
         <Notebook status="fomos" />
       </Suspense>
     </>

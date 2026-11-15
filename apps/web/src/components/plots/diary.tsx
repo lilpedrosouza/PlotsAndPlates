@@ -154,18 +154,24 @@ function EmptyDiary() {
 }
 
 export function DiarySkeleton() {
+  // Mesmo cabeçalho do diário pronto: o título já vem no HTML do servidor.
   return (
-    <div aria-busy className="flex flex-col gap-3 pt-2">
-      <Skeleton className="h-14 w-40" />
-      {[0, 1, 2, 3, 4].map((index) => (
-        <div key={index} className="flex items-center gap-3.5 py-2">
-          <Skeleton className="aspect-[2/3] w-12" />
-          <div className="flex-1">
-            <Skeleton className="h-5 w-2/3" />
-            <Skeleton className="mt-2 h-3 w-1/2" />
+    <div aria-busy className="flex flex-col gap-8 pt-2 pb-20 md:pb-8">
+      <header className="flex flex-col gap-2 border-b border-rule-strong pb-4">
+        <h1 className="font-display text-[clamp(2.25rem,10vw,4rem)] leading-[1.14]">Diário</h1>
+        <Skeleton className="h-[1.2rem] w-28" />
+      </header>
+      <div className="flex flex-col gap-3">
+        {[0, 1, 2, 3, 4].map((index) => (
+          <div key={index} className="flex items-center gap-3.5 py-2">
+            <Skeleton className="aspect-[2/3] w-12" />
+            <div className="flex-1">
+              <Skeleton className="h-5 w-2/3" />
+              <Skeleton className="mt-2 h-3 w-1/2" />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

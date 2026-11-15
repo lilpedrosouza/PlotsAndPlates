@@ -28,7 +28,7 @@ import { ActiveFilters, FiltersSheet } from "./filters-sheet";
 import { RestaurantCard } from "./restaurant-card";
 import { RestaurantRow } from "./restaurant-row";
 
-type Status = "fomos" | "quero-ir";
+export type Status = "fomos" | "quero-ir";
 type View = "grade" | "indice";
 
 /** A partir daqui o índice passa a desenhar só as linhas visíveis. */
@@ -296,6 +296,46 @@ function EmptyNotebook({ copy, filtered, onClear }: { copy: (typeof COPY)[Status
         </Link>
       </div>
     </section>
+  );
+}
+
+/**
+ * O que o caderno mostra enquanto lê a URL (filtros e modo de ver): abas,
+ * título e a lista em esqueleto, no mesmo lugar do caderno pronto. Vai no HTML
+ * do servidor, então o título aparece antes do JavaScript e da sessão.
+ */
+export function NotebookFallback({ status }: { status: Status }) {
+  return (
+    <div className="flex flex-col gap-6 pt-2 pb-20 md:pb-8">
+      <nav aria-label="Situação" className="flex gap-6 border-b border-rule">
+        {(["fomos", "quero-ir"] as const).map((target) => (
+          <Link
+            key={target}
+            href={target === "fomos" ? "/plates" : "/plates/quero-ir"}
+            aria-current={status === target ? "page" : undefined}
+            className={cn(
+              "font-micro -mb-px border-b-2 pb-2.5 text-[1rem]",
+              status === target ? "border-brand text-foreground" : "border-transparent text-soft",
+            )}
+          >
+            {target === "fomos" ? "Fomos" : "Quero ir"}
+          </Link>
+        ))}
+      </nav>
+      <header className="flex flex-col gap-4">
+        <h1 className="font-display text-[clamp(2rem,8vw,3rem)] leading-[1.05]">{COPY[status].title}</h1>
+        {status === "quero-ir" ? (
+          <div>
+            <PlatesDraw />
+          </div>
+        ) : null}
+        <div className="flex items-center gap-2" aria-hidden>
+          <Skeleton className="h-9 w-28" />
+          <Skeleton className="ml-auto h-[2.875rem] w-[5.375rem] rounded-md" />
+        </div>
+      </header>
+      <NotebookSkeleton />
+    </div>
   );
 }
 

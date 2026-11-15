@@ -13,7 +13,8 @@ export const instant = false;
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <AuthGate>
-      {children}
+      {/* O conteúdo ocupa pelo menos a tela: o rodapé não aparece e depois é empurrado quando os dados chegam. */}
+      <div className="min-h-dvh">{children}</div>
       {/* Toda tela de Plots mostra títulos e pôsteres do TMDB: a atribuição fica no pé de todas. */}
       <div className="pb-24 md:pb-4">
         <TmdbAttribution />

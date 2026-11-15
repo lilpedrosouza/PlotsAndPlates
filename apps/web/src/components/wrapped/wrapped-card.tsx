@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSection } from "@/components/shell/section-context";
 import { cn } from "@/lib/utils";
 import { useWrappedYears } from "@/lib/wrapped/queries";
@@ -41,8 +42,19 @@ export function WrappedCard() {
   );
 }
 
-/** Em dezembro e na primeira semana de janeiro, o aviso no topo do caderno e do diário. */
+/**
+ * Em dezembro e na primeira semana de janeiro, o aviso no topo do caderno e do diário.
+ * Depende da data de hoje, então não entra no HTML pré-renderizado (o Suspense segura).
+ */
 export function WrappedBanner() {
+  return (
+    <Suspense fallback={null}>
+      <WrappedBannerNow />
+    </Suspense>
+  );
+}
+
+function WrappedBannerNow() {
   const section = useSection();
   const years = useWrappedYears();
   const now = new Date();

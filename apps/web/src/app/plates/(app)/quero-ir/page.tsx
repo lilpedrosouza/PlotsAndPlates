@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Notebook, NotebookSkeleton } from "@/components/plates/notebook";
+import { Notebook, NotebookFallback } from "@/components/plates/notebook";
 
 export const metadata: Metadata = { title: "Quero ir" };
 
@@ -9,7 +9,7 @@ export const instant = false;
 
 export default function WishlistPage() {
   return (
-    <Suspense fallback={<NotebookSkeleton />}>
+    <Suspense fallback={<NotebookFallback status="quero-ir" />}>
       <Notebook status="quero-ir" />
     </Suspense>
   );

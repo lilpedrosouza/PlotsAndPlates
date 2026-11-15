@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
 import { useMe } from "@/lib/queries";
 
@@ -34,15 +33,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
     );
   }
 
-  if (auth.status !== "in" || !me.data?.profile) {
-    return (
-      <div aria-busy="true" aria-label="Carregando" className="flex flex-col gap-5 py-8">
-        <Skeleton className="h-10 w-2/3" />
-        <Skeleton className="h-5 w-1/2" />
-        <Skeleton className="mt-4 h-64 w-full" />
-      </div>
-    );
-  }
-
+  // A casca da tela aparece já no HTML: títulos e estrutura não esperam a sessão
+  // nem o /me. Cada componente mostra o próprio esqueleto até os dados chegarem,
+  // e nada é buscado sem sessão (as consultas só rodam com `auth.status === "in"`).
   return children;
 }
