@@ -1,41 +1,10 @@
 import { z } from "zod";
 import { mediaPathSchema } from "../profile";
 import { RESTAURANT_CRITERIA, isValidRating } from "../ratings";
-
-export const DISH_CATEGORIES = ["entrada", "principal", "sobremesa", "bebida"] as const;
-export type DishCategory = (typeof DISH_CATEGORIES)[number];
-export const DISH_CATEGORY_LABELS: Record<DishCategory, string> = {
-  entrada: "Entrada",
-  principal: "Principal",
-  sobremesa: "Sobremesa",
-  bebida: "Bebida",
-};
-
-export const PRICE_LEVELS = [1, 2, 3, 4] as const;
-export type PriceLevel = (typeof PRICE_LEVELS)[number];
-
-export const WISHLIST_PRIORITIES = ["alta", "media", "baixa"] as const;
-export type WishlistPriority = (typeof WISHLIST_PRIORITIES)[number];
-export const WISHLIST_PRIORITY_LABELS: Record<WishlistPriority, string> = {
-  alta: "Alta",
-  media: "Média",
-  baixa: "Baixa",
-};
-
-export const RESTAURANT_SORTS = ["recentes", "nota", "nome", "prioridade"] as const;
-export type RestaurantSort = (typeof RESTAURANT_SORTS)[number];
-
-export const RESTAURANT_STATUSES = ["fomos", "quero-ir", "todos"] as const;
-export type RestaurantStatus = (typeof RESTAURANT_STATUSES)[number];
+import { DISH_CATEGORIES, PRICE_LEVELS, RESTAURANT_SORTS, RESTAURANT_STATUSES, WISHLIST_PRIORITIES, todayIso } from "./constants";
 
 const OSM_REF = /^(node|way|relation)\/\d+$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-
-/** Data de hoje (AAAA-MM-DD) no fuso de quem está rodando o código. */
-export function todayIso(now = new Date()): string {
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
-  return local.toISOString().slice(0, 10);
-}
 
 /**
  * Versão "edição parcial" de um schema de criação: tudo opcional e sem os

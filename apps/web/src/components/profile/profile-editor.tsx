@@ -16,7 +16,7 @@ import { WrappedCard } from "@/components/wrapped/wrapped-card";
 import { ApiRequestError } from "@/lib/api";
 import { IMAGE_ACCEPT, skipsOptimizer } from "@/lib/image";
 import { uploadProfileImage, useMe, useUpdateProfile } from "@/lib/queries";
-import { getSupabase } from "@/lib/supabase";
+import { loadSupabase } from "@/lib/supabase";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -92,7 +92,7 @@ export function ProfileEditor() {
   };
 
   const signOut = async () => {
-    await getSupabase().auth.signOut();
+    await (await loadSupabase()).auth.signOut();
     queryClient.clear();
   };
 

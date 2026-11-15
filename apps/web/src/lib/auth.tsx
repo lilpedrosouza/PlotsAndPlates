@@ -3,7 +3,7 @@
 import type { Session } from "@supabase/supabase-js";
 import { type ReactNode, createContext, use, useEffect, useState } from "react";
 import { isConfigured } from "./env";
-import { getSupabase } from "./supabase";
+import { loadSupabase, storedSession } from "./supabase";
 
 type AuthState =
   | { status: "loading"; session: null }
@@ -20,13 +20,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isConfigured) return;
-    const supabase = getSupabase();
     const apply = (session: Session | null) =>
       setState(session ? { status: "in", session } : { status: "out", session: null });
 
-    supabase.auth.getSession().then(({ data }) => apply(data.session));
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => apply(session));
-    return () => data.subscription.unsubscribe();
+    // A sessão guardada vale já: as consultas da tela partem sem esperar o supabase-js.
+    const stored = storedSession();
+    if (stored) apply(stored);
+
+    // O cliente chega depois (renova o token, troca o código do login, ouve entrar/sair).
+    // Com sessão válida ele espera a tela ficar livre; sem ela, é ele quem decide.
+    let cancelled = false;
+    let unsubscribe = () => {};
+    const start = () =>
+      loadSupabase().then((supabase) => {
+        if (cancelled) return;
+        supabase.auth.getSession().then(({ data }) => !cancelled && apply(data.session));
+        const { data } = supabase.auth.onAuthStateChange((_event, session) => !cancelled && apply(session));
+        unsubscribe = () => data.subscription.unsubscribe();
+      });
+    let idle: number | null = null;
+    if (stored && "requestIdleCallback" in window) idle = window.requestIdleCallback(() => void start(), { timeout: 3000 });
+    else void start();
+    return () => {
+      cancelled = true;
+      if (idle !== null) window.cancelIdleCallback(idle);
+      unsubscribe();
+    };
   }, []);
 
   return <AuthContext value={state}>{children}</AuthContext>;

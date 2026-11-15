@@ -1,6 +1,7 @@
 "use client";
 
 import { Dices } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { AddedBy } from "@/components/couple/added-by";
 import { ArchPhoto } from "@/components/plates/arch-photo";
@@ -11,7 +12,10 @@ import { fromWatchlist, fromWishlist, useWholeWishlist } from "@/lib/draw/items"
 import { placeLine } from "@/lib/plates/format";
 import { creditLine } from "@/lib/plots/format";
 import { useWatchlist } from "@/lib/plots/queries";
-import { DrawSheet } from "./draw-sheet";
+
+
+/** O baralho só é baixado quando alguém pede um sorteio. */
+const DrawSheet = dynamic(() => import("./draw-sheet").then((module) => module.DrawSheet));
 
 function DrawTrigger({ onClick }: { onClick: () => void }) {
   return (
@@ -49,7 +53,7 @@ export function PlatesDraw() {
           setOpen(true);
         }}
       />
-      <DrawSheet key={key} world="plates" open={open} onOpenChange={setOpen} cards={cards} loading={list.isPending} />
+      {key > 0 ? <DrawSheet key={key} world="plates" open={open} onOpenChange={setOpen} cards={cards} loading={list.isPending} /> : null}
     </>
   );
 }
@@ -93,7 +97,7 @@ export function PlotsDraw({ onWatched }: { onWatched: (titleId: string) => void 
           setOpen(true);
         }}
       />
-      <DrawSheet key={key} world="plots" open={open} onOpenChange={setOpen} cards={cards} loading={list.isPending} />
+      {key > 0 ? <DrawSheet key={key} world="plots" open={open} onOpenChange={setOpen} cards={cards} loading={list.isPending} /> : null}
     </>
   );
 }

@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./api";
 import { useAuth } from "./auth";
 import { IMAGE_PRESETS, compressImage } from "./image";
-import { getSupabase } from "./supabase";
+import { loadSupabase } from "./supabase";
 
 export const meKey = ["me"] as const;
 
@@ -71,7 +71,7 @@ export function checkUsername(username: string) {
 export async function uploadProfileImage(kind: ProfileUploadKind, file: Blob): Promise<string> {
   const blob = await compressImage(file, IMAGE_PRESETS[kind]);
   const signed = await api<SignedUpload>("/uploads/sign", { method: "POST", body: { kind } });
-  const { error } = await getSupabase()
+  const { error } = await (await loadSupabase())
     .storage.from(signed.bucket)
     .uploadToSignedUrl(signed.path, signed.token, blob, { contentType: "image/webp" });
   if (error) throw new Error("A imagem não subiu. Tenta de novo?");

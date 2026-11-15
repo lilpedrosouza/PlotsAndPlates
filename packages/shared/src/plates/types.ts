@@ -1,5 +1,6 @@
 import type { PersonRef } from "../couple/types";
-import type { DishCategory, PriceLevel, RestaurantInput, WishlistPriority } from "./schemas";
+import type { DishCategory, PriceLevel, WishlistPriority } from "./constants";
+import type { RestaurantInput } from "./schemas";
 
 /** De onde veio a busca ou o rascunho. */
 export type PlaceSource = "google" | "osm";

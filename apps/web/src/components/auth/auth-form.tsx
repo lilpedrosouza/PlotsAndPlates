@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
 import { authMessage, useAuth } from "@/lib/auth";
 import { isConfigured } from "@/lib/env";
-import { getSupabase } from "@/lib/supabase";
+import { loadSupabase } from "@/lib/supabase";
 
 type Mode = "entrar" | "cadastro";
 
@@ -69,7 +69,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       return;
     }
     setPending("form");
-    const supabase = getSupabase();
+    const supabase = await loadSupabase();
     const result =
       mode === "entrar"
         ? await supabase.auth.signInWithPassword({ email, password })
@@ -94,7 +94,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const google = async () => {
     setError(null);
     setPending("google");
-    const { error: oauthError } = await getSupabase().auth.signInWithOAuth({
+    const { error: oauthError } = await (await loadSupabase()).auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });

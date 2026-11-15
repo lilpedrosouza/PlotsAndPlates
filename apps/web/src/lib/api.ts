@@ -1,6 +1,6 @@
 import type { ApiError } from "@pap/shared";
 import { env } from "./env";
-import { getSupabase } from "./supabase";
+import { accessToken } from "./supabase";
 
 export class ApiRequestError extends Error {
   constructor(
@@ -18,8 +18,7 @@ const OFFLINE = "Sem conexão com o PAP agora. Confere a internet e tenta de nov
 
 /** Chama a API do PAP com o token da sessão atual. */
 export async function api<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
-  const { data } = await getSupabase().auth.getSession();
-  const token = data.session?.access_token;
+  const token = await accessToken();
   if (!token) throw new ApiRequestError(401, "unauthorized", "Entre na sua conta para continuar.");
 
   let response: Response;

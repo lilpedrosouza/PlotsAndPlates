@@ -5,6 +5,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -24,11 +25,14 @@ import {
 } from "@/lib/plates/filters";
 import { useRestaurants } from "@/lib/plates/queries";
 import { cn } from "@/lib/utils";
-import { ActiveFilters, FiltersSheet } from "./filters-sheet";
+import { ActiveFilters } from "./active-filters";
 import { RestaurantCard } from "./restaurant-card";
 import { RestaurantRow } from "./restaurant-row";
 
 export type Status = "fomos" | "quero-ir";
+
+/** A folha de filtros (e o diálogo do Radix) só é baixada quando alguém abre. */
+const FiltersSheet = dynamic(() => import("./filters-sheet").then((module) => module.FiltersSheet));
 type View = "grade" | "indice";
 
 /** A partir daqui o índice passa a desenhar só as linhas visíveis. */
@@ -200,13 +204,15 @@ export function Notebook({ status }: { status: Status }) {
       <div ref={sentinel} aria-hidden />
       {isFetchingNextPage ? <p className="font-micro text-center text-[0.75rem] text-soft">Carregando mais…</p> : null}
 
-      <FiltersSheet
-        key={filtersKey}
-        open={filtersOpen}
-        onOpenChange={setFiltersOpen}
-        filters={{ ...filters, status }}
-        onApply={(next) => update(next)}
-      />
+      {filtersKey > 0 ? (
+        <FiltersSheet
+          key={filtersKey}
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
+          filters={{ ...filters, status }}
+          onApply={(next) => update(next)}
+        />
+      ) : null}
     </div>
   );
 }

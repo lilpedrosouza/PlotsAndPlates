@@ -1,7 +1,7 @@
 import type { PhotoUploadKind, SignedUpload } from "@pap/shared";
 import { api } from "../api";
 import { compressWithThumb } from "../image";
-import { getSupabase } from "../supabase";
+import { loadSupabase } from "../supabase";
 
 /**
  * Comprime no navegador (WebP até 1600 px + miniatura), sobe os dois arquivos
@@ -10,7 +10,7 @@ import { getSupabase } from "../supabase";
 export async function uploadPlatesPhoto(kind: PhotoUploadKind, file: Blob): Promise<string> {
   const { full, thumb } = await compressWithThumb(file);
   const signed = await api<SignedUpload>("/uploads/sign", { method: "POST", body: { kind } });
-  const storage = getSupabase().storage.from(signed.bucket);
+  const storage = (await loadSupabase()).storage.from(signed.bucket);
   const uploads = [storage.uploadToSignedUrl(signed.path, signed.token, full, { contentType: "image/webp" })];
   if (signed.thumbPath && signed.thumbToken) {
     uploads.push(storage.uploadToSignedUrl(signed.thumbPath, signed.thumbToken, thumb, { contentType: "image/webp" }));

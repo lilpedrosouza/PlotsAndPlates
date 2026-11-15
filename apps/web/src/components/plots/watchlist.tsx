@@ -1,6 +1,7 @@
 "use client";
 
 import { TITLE_KINDS, TITLE_KIND_LABELS, type TitleKind, type WatchlistItem } from "@pap/shared";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { AddedBy } from "@/components/couple/added-by";
@@ -11,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { creditLine } from "@/lib/plots/format";
 import { useTitle, useWatchlist } from "@/lib/plots/queries";
 import { cn } from "@/lib/utils";
-import { LogSheet } from "./log-sheet";
 import { useOpenTitle } from "./open-title";
 import { Poster } from "./poster";
 import { JustWatchAttribution } from "./tmdb-attribution";
@@ -130,6 +130,9 @@ function WatchlistCard({ item, onWatched }: { item: WatchlistItem; onWatched: ()
     </div>
   );
 }
+
+/** A folha de registro só é baixada quando alguém toca em "Assistimos!". */
+const LogSheet = dynamic(() => import("./log-sheet").then((module) => module.LogSheet));
 
 /** Busca o título completo e abre a folha de registro; ao salvar, ele sai do quero ver. */
 function AssistimosLauncher({ titleId, onDone }: { titleId: string; onDone: () => void }) {

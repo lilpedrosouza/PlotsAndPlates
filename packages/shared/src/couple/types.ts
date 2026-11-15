@@ -1,5 +1,5 @@
 import { coupleRating } from "../ratings";
-import type { AccentKey, PublicProfile } from "../profile";
+import type { AccentKey, PublicProfile } from "../profile-constants";
 
 /** Uma pessoa, no mínimo para mostrar nome e foto. */
 export type PersonRef = { id: string; username: string; displayName: string; avatarUrl: string | null; accent: AccentKey };

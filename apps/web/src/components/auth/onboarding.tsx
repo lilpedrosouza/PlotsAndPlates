@@ -8,7 +8,7 @@ import { TextField } from "@/components/ui/field";
 import { ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { checkUsername, useCreateProfile, useMe } from "@/lib/queries";
-import { getSupabase } from "@/lib/supabase";
+import { loadSupabase } from "@/lib/supabase";
 
 /** Sugere um @username a partir do nome: "Ana Souza" → "ana.souza". */
 const suggestUsername = (name: string) =>
@@ -148,7 +148,7 @@ export function Onboarding() {
       </Button>
       <button
         type="button"
-        onClick={() => getSupabase().auth.signOut()}
+        onClick={async () => (await loadSupabase()).auth.signOut()}
         className="self-start text-sm text-soft underline hover:text-foreground"
       >
         Entrar com outra conta
