@@ -8,10 +8,18 @@ import { useSection } from "@/components/shell/section-context";
 import { Button } from "@/components/ui/button";
 import { useMarkSeen, useMyAchievements } from "@/lib/achievements/queries";
 import { SPRING } from "@/lib/motion";
+import { useWrappedOpen } from "@/lib/wrapped/open";
 import { cn } from "@/lib/utils";
 import { AchievementBadge } from "./badge";
 
 const MAX_FAN = 8;
+
+/**
+ * Fechadas nesta visita ao site. Fica fora do componente porque cada mundo
+ * monta o próprio aviso: trocar de mundo não pode trazer de volta o que
+ * acabou de ser fechado enquanto a marcação de "vista" ainda viaja.
+ */
+const dismissedThisVisit = new Set<AchievementKey>();
 
 /**
  * Desbloqueio: as conquistas ganhas que a pessoa ainda não viu. Uma só: o selo
@@ -24,12 +32,12 @@ export function UnlockOverlay() {
   const query = useMyAchievements();
   const markSeen = useMarkSeen();
   const [shown, setShown] = useState<AchievementKey[] | null>(null);
-  // Fechadas nesta sessão: não voltam enquanto a marcação de "vista" não chega.
-  const [dismissed, setDismissed] = useState<AchievementKey[]>([]);
+  const wrappedOpen = useWrappedOpen();
 
-  const unseen = (query.data?.items ?? [])
-    .filter((item) => item.unlockedAt && !item.seen && !dismissed.includes(item.key))
-    .map((item) => item.key);
+  // Com o Wrapped na tela, o aviso espera (ele abriria por baixo dos stories).
+  const unseen = wrappedOpen
+    ? []
+    : (query.data?.items ?? []).filter((item) => item.unlockedAt && !item.seen && !dismissedThisVisit.has(item.key)).map((item) => item.key);
   const pending = unseen.join(",");
 
   // Guarda o lote que apareceu: o que destravar enquanto ele está aberto vem no próximo.
@@ -38,7 +46,7 @@ export function UnlockOverlay() {
   const close = () => {
     if (shown) {
       markSeen.mutate(shown);
-      setDismissed((current) => [...current, ...shown]);
+      for (const key of shown) dismissedThisVisit.add(key);
     }
     setShown(null);
   };

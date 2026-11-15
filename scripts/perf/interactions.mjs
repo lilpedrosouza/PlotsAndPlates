@@ -5,7 +5,7 @@
 import path from "node:path";
 import { ROOT, args, firstHref, launch, login, markAchievementsSeen, writeJson } from "./lib.mjs";
 
-const opts = args({ base: "http://localhost:3100", label: "medicao", only: "", window: "1500" });
+const opts = args({ base: "http://localhost:3100", label: "medicao", only: "", window: "1500", dpr: "2.625" });
 const BASE = opts.base.replace(/\/$/, "");
 const WINDOW = Number(opts.window);
 
@@ -42,7 +42,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function newPage(browser) {
   const page = await browser.newPage();
-  await page.setViewport({ width: 412, height: 915, deviceScaleFactor: 2.625, isMobile: true, hasTouch: true });
+  await page.setViewport({ width: 412, height: 915, deviceScaleFactor: Number(opts.dpr), isMobile: true, hasTouch: true });
   await page.evaluateOnNewDocument(PROBE);
   return page;
 }
@@ -66,7 +66,13 @@ async function tap(page, selector) {
     if (!handle) await sleep(500);
   }
   if (!handle) throw new Error(`nada visível para ${selector}`);
+  const before = await handle.boundingBox();
   await handle.scrollIntoView();
+  // Rolou até o alvo? Espera os pedaços novos da tela serem pintados antes de tocar:
+  // ninguém toca no mesmo milissegundo da rolagem, e o raster por software do Chromium
+  // sem tela atrasaria a apresentação do quadro do toque (medido: +190 ms).
+  const after = await handle.boundingBox();
+  if (before && after && Math.abs(before.y - after.y) > 1) await sleep(700);
   const box = await handle.boundingBox();
   await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
 }
@@ -215,7 +221,7 @@ if (!opts.only || "aviso-conquista".includes(opts.only)) {
   if (email && password) {
     const context = await browser.createBrowserContext();
     const page = await context.newPage();
-    await page.setViewport({ width: 412, height: 915, deviceScaleFactor: 2.625, isMobile: true, hasTouch: true });
+    await page.setViewport({ width: 412, height: 915, deviceScaleFactor: Number(opts.dpr), isMobile: true, hasTouch: true });
     await page.evaluateOnNewDocument(PROBE);
     try {
       await page.goto(`${BASE}/entrar`, { waitUntil: "networkidle2" });

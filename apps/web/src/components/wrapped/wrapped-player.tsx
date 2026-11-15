@@ -9,6 +9,7 @@ import { useSection } from "@/components/shell/section-context";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SPRING } from "@/lib/motion";
+import { useMarkWrappedOpen } from "@/lib/wrapped/open";
 import { useWrapped } from "@/lib/wrapped/queries";
 import { deliverStory, renderStory } from "./share";
 import { buildStories } from "./stories";
@@ -18,6 +19,7 @@ const HOLD_MS = 220;
 
 /** O ano do casal em stories, por cima de tudo. */
 export function WrappedPlayer() {
+  useMarkWrappedOpen();
   const params = useParams<{ ano: string }>();
   const year = Number(params.ano);
   const query = useWrapped(year);
@@ -98,6 +100,13 @@ export function WrappedPlayer() {
     go(event.clientX - left < width / 3 ? -1 : 1);
   };
 
+  // O sistema cancelou o toque (rolagem, gesto, notificação): nada de pausa presa.
+  const onPointerCancel = () => {
+    if (press.current.timer) window.clearTimeout(press.current.timer);
+    press.current = { at: 0, held: false, timer: null };
+    setPaused(false);
+  };
+
   const share = async () => {
     if (ready) {
       const file = ready;
@@ -173,7 +182,7 @@ export function WrappedPlayer() {
               className="absolute inset-0 z-10 touch-none select-none"
               onPointerDown={onPointerDown}
               onPointerUp={onPointerUp}
-              onPointerCancel={() => setPaused(false)}
+              onPointerCancel={onPointerCancel}
             />
 
             <div data-theme={topChrome} className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-col gap-3 px-4 pt-3">

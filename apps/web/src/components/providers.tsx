@@ -1,12 +1,20 @@
 "use client";
 
-import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryClient, QueryClientProvider, notifyManager } from "@tanstack/react-query";
 import { LazyMotion, MotionConfig } from "motion/react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, startTransition, useState } from "react";
 import { refreshAchievements } from "@/lib/achievements/queries";
 import { ApiRequestError } from "@/lib/api";
 import { AuthProvider } from "@/lib/auth";
 import { TransitionRouterProvider } from "@/lib/transition-router";
+
+/**
+ * Dados que chegam da API (respostas, invalidações, refetch) renderizam numa
+ * transição: o React fatia e interrompe esse trabalho, e um toque no meio dele
+ * responde na hora. Antes, a volta de uma lista renderizava tudo de uma vez
+ * (até ~200 ms com a CPU 4x mais lenta) e segurava o quadro do toque seguinte.
+ */
+notifyManager.setBatchNotifyFunction((callback) => startTransition(callback));
 
 /** Animações de layout (reordenar o caderno) precisam do pacote completo; ele chega sob demanda. */
 const loadMotionFeatures = () => import("@/lib/motion-features").then((module) => module.default);

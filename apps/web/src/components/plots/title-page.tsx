@@ -16,7 +16,7 @@ import { Bookmark, BookmarkCheck, Heart, ListPlus, Pencil, RotateCcw, Star, Tras
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import { firstName } from "@/components/couple/added-by";
 import { CommunitySection } from "@/components/people/community-section";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -57,9 +57,13 @@ export function TitlePage() {
   const query = useTitle(id);
   const [sheet, setSheet] = useState<SheetState>(null);
   const [sheetKey, setSheetKey] = useState(0);
+  // A folha monta numa transição: o toque responde na hora e o formulário entra
+  // logo depois, sem segurar o quadro (com a CPU lenta, montar tudo levava ~100 ms).
   const openSheet = (next: SheetState) => {
-    setSheetKey((key) => key + 1);
-    setSheet(next);
+    startTransition(() => {
+      setSheetKey((key) => key + 1);
+      setSheet(next);
+    });
   };
 
   if (query.isPending) return <TitleSkeleton />;

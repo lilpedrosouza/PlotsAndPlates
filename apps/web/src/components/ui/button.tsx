@@ -51,9 +51,15 @@ type ButtonProps = Omit<ComponentProps<typeof m.button>, "children"> &
     children?: React.ReactNode;
     /** Mostra o estado de envio e bloqueia novos cliques. */
     busy?: boolean;
+    /**
+     * Encolhe de leve ao apertar (padrão). Desligue em botões que já respondem
+     * com animação própria: no "Fomos!" dentro do cartão, o encolher atrasava a
+     * apresentação do quadro do toque em ~180 ms com a CPU lenta.
+     */
+    pressScale?: boolean;
   };
 
-export function Button({ className, variant, size, block, busy, children, disabled, ...props }: ButtonProps) {
+export function Button({ className, variant, size, block, busy, pressScale = true, children, disabled, ...props }: ButtonProps) {
   const section = useSection();
   return (
     <m.button
@@ -61,7 +67,7 @@ export function Button({ className, variant, size, block, busy, children, disabl
       data-slot="button"
       aria-busy={busy || undefined}
       disabled={disabled || busy}
-      whileTap={{ scale: 0.96 }}
+      whileTap={pressScale ? { scale: 0.96 } : undefined}
       transition={SPRING[section].press}
       className={cn(buttonVariants({ variant, size, block }), className)}
       {...props}

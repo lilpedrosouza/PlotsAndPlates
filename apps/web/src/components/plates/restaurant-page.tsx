@@ -16,7 +16,7 @@ import { Bookmark, Pencil, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import { AddedBy, firstName } from "@/components/couple/added-by";
 import { CommunitySection } from "@/components/people/community-section";
 import { Avatar } from "@/components/ui/avatar";
@@ -64,9 +64,13 @@ export function RestaurantPage() {
   const [sheet, setSheet] = useState<SheetState>(null);
   // Cada abertura monta a folha de novo, com os dados atuais.
   const [sheetKey, setSheetKey] = useState(0);
+  // A folha monta numa transição: o toque responde na hora e o formulário entra
+  // logo depois, sem segurar o quadro (com a CPU lenta, montar tudo levava ~100 ms).
   const openSheet = (next: SheetState) => {
-    setSheetKey((key) => key + 1);
-    setSheet(next);
+    startTransition(() => {
+      setSheetKey((key) => key + 1);
+      setSheet(next);
+    });
   };
 
   // "?avaliar=1" (depois do cadastro ou do "Fomos!") abre a avaliação assim que a página carrega.

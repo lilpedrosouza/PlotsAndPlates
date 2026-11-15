@@ -5,6 +5,7 @@ import * as m from "motion/react-m";
 import { useState } from "react";
 import { useSection } from "@/components/shell/section-context";
 import { Button } from "@/components/ui/button";
+import { afterPaint } from "@/lib/after-paint";
 import { POP } from "@/lib/motion";
 import { useFomos } from "@/lib/plates/mutations";
 import { useTransitionNavigate } from "@/lib/transition-router";
@@ -18,19 +19,26 @@ export function FomosButton({ restaurantId, size = "md", block }: { restaurantId
   const fomos = useFomos(restaurantId);
   const navigate = useTransitionNavigate();
   const [stamped, setStamped] = useState(false);
+  const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const onClick = () => {
     setError(null);
-    fomos.mutate(
-      {},
-      {
-        onSuccess: () => {
-          setStamped(true);
-          setTimeout(() => navigate(`/plates/r/${restaurantId}?avaliar=1`), 420);
+    // O botão fica ocupado na hora; a mutação (com as atualizações otimistas e as
+    // invalidações das listas) começa depois que esse retorno aparece na tela.
+    setStarting(true);
+    afterPaint(() =>
+      fomos.mutate(
+        {},
+        {
+          onSuccess: () => {
+            setStamped(true);
+            setTimeout(() => navigate(`/plates/r/${restaurantId}?avaliar=1`), 420);
+          },
+          onError: (failure) => setError(failure instanceof Error ? failure.message : "Não deu. Tenta de novo?"),
+          onSettled: () => setStarting(false),
         },
-        onError: (failure) => setError(failure instanceof Error ? failure.message : "Não deu. Tenta de novo?"),
-      },
+      ),
     );
   };
 
@@ -41,7 +49,7 @@ export function FomosButton({ restaurantId, size = "md", block }: { restaurantId
         transition={POP[section]}
         className={block ? "w-full" : "inline-block"}
       >
-        <Button size={size} block={block} busy={fomos.isPending} onClick={onClick} disabled={stamped}>
+        <Button size={size} block={block} busy={starting || fomos.isPending} onClick={onClick} disabled={stamped} pressScale={false}>
           {stamped ? <Check aria-hidden /> : null}
           Fomos!
         </Button>
