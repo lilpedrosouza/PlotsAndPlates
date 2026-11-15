@@ -9,6 +9,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { PlateArt } from "@/components/art/plate-art";
+import { PlatesDraw } from "@/components/draw/draw-buttons";
 import { useSection } from "@/components/shell/section-context";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -114,6 +115,11 @@ export function Notebook({ status }: { status: Status }) {
 
       <header className="flex flex-col gap-4">
         <h1 className="font-display text-[clamp(2rem,8vw,3rem)] leading-[1.05]">{copy.title}</h1>
+        {status === "quero-ir" ? (
+          <div>
+            <PlatesDraw />
+          </div>
+        ) : null}
         <div className="flex items-center gap-2">
           <Button
             variant="secondary"

@@ -4,6 +4,7 @@ import { TITLE_KINDS, TITLE_KIND_LABELS, type TitleKind, type WatchlistItem } fr
 import Link from "next/link";
 import { useState } from "react";
 import { AddedBy } from "@/components/couple/added-by";
+import { PlotsDraw } from "@/components/draw/draw-buttons";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ChipToggle } from "@/components/ui/chip";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,6 +30,14 @@ export function Watchlist() {
     <div className="flex flex-col gap-6 pt-2 pb-20 md:pb-8">
       <header className="flex flex-col gap-4">
         <h1 className="font-display text-[clamp(2.25rem,10vw,4rem)] leading-[1.14]">Quero ver</h1>
+        <div>
+          <PlotsDraw
+            onWatched={(titleId) => {
+              setLaunchKey((key) => key + 1);
+              setWatching(titleId);
+            }}
+          />
+        </div>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filtros">
           <ChipToggle pressed={onlyMine} onPressedChange={setOnlyMine}>
             Nos meus streamings

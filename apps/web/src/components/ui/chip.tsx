@@ -26,7 +26,7 @@ export function ChipToggle({ pressed, onPressedChange, children, disabled }: Chi
       transition={SPRING[section].press}
       onClick={() => onPressedChange(!pressed)}
       className={cn(
-        "inline-flex h-10 items-center gap-1.5 rounded-md border px-3.5 text-sm font-semibold transition-colors duration-fast",
+        "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md border px-3.5 text-sm font-semibold whitespace-nowrap transition-colors duration-fast",
         "plots:text-xs plots:font-bold plots:uppercase plots:tracking-[0.08em]",
         pressed
           ? "border-foreground bg-foreground text-background"
