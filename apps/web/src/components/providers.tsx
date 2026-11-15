@@ -1,11 +1,13 @@
 "use client";
 
-import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryClient, useQueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { LazyMotion, MotionConfig } from "motion/react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { refreshAchievements } from "@/lib/achievements/queries";
 import { ApiRequestError } from "@/lib/api";
-import { AuthProvider } from "@/lib/auth";
+import { AuthProvider, useAuth } from "@/lib/auth";
+import { CACHE_MAX_AGE, clearPersistedCache, persistOptions } from "@/lib/persist";
 import { TransitionRouterProvider } from "@/lib/transition-router";
 
 /** Animações de layout (reordenar o caderno) precisam do pacote completo; ele chega sob demanda. */
@@ -25,6 +27,8 @@ export function Providers({ children }: { children: ReactNode }) {
       defaultOptions: {
         queries: {
           staleTime: 60_000,
+          // O que fica guardado no aparelho precisa continuar no cache enquanto vale.
+          gcTime: CACHE_MAX_AGE,
           refetchOnWindowFocus: false,
           retry: (failureCount, error) => {
             // Erros de regra (4xx) não melhoram tentando de novo.
@@ -36,10 +40,12 @@ export function Providers({ children }: { children: ReactNode }) {
     });
     return client;
   });
+  const [persist] = useState(persistOptions);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={persist}>
       <AuthProvider>
+        <CacheGuard />
         {/* `m` + LazyMotion mantém o Motion fora do bundle inicial; reducedMotion segue o sistema. */}
         <LazyMotion features={loadMotionFeatures} strict>
           <MotionConfig reducedMotion="user">
@@ -47,6 +53,18 @@ export function Providers({ children }: { children: ReactNode }) {
           </MotionConfig>
         </LazyMotion>
       </AuthProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
+}
+
+/** Sessão encerrada (sair, expirou, outra pessoa no aparelho): nada do que estava guardado fica. */
+function CacheGuard() {
+  const auth = useAuth();
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (auth.status !== "out") return;
+    queryClient.clear();
+    clearPersistedCache();
+  }, [auth.status, queryClient]);
+  return null;
 }

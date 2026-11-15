@@ -10,7 +10,8 @@ const besley = Besley({ subsets: ["latin"], weight: "700", variable: "--font-bes
 /** Grotesca de letra corrida: texto de Plates. */
 const sofia = Sofia_Sans({ subsets: ["latin"], variable: "--font-sofia", display: "swap" });
 /** Futura de cartaz: títulos e texto de Plots. */
-const jost = Jost({ subsets: ["latin"], variable: "--font-jost", display: "swap" });
+// Na porta a Jost só desenha o "Plots" do cartaz (peso 800): um arquivo estático menor.
+const jost = Jost({ subsets: ["latin"], weight: "800", variable: "--font-jost", display: "swap" });
 
 /** Porta de entrada: os dois mundos na mesma tela, cartaz em cima e rótulo embaixo. */
 export default function PortaLayout({ children }: { children: ReactNode }) {
