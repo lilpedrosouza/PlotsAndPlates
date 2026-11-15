@@ -37,10 +37,31 @@ Ressalvas:
 
 ## Produção: antes × depois
 
-Antes: commit `55b251c` (fase 5). Depois: _medição após o deploy da fase 6
-(preenchida no fechamento)._
+Antes: commit `55b251c` (fase 5), primeira visita. Depois: commit `2616fdc`,
+como quem volta ao app: cada tela logada recebe uma visita antes das 3 rodadas.
+O cache HTTP do navegador continua sendo limpo a cada rodada; o que fica é a
+última versão das telas guardada no aparelho (ver "Telas abrem com a última
+versão").
 
-<!-- PROD-DEPOIS -->
+| Tela | Nota antes | Nota depois | LCP antes | LCP depois | TBT antes | TBT depois | CLS antes | CLS depois |
+|---|---|---|---|---|---|---|---|---|
+| porta-entrar | 95 | **99** | 2,7 s | 2,1 s | 105 ms | 68 ms | 0 | 0 |
+| raiz | 84 | **95** | 3,6 s | 1,8 s | 300 ms | 220 ms | 0 | 0 |
+| plates-caderno | 73 | **91** | 3,9 s | 2,1 s | 568 ms | 321 ms | 0 | 0 |
+| plates-quero-ir | 74 | **91** | 3,9 s | 1,7 s | 528 ms | 355 ms | 0 | 0 |
+| plates-restaurante | 69 | **88** | 4,4 s | 2,6 s | 596 ms | 376 ms | 0 | 0 |
+| plates-perfil | 69 | **91** | 4,2 s | 2,7 s | 439 ms | 269 ms | 0,145 | 0 |
+| plates-pessoas | 78 | **98** | 3,9 s | 1,8 s | 367 ms | 166 ms | 0 | 0 |
+| plates-mapa | 53 | **70** | 4,2 s | 1,7 s | 2836 ms | 2751 ms | 0,016 | 0,016 |
+| plots-diario | 61 | **98** | 4,4 s | 1,9 s | 548 ms | 151 ms | 0,189 | 0 |
+| plots-quero-ver | 67 | **92** | 5,1 s | 2,9 s | 531 ms | 209 ms | 0,011 | 0 |
+| plots-titulo | 51 | **79** | 5,7 s | 3,2 s | 780 ms | 575 ms | 0,189 | 0 |
+| plots-perfil | 72 | **93** | 4,1 s | 1,5 s | 335 ms | 315 ms | 0,144 | 0 |
+| plots-buscar | 76 | **97** | 4,4 s | 1,4 s | 346 ms | 181 ms | 0 | 0 |
+| wrapped | 75 | **95** | 4,3 s | 2,1 s | 418 ms | 234 ms | 0 | 0 |
+
+Relatórios HTML da rodada mediana em [`lighthouse/`](lighthouse/), comprimidos
+(`gunzip arquivo.html.gz` e abrir no navegador).
 
 ## Build local: antes × depois
 
@@ -107,8 +128,16 @@ correções.
     depois para renovar o token, entrar e sair.
   - As **folhas** de filtros, de sorteio e de registro só são baixadas quando
     alguém abre.
-- **Fontes:** Besley e a letra miúda vêm só no peso usado, e as fontes
-  pré-carregadas caíram de ~142 KB para ~102 KB.
+- **Fontes:** Besley e a letra miúda vêm só no peso usado (na porta, a Jost
+  também), e as fontes pré-carregadas caíram de ~142 KB para ~102 KB.
+- **Telas abrem com a última versão (depois do primeiro deploy):** o cache do
+  React Query fica no localStorage do aparelho, com a extensão oficial.
+  - A tela abre com os dados da última visita e a API atualiza em seguida.
+  - O cache é da conta da sessão e some ao sair.
+  - Nunca são guardados buscas nem os dados ao vivo do Google (termos do
+    Google Maps).
+  - No quero ver, os três primeiros pôsteres da última visita são pedidos por
+    um script mínimo no `<head>`, antes do app.
 
 **Estabilidade e mídia**
 - **CLS:**
@@ -133,14 +162,42 @@ correções.
     mundo.
 
 **API**
+- **Escolher um restaurante no cadastro:**
+  - O Overpass passou a ter espera escalonada entre os espelhos e prazo total
+    de 3,5 s. Antes eram 8 s por servidor, um depois do outro: até 24 s com os
+    três lotados, como no dia da medição.
+  - Depois de uma falha, o Overpass fica de lado por 1 minuto.
+  - Plano B pelo nome no Nominatim. Medido com os servidores reais e o
+    Overpass fora do ar: 2,6–3,5 s.
 - **Conquistas:**
   - `GET /me/achievements` não grava nada quando não há novidade.
   - Depois de uma ação, o par é procurado uma vez, não quatro.
   - Índice novo em `visits.together_with` (migration 0015).
 
-## Exceções e limites
+## Triagem (regra do Pedro)
 
-<!-- TRIAGEM -->
+Telas do dia a dia, que precisam bater a meta:
+
+| Tela | Nota | LCP | Situação |
+|---|---|---|---|
+| Porta | 99 | 2,1 s | meta batida |
+| Raiz | 95 | 1,8 s | meta batida |
+| Caderno | 91 | 2,1 s | meta batida |
+| Quero ir | 91 | 1,7 s | meta batida |
+| Diário | 98 | 1,9 s | meta batida |
+| Quero ver | 92 | **2,9 s** | nota batida, LCP acima |
+
+- **Quero ver:** o maior elemento é o primeiro pôster do TMDB, de ~35 KB.
+  Mesmo pedido antes do app e com a lista vinda do aparelho, a rede 4G lenta
+  simulada leva ~1,3 s para baixá-lo.
+- **Fora do dia a dia, com nota ≥ 90:** pessoas, busca, perfis e Wrapped.
+- **Fora do dia a dia, abaixo da meta:**
+  - restaurante: 88, LCP 2,6 s;
+  - título: 79, LCP 3,2 s, com TBT de 575 ms (página com muito conteúdo: temporadas, onde assistir, elenco);
+  - mapa: exceção da spec.
+- **INP e CLS:** dentro da meta em todas as telas.
+
+## Exceções e limites
 
 - **Mapa (exceção autorizada na spec):** o `maplibre-gl` sozinho gasta ~1,5 s
   de script com a CPU 4x (TBT ~3 s). A nota subiu de 49 para 60–66 sem trocar

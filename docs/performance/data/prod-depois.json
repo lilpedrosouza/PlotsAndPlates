@@ -1,0 +1,240 @@
+{
+  "porta-entrar": {
+    "path": "/entrar",
+    "finalUrl": "/entrar",
+    "score": 99,
+    "lcp": 2121,
+    "fcp": 1077,
+    "tbt": 68,
+    "cls": 0,
+    "si": 1077,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      99,
+      97,
+      99
+    ]
+  },
+  "raiz": {
+    "path": "/",
+    "finalUrl": "/entrar",
+    "score": 95,
+    "lcp": 1822,
+    "fcp": 1072,
+    "tbt": 220,
+    "cls": 0,
+    "si": 1072,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      98,
+      94,
+      95
+    ]
+  },
+  "plates-caderno": {
+    "path": "/plates",
+    "finalUrl": "/plates",
+    "score": 91,
+    "lcp": 2131,
+    "fcp": 1081,
+    "tbt": 321,
+    "cls": 0,
+    "si": 1081,
+    "a11y": 98,
+    "bp": 100,
+    "scores": [
+      96,
+      91,
+      91
+    ]
+  },
+  "plates-quero-ir": {
+    "path": "/plates/quero-ir",
+    "finalUrl": "/plates/quero-ir",
+    "score": 91,
+    "lcp": 1685,
+    "fcp": 932,
+    "tbt": 355,
+    "cls": 0,
+    "si": 932,
+    "a11y": 98,
+    "bp": 100,
+    "scores": [
+      91,
+      91,
+      96
+    ]
+  },
+  "plates-restaurante": {
+    "path": "/plates/r/d894a539-242e-418b-94a7-0e1448b28059",
+    "finalUrl": "/plates/r/d894a539-242e-418b-94a7-0e1448b28059",
+    "score": 88,
+    "lcp": 2584,
+    "fcp": 794,
+    "tbt": 376,
+    "cls": 0,
+    "si": 1081,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      86,
+      93,
+      88
+    ]
+  },
+  "plates-perfil": {
+    "path": "/plates/perfil",
+    "finalUrl": "/plates/perfil",
+    "score": 91,
+    "lcp": 2730,
+    "fcp": 934,
+    "tbt": 269,
+    "cls": 0,
+    "si": 984,
+    "a11y": 100,
+    "bp": 96,
+    "scores": [
+      85,
+      93,
+      91
+    ]
+  },
+  "plates-pessoas": {
+    "path": "/plates/pessoas",
+    "finalUrl": "/plates/pessoas",
+    "score": 98,
+    "lcp": 1833,
+    "fcp": 933,
+    "tbt": 166,
+    "cls": 0,
+    "si": 933,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      98,
+      97,
+      98
+    ]
+  },
+  "plates-mapa": {
+    "path": "/plates/mapa",
+    "finalUrl": "/plates/mapa",
+    "score": 70,
+    "lcp": 1682,
+    "fcp": 794,
+    "tbt": 2751,
+    "cls": 0.016,
+    "si": 3498,
+    "a11y": 100,
+    "bp": 96,
+    "scores": [
+      70,
+      69,
+      70
+    ]
+  },
+  "plots-diario": {
+    "path": "/plots",
+    "finalUrl": "/plots",
+    "score": 98,
+    "lcp": 1900,
+    "fcp": 1082,
+    "tbt": 151,
+    "cls": 0,
+    "si": 1084,
+    "a11y": 100,
+    "bp": 96,
+    "scores": [
+      96,
+      99,
+      98
+    ]
+  },
+  "plots-quero-ver": {
+    "path": "/plots/quero-ver",
+    "finalUrl": "/plots/quero-ver",
+    "score": 92,
+    "lcp": 2882,
+    "fcp": 807,
+    "tbt": 209,
+    "cls": 0,
+    "si": 873,
+    "a11y": 100,
+    "bp": 96,
+    "scores": [
+      92,
+      86,
+      92
+    ]
+  },
+  "plots-titulo": {
+    "path": "/plots/t/a3a2addf-cc2f-4d32-979c-41dd2aa2f34a",
+    "finalUrl": "/plots/t/a3a2addf-cc2f-4d32-979c-41dd2aa2f34a",
+    "score": 79,
+    "lcp": 3183,
+    "fcp": 792,
+    "tbt": 575,
+    "cls": 0,
+    "si": 1157,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      79,
+      79,
+      79
+    ]
+  },
+  "plots-perfil": {
+    "path": "/plots/perfil",
+    "finalUrl": "/plots/perfil",
+    "score": 93,
+    "lcp": 1534,
+    "fcp": 791,
+    "tbt": 315,
+    "cls": 0,
+    "si": 857,
+    "a11y": 100,
+    "bp": 96,
+    "scores": [
+      93,
+      93,
+      93
+    ]
+  },
+  "plots-buscar": {
+    "path": "/plots/buscar",
+    "finalUrl": "/plots/buscar",
+    "score": 97,
+    "lcp": 1383,
+    "fcp": 792,
+    "tbt": 181,
+    "cls": 0,
+    "si": 792,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      97,
+      99,
+      96
+    ]
+  },
+  "wrapped": {
+    "path": "/plots/wrapped/2026",
+    "finalUrl": "/plots/wrapped/2026",
+    "score": 95,
+    "lcp": 2133,
+    "fcp": 791,
+    "tbt": 234,
+    "cls": 0,
+    "si": 919,
+    "a11y": 100,
+    "bp": 100,
+    "scores": [
+      97,
+      95,
+      95
+    ]
+  }
+}
