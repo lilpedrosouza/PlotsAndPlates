@@ -1,0 +1,1 @@
+ALTER POLICY "user_achievements_select_all" ON "user_achievements" TO authenticated USING ("user_achievements"."user_id" = (select auth.uid()) or "user_achievements"."user_id" = public.partner_of((select auth.uid())) or "user_achievements"."key" not in ('almas-gemeas', 'juntos-sempre', 'opinioes-fortes', 'primeiro-encontro'));

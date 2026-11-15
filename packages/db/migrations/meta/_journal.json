@@ -99,6 +99,13 @@
       "when": 1794709390527,
       "tag": "0013_grants_achievements",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794709435975,
+      "tag": "0014_achievements_couple_private",
+      "breakpoints": true
     }
   ]
 }

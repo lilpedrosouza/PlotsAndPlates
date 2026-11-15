@@ -20,7 +20,10 @@ beforeAll(async () => {
     await as(id, (tx) => tx.insert(profiles).values({ id, username, displayName: username }));
   }
   // Conquistas são gravadas só pela API (dona das tabelas).
-  await test.db.insert(userAchievements).values({ userId: ANA, key: "primeira-mesa" });
+  await test.db.insert(userAchievements).values([
+    { userId: ANA, key: "primeira-mesa" },
+    { userId: ANA, key: "primeiro-encontro" },
+  ]);
 });
 
 afterAll(async () => {
@@ -35,9 +38,11 @@ describe("RLS de user_achievements", () => {
     expect(rows.rows[0]?.relrowsecurity).toBe(true);
   });
 
-  it("qualquer pessoa logada lê as desbloqueadas (o perfil público filtra as do casal)", async () => {
-    const rows = await as(BIA, (tx) => tx.select({ key: userAchievements.key, unlockedAt: userAchievements.unlockedAt }).from(userAchievements));
-    expect(rows).toHaveLength(1);
+  it("quem é de fora lê as desbloqueadas, menos as do casal (diriam quem tem par)", async () => {
+    const rows = await as(BIA, (tx) => tx.select({ key: userAchievements.key }).from(userAchievements));
+    expect(rows.map((row) => row.key)).toEqual(["primeira-mesa"]);
+    const own = await as(ANA, (tx) => tx.select({ key: userAchievements.key }).from(userAchievements));
+    expect(own.map((row) => row.key).sort()).toEqual(["primeira-mesa", "primeiro-encontro"]);
   });
 
   it("se a pessoa já viu a animação só a API sabe", async () => {
@@ -52,6 +57,7 @@ describe("RLS de user_achievements", () => {
 
   it("uma conquista por pessoa", async () => {
     await expect(test.db.insert(userAchievements).values({ userId: ANA, key: "primeira-mesa" })).rejects.toThrow();
+    expect(await test.db.select().from(userAchievements)).toHaveLength(2);
   });
 
   it("anon não lê", async () => {
