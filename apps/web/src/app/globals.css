@@ -570,3 +570,6 @@ html:active-view-transition-type(to-plates)::view-transition-new(root) {
     box-shadow: none;
   }
 }
+
+/* Barra de progresso do story do Wrapped: enche em 6 s; pausa segurando. */
+@keyframes pap-story-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }

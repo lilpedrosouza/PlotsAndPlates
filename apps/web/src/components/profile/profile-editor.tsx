@@ -12,6 +12,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ChipToggle } from "@/components/ui/chip";
 import { TextAreaField, TextField } from "@/components/ui/field";
+import { WrappedCard } from "@/components/wrapped/wrapped-card";
 import { ApiRequestError } from "@/lib/api";
 import { IMAGE_ACCEPT, skipsOptimizer } from "@/lib/image";
 import { uploadProfileImage, useMe, useUpdateProfile } from "@/lib/queries";
@@ -127,6 +128,8 @@ export function ProfileEditor() {
           </p>
         ) : null}
       </section>
+
+      <WrappedCard />
 
       <PartnerBlock />
 

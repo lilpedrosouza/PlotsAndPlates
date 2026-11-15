@@ -22,10 +22,12 @@ export function otherSection(section: Section): Section {
 const MIRRORED = ["/perfil", "/estilo", "/pessoas"];
 /** O perfil público de alguém também existe nos dois mundos. */
 const PUBLIC_PROFILE = /^\/u\/[^/]+$/;
+/** O Wrapped de um ano também. */
+const WRAPPED = /^\/wrapped\/\d{4}$/;
 
 export function mirrorPath(pathname: string, target: Section): string {
   const rest = pathname.replace(/^\/(plates|plots)/, "");
-  return MIRRORED.includes(rest) || PUBLIC_PROFILE.test(rest) ? `/${target}${rest}` : `/${target}`;
+  return MIRRORED.includes(rest) || PUBLIC_PROFILE.test(rest) || WRAPPED.test(rest) ? `/${target}${rest}` : `/${target}`;
 }
 
 export function rememberSection(section: Section) {
