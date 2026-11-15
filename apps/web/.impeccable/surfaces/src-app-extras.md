@@ -31,7 +31,7 @@ Momento memorável: **o ano como programa duplo.** O Wrapped alterna os dois mun
 - **Vazio:** "Nada com esses filtros." + "Limpar filtros". Um item só: revela direto, sem embaralhar.
 
 ### Conquistas
-- **Badge — Plates:** carimbo redondo de 72px (anel duplo como o `Stamp`), ícone de traço (lucide) no centro, nome em letra miúda curva? não: nome embaixo em letra miúda reta. Bloqueada: contorno tracejado em tinta suave, ícone a 40%, progresso "7 de 10" embaixo.
+- **Badge — Plates:** carimbo redondo de 72px (anel duplo como o `Stamp`), ícone de traço (lucide) no centro e o nome embaixo em letra miúda. Bloqueada: contorno tracejado em tinta suave, ícone a 40%, progresso "7 de 10" embaixo.
 - **Badge — Plots:** placa retangular 4:3 de canto vivo com contorno de 1px no fio forte, ícone e nome em caixa alta; ganha = fundo na cor de destaque com texto `on-brand`; bloqueada = contorno tracejado e progresso.
 - **Bloco no perfil:** "Conquistas · 5 de 16" e grade de 4 colunas (3 no celular) ordenada: ganhas primeiro (mais recente antes), depois as que faltam por proximidade da meta. Tocar abre a descrição (folha pequena) com a regra e a data.
 - **Perfil público:** só as ganhas, sem progresso, sem as do casal.

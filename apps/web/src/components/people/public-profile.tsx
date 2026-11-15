@@ -1,10 +1,11 @@
 "use client";
 
-import { type PublicPlatesProfile, type PublicPlotsProfile, type PublicProfile, formatRating } from "@pap/shared";
+import { type PublicPlatesProfile, type PublicPlotsProfile, type PublicProfile, achievementByKey, formatRating } from "@pap/shared";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { AchievementBadge } from "@/components/achievements/badge";
 import { ArchPhoto } from "@/components/plates/arch-photo";
 import { Poster } from "@/components/plots/poster";
 import { useSection } from "@/components/shell/section-context";
@@ -12,6 +13,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Stamp } from "@/components/ui/stamp";
+import { usePublicAchievements } from "@/lib/achievements/queries";
 import { ApiRequestError } from "@/lib/api";
 import { useCouple, useSendInvite } from "@/lib/couple/queries";
 import { skipsOptimizer } from "@/lib/image";
@@ -86,6 +88,25 @@ function InviteAction({ profile }: { profile: PublicProfile }) {
         </p>
       ) : null}
     </div>
+  );
+}
+
+/** Conquistas ganhas (a API já tira as do casal). */
+function PublicAchievements({ username, accent }: { username: string; accent: PublicProfile["accent"] }) {
+  const query = usePublicAchievements(username);
+  const items = query.data ?? [];
+  if (!query.isSuccess || items.length === 0) return null;
+  return (
+    <Block title={`Conquistas · ${items.length}`}>
+      <ul className="grid grid-cols-4 gap-3 sm:grid-cols-6">
+        {items.map((item) => (
+          <li key={item.key} className="flex flex-col items-center gap-1.5 text-center">
+            <AchievementBadge achievementKey={item.key} unlocked size={52} accent={accent} />
+            <span className="text-[0.75rem] leading-tight">{achievementByKey(item.key).name}</span>
+          </li>
+        ))}
+      </ul>
+    </Block>
   );
 }
 
@@ -174,6 +195,7 @@ function PlatesBody({ data }: { data: PublicPlatesProfile }) {
           </ul>
         )}
       </Block>
+      <PublicAchievements username={data.profile.username} accent={data.profile.accent} />
       <Block title="Avaliações recentes">
         {data.recent.length === 0 ? (
           <p className="text-soft">Nenhuma avaliação para mostrar.</p>
@@ -233,6 +255,7 @@ function PlotsBody({ data }: { data: PublicPlotsProfile }) {
           </ol>
         )}
       </Block>
+      <PublicAchievements username={data.profile.username} accent={data.profile.accent} />
       <Block title="Sessões recentes">
         {data.recent.length === 0 ? (
           <p className="text-soft">Nenhuma sessão para mostrar.</p>

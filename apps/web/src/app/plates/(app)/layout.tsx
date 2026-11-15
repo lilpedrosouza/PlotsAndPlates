@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { UnlockOverlay } from "@/components/achievements/unlock-overlay";
 import { AddStamp } from "@/components/plates/add-stamp";
 import { AuthGate } from "@/components/shell/auth-gate";
 
@@ -13,6 +14,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <AuthGate>
       {children}
       <AddStamp />
+      <UnlockOverlay />
     </AuthGate>
   );
 }

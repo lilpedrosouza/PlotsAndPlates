@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { UnlockOverlay } from "@/components/achievements/unlock-overlay";
 import { AddSeal } from "@/components/plots/add-seal";
 import { TmdbAttribution } from "@/components/plots/tmdb-attribution";
 import { AuthGate } from "@/components/shell/auth-gate";
@@ -18,6 +19,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <TmdbAttribution />
       </div>
       <AddSeal />
+      <UnlockOverlay />
     </AuthGate>
   );
 }
