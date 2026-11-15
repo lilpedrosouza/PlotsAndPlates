@@ -3,10 +3,10 @@ import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
 import { secureHeaders } from "hono/secure-headers";
+import { achievementsAfterAction } from "./achievements/check";
 import { requireAuth } from "./auth";
 import { ApiFailure } from "./errors";
 import { clientIp, rateLimit } from "./rate-limit";
-import { achievementsAfterAction } from "./achievements/check";
 import { achievementRoutes } from "./routes/achievements";
 import { communityRoutes } from "./routes/community";
 import { coupleRoutes } from "./routes/couple";
@@ -22,6 +22,7 @@ import { restaurantRoutes } from "./routes/restaurants";
 import { titleRoutes } from "./routes/titles";
 import { visitRoutes } from "./routes/visits";
 import { wishlistRoutes } from "./routes/wishlist";
+import { wrappedRoutes } from "./routes/wrapped";
 import type { AppDeps, AppEnv } from "./types";
 
 export function createApp(deps: AppDeps) {
@@ -65,6 +66,7 @@ export function createApp(deps: AppDeps) {
   v1.route("/", communityRoutes(deps));
   v1.route("/", publicProfileRoutes(deps));
   v1.route("/", achievementRoutes(deps));
+  v1.route("/", wrappedRoutes(deps));
   app.route("/v1", v1);
 
   app.notFound((c) => c.json({ error: { code: "not_found", message: "Rota não encontrada." } }, 404));
