@@ -7,7 +7,7 @@ import { WorldFrame } from "@/components/shell/world-frame";
 // pré-carrega uma fonte nas rotas do arquivo que a chama. Assim cada mundo só
 // pré-carrega as próprias fontes.
 /** Clarendon de rótulo: títulos de Plates. */
-const besley = Besley({ subsets: ["latin"], variable: "--font-besley", display: "swap" });
+const besley = Besley({ subsets: ["latin"], weight: "700", variable: "--font-besley", display: "swap" });
 /** Grotesca de letra corrida: texto de Plates. */
 const sofia = Sofia_Sans({ subsets: ["latin"], variable: "--font-sofia", display: "swap" });
 
