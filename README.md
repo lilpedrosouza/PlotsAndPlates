@@ -7,7 +7,7 @@ O diário a dois do que a gente come e do que a gente assiste.
 
 Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do casal. Uso pessoal, sem fins comerciais.
 
-> **Estado atual: fase 4.** Fases 1 (monorepo, autenticação, perfil, design system), 2 (Plates completo), 3 (Plots completo) e 4 (casal, perfis e comunidade) prontas. Wrapped, sorteio e conquistas chegam na fase 5.
+> **Estado atual: fase 5.** Fases 1 (monorepo, autenticação, perfil, design system), 2 (Plates completo), 3 (Plots completo), 4 (casal, perfis e comunidade) e 5 (Wrapped, sorteio e conquistas) prontas. A passada final de performance e o relatório Lighthouse chegam na fase 6.
 
 ### O que já dá para usar em Plates
 
@@ -33,6 +33,12 @@ Cada pessoa dá a própria nota; o app mostra as duas lado a lado e a média do 
 - **Listas do casal:** um quero ir e um quero ver para os dois, com quem adicionou cada item; Fomos!/Assistimos! tira para os dois.
 - **Pessoas** (`/plates/pessoas`, `/plots/pessoas`) e **perfil público** (`/plates/u/:username`, `/plots/u/:username`): estatísticas, favoritos (restaurantes de maior nota pública ou o Top 4) e avaliações recentes, só o que é público.
 - **O que o pessoal do PAP achou:** no fim da página do restaurante e do título, a média e as avaliações públicas de quem não é você nem seu par.
+
+### Extras
+
+- **PAP Wrapped** (`/plates/wrapped/:ano`, `/plots/wrapped/:ano`; cartão "Seu ano no PAP" no perfil): os números do ano do casal em stories — restaurantes, visitas, pratos, cozinha favorita, horas de sessão, gênero favorito, campeões, onde vocês concordaram e discordaram, conquistas. O ano corrente é "até agora"; em dezembro aparece um aviso no caderno e no diário. Cada story vira imagem 1080×1920 para compartilhar.
+- **O que a gente faz hoje?** (no quero ir e no quero ver): sorteio com cartas, com filtros de cozinha e preço (Plates), tipo, duração e streaming (Plots) e "Os dois querem"; "Sortear de novo" não repete até passar por todos.
+- **Conquistas** (no perfil): 16 conquistas nos dois mundos e do casal, desbloqueadas na hora com animação e guardadas para sempre; no perfil público aparecem as ganhas, menos as do casal.
 
 ## Como está organizado
 

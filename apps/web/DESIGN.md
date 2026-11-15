@@ -436,6 +436,13 @@ O par e as outras pessoas aplicados aos dois mundos. A direção e as decisões 
 - **Comunidade:** bloco de tela com a média em número de 2rem e "de N avaliações"; cada avaliação com avatar de 32px, nome, data em letra miúda, review (itálico em Plates) e carimbo pequeno.
 - **Perfil público:** capa e avatar como no próprio perfil; três números de 1,75rem numa faixa entre fios (cardápio em Plates, créditos em Plots); favoritos em rótulos pequenos 2×2 (4 colunas no computador) ou Top 4 em linha; recentes em linhas.
 
+## Wrapped, sorteio e conquistas (fase 5)
+A direção e as decisões estão em `.impeccable/surfaces/src-app-extras.md`.
+- **Wrapped (stories):** tela cheia por cima da navegação, palco em 9:16 centrado (faixas pretas nas telas largas). Cada story é um quadro do seu mundo (`SectionProvider` + `data-theme` + `data-accent` de quem vê) com moldura de rótulo (Plates) ou fio simples (Plots) a 12px da borda e "PAP · ano" no pé. Número principal de `clamp(4rem, 28vw, 6rem)`; títulos de story de 1,5 a 2rem (fora da rampa de propósito: é a escala de cartaz); linhas de cardápio com pontilhado (Plates) e créditos em letra miúda espaçada (Plots). Abertura e encerramento dividem a tela: metade creme, metade preta, o ano de `clamp(6rem, 40vw, 11rem)` atravessando as duas.
+- **Ritmo do Wrapped:** segmentos de progresso de 3px que enchem em 6s (`pap-story-progress`, pausa com `animation-play-state`); troca de story com o painel novo entrando pela lateral (mola `settle` de Plots); movimento reduzido: dissolve e sem avanço automático. Compartilhar gera PNG 1080×1920 do story atual.
+- **Sorteio:** folha com filtros em etiquetas numa faixa rolável (etiquetas nunca quebram linha) e o baralho de até cinco cartas 2:3 desalinhadas (−4° a 4°) com o monograma "PAP" no verso; embaralhar = leque de ida e volta em 1,1s (só `transform`), a de cima vira com `rotateY` e assenta com a mola `settle`. Plates: carta-rótulo; Plots: carta-pôster.
+- **Conquistas:** carimbo redondo de anel duplo (Plates) ou placa 5:4 de canto vivo (Plots), ícone de traço no centro; bloqueada = contorno tracejado em tinta suave e progresso "7 de 10". Desbloqueio: véu a 40% e a badge em 140px (Plates carimba com a mola `pop`; Plots acende em três piscadas); várias de uma vez: "Vocês já tinham N conquistas!" com as badges em leque escalonado. A badge de outra pessoa sai na cor de destaque dela.
+
 ## Do's and Don'ts
 
 ### Do:
