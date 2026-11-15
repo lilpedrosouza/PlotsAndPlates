@@ -4,3 +4,6 @@ export * from "./visibility";
 export * from "./plates";
 export * from "./plots";
 export * from "./couple";
+export * from "./achievements";
+export * from "./wrapped";
+export * from "./draw";
