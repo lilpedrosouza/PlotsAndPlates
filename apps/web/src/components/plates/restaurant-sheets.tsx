@@ -162,7 +162,8 @@ export function VisitSheet({
   const [amount, setAmount] = useState(moneyInput(visit?.amountCents));
   const [dishIds, setDishIds] = useState<string[]>(visit?.dishIds ?? []);
   const partner = usePartner();
-  const [together, setTogether] = useState(visit ? visit.together : partner !== null);
+  // Sem mexer, vale o padrão (juntos quando há par), mesmo que o par chegue depois de a folha abrir.
+  const [together, setTogether] = useState<boolean | null>(visit ? visit.together : null);
   // Só quem registrou desmarca o "juntos" aqui; o par tira a visita do caderno dele apagando.
   const showTogether = partner !== null && (!visit || visit.registeredBy === null);
   const [photos, setPhotos] = useState<{ path: string; preview: string }[]>(
@@ -205,7 +206,7 @@ export function VisitSheet({
       amountCents: parseMoney(amount),
       dishIds,
       photoPaths: photos.map((photo) => photo.path),
-      ...(showTogether ? { together } : {}),
+      ...(showTogether && together !== null ? { together } : {}),
     };
     const done = { onSuccess: () => onOpenChange(false), onError: (failure: unknown) => setError(errorText(failure)) };
     if (visit) update.mutate({ visitId: visit.id, patch: body }, done);
@@ -228,7 +229,7 @@ export function VisitSheet({
           <TextField label="Quando" type="date" value={visitedOn} max={todayIso()} onChange={(event) => setVisitedOn(event.target.value)} />
           <TextField label="Quanto gastamos" inputMode="decimal" prefix="R$" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="0,00" />
         </div>
-        {showTogether && partner ? <TogetherToggle partner={partner} label="Fomos juntos" where="caderno" value={together} onChange={setTogether} /> : null}
+        {showTogether && partner ? <TogetherToggle partner={partner} label="Fomos juntos" where="caderno" value={together ?? true} onChange={setTogether} /> : null}
         <TextField label="Ocasião" value={occasion} onChange={(event) => setOccasion(event.target.value)} maxLength={80} placeholder="Aniversário, almoço de domingo…" />
         {options.length > 0 || canEdit ? (
           <fieldset className="flex flex-col gap-3">

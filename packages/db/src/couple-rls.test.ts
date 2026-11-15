@@ -47,7 +47,7 @@ beforeAll(async () => {
   place = r!.id;
   const [t] = await test.db.insert(titles).values({ tmdbType: "movie", tmdbId: 1, kind: "filme", title: "Filme" }).returning();
   movie = t!.id;
-  const [v1] = await as(ANA, (tx) => tx.insert(visits).values({ restaurantId: place, userId: ANA, visitedOn: "2026-11-01", together: true }).returning());
+  const [v1] = await as(ANA, (tx) => tx.insert(visits).values({ restaurantId: place, userId: ANA, visitedOn: "2026-11-01", together: true, togetherWith: BIA }).returning());
   const [v2] = await as(ANA, (tx) => tx.insert(visits).values({ restaurantId: place, userId: ANA, visitedOn: "2026-11-02" }).returning());
   together = v1!.id;
   alone = v2!.id;
@@ -63,11 +63,28 @@ afterAll(async () => {
 });
 
 describe("o par", () => {
-  it("partner_of devolve o par e nada para quem não tem", async () => {
-    const rows = (await test.db.execute(sql`select public.partner_of(${ANA}::uuid) as a, public.partner_of(${CAIO}::uuid) as c`)) as unknown as {
-      rows: { a: string | null; c: string | null }[];
-    };
-    expect(rows.rows[0]).toEqual({ a: BIA, c: null });
+  it("partner_of devolve o par de quem está logado e nada sobre outras pessoas", async () => {
+    const ask = (who: string, about: string) =>
+      as(who, async (tx) => ((await tx.execute(sql`select public.partner_of(${about}::uuid) as p`)) as unknown as { rows: { p: string | null }[] }).rows[0]?.p);
+    expect(await ask(ANA, ANA)).toBe(BIA);
+    expect(await ask(CAIO, CAIO)).toBeNull();
+    // Quem é de fora não descobre quem é par de quem.
+    expect(await ask(CAIO, ANA)).toBeNull();
+    await expect(
+      test.db.transaction(async (tx) => {
+        await tx.execute(sql`set local role anon`);
+        return tx.execute(sql`select public.partner_of(${ANA}::uuid)`);
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("visita juntos com outra pessoa (par antigo) não aparece para o par de agora", async () => {
+    const [old] = await as(ANA, (tx) =>
+      tx.insert(visits).values({ restaurantId: place, userId: ANA, visitedOn: "2026-10-01", together: true, togetherWith: CAIO }).returning(),
+    );
+    const seen = await as(BIA, (tx) => tx.select({ id: visits.id }).from(visits));
+    expect(seen.map((row) => row.id)).not.toContain(old!.id);
+    expect(seen.map((row) => row.id)).toContain(together);
   });
 
   it("vê a avaliação privada; quem é de fora não vê", async () => {

@@ -88,7 +88,7 @@ describe("perfil público", () => {
     const duda = await api.ok(await api.request("GET", "/v1/profiles/duda/plots", t.caio!));
     expect(duda.favorites.map((item: { id: string }) => item.id)).toEqual([movie]);
     expect(duda.recent).toHaveLength(0);
-    expect(duda.stats.sessions).toBe(1);
+    expect(duda.stats.sessions).toBe(0);
     const caio = await api.ok(await api.request("GET", "/v1/profiles/caio/plots", t.duda!));
     expect(caio.recent[0]).toMatchObject({ titleId: movie, rating: 3, review: "ok" });
   });

@@ -2,6 +2,7 @@ import { visitDishes, visitPhotos, visits, withUser } from "@pap/db";
 import { visitInputSchema, visitPatchSchema } from "@pap/shared";
 import { and, eq, inArray, notInArray } from "drizzle-orm";
 import { Hono } from "hono";
+import { partnerOf } from "../couples/partner";
 import { notFound } from "../errors";
 import { type OwnedPhoto, assertOwnPhoto, removePhotos } from "../plates/paths";
 import { type PlatesContext, loadVisits } from "../plates/queries";
@@ -31,7 +32,6 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
     const user = c.get("user");
     const visitId = routeId(c.req.param("id"));
     const { dishIds, photoPaths, ...fields } = c.req.valid("json");
-    for (const path of photoPaths ?? []) assertOwnPhoto(path, "visit", user.id);
 
     let dropped: OwnedPhoto[] = [];
     const visit = await withUser(db, { sub: user.id }, async (tx) => {
@@ -40,10 +40,18 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
       const [current] = await tx.select().from(visits).where(eq(visits.id, visitId));
       if (!current) throw notFound("Visita não encontrada.");
 
-      if (Object.keys(fields).length > 0) {
+      // Só quem registrou liga ou desliga o "juntos" (o par tira do caderno dele apagando).
+      const { together, ...rest } = fields;
+      const changes: Partial<typeof visits.$inferInsert> = { ...rest };
+      if (together !== undefined && current.userId === user.id) {
+        const partner = together ? await partnerOf(tx, user.id) : null;
+        changes.together = partner !== null;
+        changes.togetherWith = partner;
+      }
+      if (Object.keys(changes).length > 0) {
         await tx
           .update(visits)
-          .set({ ...fields, updatedAt: new Date() })
+          .set({ ...changes, updatedAt: new Date() })
           .where(eq(visits.id, visitId));
       }
       if (dishIds !== undefined) {
@@ -64,7 +72,9 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
           .from(visitPhotos)
           .where(and(eq(visitPhotos.visitId, visitId), photoPaths.length > 0 ? inArray(visitPhotos.path, photoPaths) : undefined));
         const known = new Set(existing.map((row) => row.path));
+        // Numa visita juntos a lista traz as fotos dos dois; só as novas precisam ser de quem envia.
         const added = photoPaths.filter((path) => !known.has(path));
+        for (const path of added) assertOwnPhoto(path, "visit", user.id);
         if (added.length > 0) {
           await tx.insert(visitPhotos).values(added.map((path) => ({ visitId, ownerId: user.id, path })));
         }
@@ -95,7 +105,7 @@ export function visitRoutes(deps: Pick<AppDeps, "db" | "storage">) {
       // Pela conexão dona das tabelas: depois de desmarcar, a visita deixa de ser visível ao par (o RLS recusaria).
       await db
         .update(visits)
-        .set({ together: false, updatedAt: new Date() })
+        .set({ together: false, togetherWith: null, updatedAt: new Date() })
         .where(and(eq(visits.id, outcome.untag), eq(visits.together, true)));
     }
     await removePhotos(storage, outcome.photos);

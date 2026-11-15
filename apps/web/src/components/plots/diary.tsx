@@ -7,6 +7,7 @@ import { useEffect, useRef } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Stamp } from "@/components/ui/stamp";
+import { usePartner } from "@/lib/couple/queries";
 import { catalog } from "@/lib/plates/format";
 import { dayLabel, monthKey, monthLabel, seasonTag } from "@/lib/plots/format";
 import { useDiary } from "@/lib/plots/queries";
@@ -88,6 +89,7 @@ export function Diary() {
 
 function DiaryRow({ entry }: { entry: DiaryEntry }) {
   const open = useOpenTitle();
+  const partner = usePartner();
   const href = `/plots/t/${entry.titleId}`;
   const tag = seasonTag(entry.seasonNumber);
   return (
@@ -121,12 +123,12 @@ function DiaryRow({ entry }: { entry: DiaryEntry }) {
             </span>
           ) : null}
           {entry.isPrivate ? <span>Privado</span> : null}
-          {entry.together ? <span className="text-foreground">Juntos</span> : null}
+          {entry.together && partner ? <span className="text-foreground">Juntos</span> : null}
         </p>
       </div>
       {entry.rating !== null ? (
         <Stamp value={entry.rating} size="sm" />
-      ) : entry.together ? (
+      ) : entry.together && partner ? (
         <span className="font-micro flex size-14 shrink-0 items-center justify-center border border-dashed border-rule-strong text-center text-[0.625rem] leading-tight text-soft">
           Dar
           <br />

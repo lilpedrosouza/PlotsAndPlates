@@ -70,7 +70,7 @@ export function LogSheet({ title, open, onOpenChange, presetSeason, log }: LogSh
   // "Vimos juntos" só na criação: é quando nasce o registro do par.
   const partner = usePartner();
   const showTogether = partner !== null && !log;
-  const [together, setTogether] = useState(true);
+  const [together, setTogether] = useState<boolean | null>(null);
   // "Reassistido" sugerido pelo histórico; só vai na requisição se a pessoa mexer.
   const suggestedRewatch = log ? log.rewatch : isRewatch(title.logs, seasonNumber);
   const [rewatch, setRewatch] = useState<boolean | null>(null);
@@ -94,7 +94,7 @@ export function LogSheet({ title, open, onOpenChange, presetSeason, log }: LogSh
       review,
       seasonNumber: isShow ? seasonNumber : null,
       ...(rewatch !== null ? { rewatch } : {}),
-      ...(showTogether ? { together } : {}),
+      ...(showTogether && together !== null ? { together } : {}),
     };
     const done = { onSuccess: () => onOpenChange(false), onError: (failure: Error) => setError(failure.message) };
     if (log) update.mutate({ logId: log.id, patch: body }, done);
@@ -128,7 +128,7 @@ export function LogSheet({ title, open, onOpenChange, presetSeason, log }: LogSh
           </fieldset>
         ) : null}
         <TextField label="Quando" type="date" value={watchedOn} max={todayIso()} onChange={(event) => setWatchedOn(event.target.value)} />
-        {showTogether && partner ? <TogetherToggle partner={partner} label="Vimos juntos" where="diário" value={together} onChange={setTogether} /> : null}
+        {showTogether && partner ? <TogetherToggle partner={partner} label="Vimos juntos" where="diário" value={together ?? true} onChange={setTogether} /> : null}
         <div className="flex flex-col gap-1">
           <span className="font-micro text-[0.8125rem] text-soft">{isShow ? "Nota da temporada" : "Nota"}</span>
           <RatingInput label={isShow ? "Nota da temporada" : "Nota"} value={rating} onChange={setRating} />

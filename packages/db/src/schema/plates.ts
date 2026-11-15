@@ -135,6 +135,8 @@ export const visits = pgTable(
     amountCents: integer("amount_cents"),
     /** "Juntos": só passa a valer com o vínculo de casal (fase 4). */
     together: boolean("together").notNull().default(false),
+    /** Com quem foi a visita "juntos": um par novo não herda as visitas do par antigo. */
+    togetherWith: uuid("together_with").references(() => authUsers.id, { onDelete: "set null" }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -146,14 +148,14 @@ export const visits = pgTable(
     pgPolicy("visits_select_own", {
       for: "select",
       to: authenticatedRole,
-      using: sql`${isMine(table.userId)} or (${table.together} and ${isPartners(table.userId)})`,
+      using: sql`${isMine(table.userId)} or (${table.together} and ${isMine(table.togetherWith)} and ${isPartners(table.userId)})`,
     }),
     pgPolicy("visits_insert_own", { for: "insert", to: authenticatedRole, withCheck: isMine(table.userId) }),
     pgPolicy("visits_update_own", {
       for: "update",
       to: authenticatedRole,
-      using: sql`${isMine(table.userId)} or (${table.together} and ${isPartners(table.userId)})`,
-      withCheck: sql`${isMine(table.userId)} or ${isPartners(table.userId)}`,
+      using: sql`${isMine(table.userId)} or (${table.together} and ${isMine(table.togetherWith)} and ${isPartners(table.userId)})`,
+      withCheck: sql`${isMine(table.userId)} or (${isMine(table.togetherWith)} and ${isPartners(table.userId)})`,
     }),
     pgPolicy("visits_delete_own", { for: "delete", to: authenticatedRole, using: isMine(table.userId) }),
   ],

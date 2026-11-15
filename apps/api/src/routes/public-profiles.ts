@@ -34,7 +34,7 @@ async function findProfile(db: Db, viewerId: string, username: string): Promise<
 }
 
 /**
- * Perfis públicos (só leitura). As contagens vêm da conexão da API, porque
+ * Perfis públicos (só leitura). As contagens de visitas vêm da conexão da API, porque
  * visitas não são visíveis a terceiros e só o número aparece; notas, reviews e
  * sessões passam pela RLS e por um filtro explícito: quem é de fora vê só o
  * público, o par e a própria pessoa veem também o privado.
@@ -51,7 +51,10 @@ export function publicProfileRoutes({ db, storage }: Pick<AppDeps, "db" | "stora
 
     // Visitas da pessoa: as que ela registrou e as "juntos" registradas pelo par.
     const hers: SQL = personPartner
-      ? (or(eq(visits.userId, person.id), and(eq(visits.together, true), eq(visits.userId, personPartner))) as SQL)
+      ? (or(
+          eq(visits.userId, person.id),
+          and(eq(visits.together, true), eq(visits.userId, personPartner), eq(visits.togetherWith, person.id)),
+        ) as SQL)
       : eq(visits.userId, person.id);
     const [visitStats] = await db
       .select({ visits: count(), restaurants: countDistinct(visits.restaurantId) })
@@ -122,12 +125,14 @@ export function publicProfileRoutes({ db, storage }: Pick<AppDeps, "db" | "stora
     const isPartner = personPartner !== null && personPartner === user.id;
     const seesPrivate = isPartner || person.id === user.id;
 
-    const [logStats] = await db
-      .select({ sessions: count(), titles: countDistinct(watchLogs.titleId) })
-      .from(watchLogs)
-      .where(eq(watchLogs.userId, person.id));
-
     const body = await withUser(db, { sub: user.id }, async (tx) => {
+      // Sessões contam pela RLS e pelo filtro: quem é de fora não conta as privadas.
+      const counted: SQL[] = [eq(watchLogs.userId, person.id)];
+      if (!seesPrivate) counted.push(eq(watchLogs.isPrivate, false));
+      const [logStats] = await tx
+        .select({ sessions: count(), titles: countDistinct(watchLogs.titleId) })
+        .from(watchLogs)
+        .where(and(...counted));
       const ratingVisible: SQL[] = [eq(titleRatings.userId, person.id), isNotNull(titleRatings.rating)];
       if (!seesPrivate) ratingVisible.push(eq(titleRatings.isPrivate, false));
       const ratings = await tx.select({ rating: titleRatings.rating }).from(titleRatings).where(and(...ratingVisible));

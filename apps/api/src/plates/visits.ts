@@ -34,7 +34,9 @@ export async function insertVisit(ctx: PlatesContext, restaurantId: string, inpu
   const photoPaths = input.photoPaths ?? [];
   for (const path of photoPaths) assertOwnPhoto(path, "visit", ctx.userId);
   await assertDishesOf(ctx, restaurantId, dishIds);
-  const together = input.together ?? Boolean(await partnerOf(ctx.tx, ctx.userId));
+  // "Juntos" vale com o par de agora; sem par, não há com quem valer.
+  const partner = await partnerOf(ctx.tx, ctx.userId);
+  const together = (input.together ?? true) && partner !== null;
 
   const [visit] = await ctx.tx
     .insert(visits)
@@ -45,6 +47,7 @@ export async function insertVisit(ctx: PlatesContext, restaurantId: string, inpu
       occasion: input.occasion ?? "",
       amountCents: input.amountCents ?? null,
       together,
+      togetherWith: together ? partner : null,
     })
     .returning({ id: visits.id });
   if (!visit) throw new Error("A visita não foi criada.");

@@ -28,7 +28,14 @@ import { routeId } from "./restaurants";
 const numeric = (value: number | null | undefined) => (value == null ? null : String(value));
 
 /** Registro do par a criar depois da transação (sessão "juntos"). */
-export type PartnerMirror = { partnerId: string; titleId: string; seasonNumber: number | null; watchedOn: string; groupId: string };
+export type PartnerMirror = {
+  partnerId: string;
+  titleId: string;
+  seasonNumber: number | null;
+  watchedOn: string;
+  groupId: string;
+  isPrivate: boolean;
+};
 
 /**
  * Cria um registro no diário (usado também pelo "Assistimos!"). Em "juntos"
@@ -43,7 +50,8 @@ export async function insertLog(
   const seasonNumber = input.seasonNumber ?? null;
   await assertSeasonFor(ctx, title, seasonNumber);
   const partnerId = await partnerOf(ctx.tx, ctx.userId);
-  const together = input.together ?? Boolean(partnerId);
+  // "Juntos" só existe com par; sem par, a marca não teria com quem valer.
+  const together = (input.together ?? true) && partnerId !== null;
   const groupId = together && partnerId ? randomUUID() : null;
   const previous = await ctx.tx
     .select({ seasonNumber: watchLogs.seasonNumber })
@@ -70,7 +78,10 @@ export async function insertLog(
   if (row.liked) await markLiked(ctx, title);
   return {
     log: toLog(row),
-    mirror: groupId && partnerId ? { partnerId, titleId: title.id, seasonNumber, watchedOn: input.watchedOn, groupId } : null,
+    mirror:
+      groupId && partnerId
+        ? { partnerId, titleId: title.id, seasonNumber, watchedOn: input.watchedOn, groupId, isPrivate: row.isPrivate }
+        : null,
   };
 }
 
@@ -88,6 +99,8 @@ export async function writeMirror(db: Db, mirror: PartnerMirror | null) {
     watchedOn: mirror.watchedOn,
     together: true,
     groupId: mirror.groupId,
+    // Sessão privada de um continua privada no diário do outro.
+    isPrivate: mirror.isPrivate,
     rewatch: isRewatch(previous, mirror.seasonNumber),
   });
 }
