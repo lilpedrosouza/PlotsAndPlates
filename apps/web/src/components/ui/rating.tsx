@@ -75,11 +75,22 @@ export function RatingInput({ value, onChange, label, size = 36, className }: Ra
     setPopped(next === null ? null : Math.ceil(next) - 1);
   };
 
+  // A nota sai da estrela tocada, não da largura da caixa: dentro de uma coluna
+  // flexível a caixa estica até a linha toda e as estrelas ficam só no começo dela
+  // (tocar na 4ª estrela dava 2, e era preciso tocar no branco à direita).
   const valueFromPointer = (clientX: number): number => {
-    const rect = track.current?.getBoundingClientRect();
-    if (!rect) return RATING_MIN;
-    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    return Math.min(RATING_MAX, Math.max(RATING_MIN, Math.ceil((ratio * RATING_MAX) / RATING_STEP) * RATING_STEP));
+    const stars = track.current ? [...track.current.querySelectorAll<HTMLElement>("[data-star]")] : [];
+    if (stars.length === 0) return RATING_MIN;
+    for (const [index, star] of stars.entries()) {
+      const rect = star.getBoundingClientRect();
+      // O vão entre as estrelas conta para a estrela da esquerda.
+      const right = stars[index + 1]?.getBoundingClientRect().left ?? rect.right;
+      if (clientX < right) {
+        const half = clientX < rect.left + rect.width / 2 ? 0.5 : 1;
+        return Math.min(RATING_MAX, Math.max(RATING_MIN, index + half));
+      }
+    }
+    return RATING_MAX;
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -113,11 +124,12 @@ export function RatingInput({ value, onChange, label, size = 36, className }: Ra
         commit(next === value ? null : next);
         setPreview(null);
       }}
-      className={cn("inline-flex cursor-pointer touch-manipulation items-center gap-1 py-1", className)}
+      className={cn("inline-flex w-fit cursor-pointer touch-manipulation items-center gap-1 py-1", className)}
     >
       {[0, 1, 2, 3, 4].map((index) => (
         <m.span
           key={index}
+          data-star
           className="block"
           animate={popped === index ? { scale: [1, 1.32, 1], rotate: [0, -8, 0] } : { scale: 1, rotate: 0 }}
           transition={POP[section]}
