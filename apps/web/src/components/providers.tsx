@@ -1,8 +1,9 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LazyMotion, MotionConfig } from "motion/react";
 import { type ReactNode, useState } from "react";
+import { refreshAchievements } from "@/lib/achievements/queries";
 import { ApiRequestError } from "@/lib/api";
 import { AuthProvider } from "@/lib/auth";
 import { TransitionRouterProvider } from "@/lib/transition-router";
@@ -11,22 +12,30 @@ import { TransitionRouterProvider } from "@/lib/transition-router";
 const loadMotionFeatures = () => import("@/lib/motion-features").then((module) => module.default);
 
 export function Providers({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60_000,
-            refetchOnWindowFocus: false,
-            retry: (failureCount, error) => {
-              // Erros de regra (4xx) não melhoram tentando de novo.
-              if (error instanceof ApiRequestError && error.status >= 400 && error.status < 500) return false;
-              return failureCount < 2;
-            },
-          },
+  const [queryClient] = useState(() => {
+    const client: QueryClient = new QueryClient({
+      // Qualquer ação que deu certo pode ter destravado uma conquista (e o Wrapped mudou).
+      mutationCache: new MutationCache({
+        onSuccess: (_data, _variables, _context, mutation) => {
+          if (mutation.meta?.skipAchievements) return;
+          refreshAchievements(client);
+          void client.invalidateQueries({ queryKey: ["wrapped"] });
         },
       }),
-  );
+      defaultOptions: {
+        queries: {
+          staleTime: 60_000,
+          refetchOnWindowFocus: false,
+          retry: (failureCount, error) => {
+            // Erros de regra (4xx) não melhoram tentando de novo.
+            if (error instanceof ApiRequestError && error.status >= 400 && error.status < 500) return false;
+            return failureCount < 2;
+          },
+        },
+      },
+    });
+    return client;
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
